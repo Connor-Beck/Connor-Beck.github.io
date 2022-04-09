@@ -5,7 +5,7 @@
 	margin:0;
 	padding: 0;
 	box-sizing: border-box;
-	background-color: black;
+	background-color: whitesmoke;
 }
 
 #canvas1{
@@ -15,4 +15,340 @@
 	width:100%;
 	height:100%;
 	background-color: whitesmoke;
+}
+
+html,
+html * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: arial, sans-serif;
+  font-size: 1vw;
+  background: whitesmoke;
+}
+
+img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+  -webkit-transform: translate3d(0,0,0);
+          transform: translate3d(0,0,0);
+}
+a, a:visited {
+    color: inherit;
+}
+header {
+  position: fixed;
+  padding: 1.5em;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+.site-logo {
+  position: relative;
+  display: block;
+  float: left;
+  z-index: 10000;
+  width: 5.1em;
+}
+.site-nav {
+  position: relative;
+  float: right;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  display: block !important;
+  width: 80%;
+  padding: .75em 1em 0 0;
+  opacity: .95;
+  background: none;
+}
+.site-nav ul {
+  list-style-type: none;
+  margin: 0;
+  text-align: right;
+  z-index: 1000
+}
+.site-nav ul li {
+  display: inline-block;
+  margin-bottom: 0;
+  margin-left: 1.5em;
+  z-index: 1000;
+}
+.site-nav ul li a {
+  font-size: .85em;
+  padding-bottom: .5em;
+  text-decoration: none;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #fff;
+  -webkit-transition: color .3s;
+  transition: color .3s;
+  z-index: 400;
+}
+
+.site-nav ul li a:hover {
+  outline: none;
+  border-bottom: 1px solid white;
+}
+
+.intro {
+	background: whitesmoke;
+	padding: 50% 0 0 0;
+	z-index: 0;
+}
+
+.Title {
+  position: relative;
+  height: 54vw;
+  background: #000000;
+  z-index: 2;
+}
+.Title-content {
+  pointer-events: none;
+  font-family: 'acumin-pro-extra-condensed', sans-serif;
+  color: #000000;
+  position: absolute;
+  z-index: 2;
+  padding-top: 4em;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+h2 {
+	font-weight: 100;
+	font-size: 2em;
+    line-height: 2.2;
+	margin-bottom: -.35em;
+	padding-top: 13%;
+	letter-spacing: .2em;
+	text-transform: uppercase;
+	text-shadow: 0px 0px 8px rgba(0, 0, 0,.2);
+}
+h1 {
+  margin-bottom: 1.5%;
+  text-transform: uppercase;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0,.05);
+  letter-spacing: .5em;
+  margin-left: .7em;
+  font-size: 8.5vw;
+}
+
+.AboutMe{
+  display: flex;
+  width: 100%;
+  padding: 0% 0% 0% 0%;
+  background: whitesmoke;
+}
+.AboutMe.About {
+  position:relative;
+}
+.About figure {
+  position: relative;
+	padding: 0% 10% 0% 0%;
+	width: 40%;
+}
+.AboutMe.AboutMe-description {
+  color: #000000;
+  padding: 0% 0% 0% 10%;
+  width: 40%;
+}
+.AboutMe-title {
+  font-family: 'acumin-pro-extra-condensed', sans-serif;
+  font-size: 3em;
+  font-weight: 100;
+  color: #000000;
+  padding: 10% 5% 0% 5%;
+  letter-spacing: .36em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  max-width: 75%;
+  margin-bottom: .5em;
+}
+
+
+.Research {
+  position: relative;
+  width: 100%;
+  z-index: 100;
+  overflow: hidden;
+}
+.Research2 {
+  position: relative;
+  width: 100%;
+  z-index: 100;
+  overflow: hidden;
+}
+
+
+.TimeDynamics{
+  display: flex;
+  width: 100%;
+  padding: 0% 0% 0% 0%;
+  background: #000000;
+}
+.TimeDynamics.CalciumDynamics {
+  position:relative;
+}
+.CalciumDynamics figure {
+  position: relative;
+	padding: 0% 10% 0% 0%;
+	width: 100%;
+}
+.CalciumDynamics figure img {
+  position: relative;
+  z-index: 100;
+  opacity: 1;
+}
+.TimeDynamics.CalciumDynamics-description {
+  color: #fff;
+  width: 100%;
+  padding: 0% 0% 0% 10%;
+}
+.CalciumDynamics-title {
+  font-family: 'acumin-pro-extra-condensed', sans-serif;
+  font-size: 3em;
+  font-weight: 100;
+  color: #fff;
+  padding: 10% 5% 0% 5%;
+  letter-spacing: .36em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  max-width: 75%;
+  margin-bottom: .5em;
+}
+.CalciumDynamics-text {
+  font-size: 1.1em;
+  color: #fff;
+  padding: 0% 5% 0% 5%;
+  line-height: 1.9;
+  opacity: .8;
+  max-width: 90%;
+}
+
+.Nanoparticles{
+  display: flex;
+	width: 100%;
+	padding: 0% 0% 0% 0%;
+	background: #000000;
+}
+.Nanoparticles.Force_Mediation {
+  position:relative;
+}
+.Force_Mediation figure {
+  position: relative;
+  background: #000000;
+  padding: 0% 0% 0% 10%;
+  width: 100%;
+}
+.Force_Mediation figure img {
+  position: relative;
+  z-index: 100;
+}
+.Nanoparticles.Force_Mediation-description {
+  color: #fff;
+  background: #000000
+  width: 100%;
+  padding: 0% 10% 0% 5%;
+}
+.Force_Mediation-title {
+  font-family: 'acumin-pro-extra-condensed', sans-serif;
+  font-size: 3em;
+  font-weight: 100;
+  color: #fff;
+  padding: 10% 5% 0% 5%;
+  text-align: right;
+  letter-spacing: .36em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  max-width: 90%;
+  margin-bottom: .5em;
+}
+.Force_Mediation-text {
+  font-size: 1.1em;
+  text-align: right;
+  color: #fff;
+  padding: 0% 5% 0% 5%;
+  line-height: 1.9;
+  opacity: .8;
+  max-width: 90%;
+}
+
+
+
+
+footer {
+  margin-top: -3.5em;
+  padding-top: 10em;
+  background: #000000;
+}
+.footer-content {
+  width: 64%;
+  margin: 0 auto;
+	padding-bottom:1.7em;
+}
+.footer-social {
+  display: block;
+  width: 100%;
+  list-style-type: none;
+  text-align: center;
+}
+.footer-social li {
+  display: inline-block;
+  margin: 0 1.2em;
+}
+.footer-social li a {
+  line-height: 3.5em;
+  display: inline-block;
+  width: 4em;
+  height: 4em;
+  text-align: center;
+  border: 2px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+}
+.footer-social li a:hover {
+  border-color: #fff;
+  background: #fff;
+}
+.footer-social li a img {
+  width: auto;
+  height: 1em;
+}
+.footer-social li a .social-hover {
+  display: none;
+}
+.footer-social li a:hover .social-default {
+  display: none;
+}
+.footer-social li a:hover .social-hover {
+  display: inline;
+}
+.footer-info {
+  clear: both;
+  padding-top: 5em;
+}
+.footer-info p {
+  font-size: .8em;
+  color:#fff;
+  line-height: 1.55;
+  max-width: 36em;
+  margin-bottom: 1.7em;
+}
+.footer-credit {
+  float: right;
+  width: 40%;
+  text-align: right;
+  position: relative;
+}
+.footer-legal {
+  opacity: .8;
+}
+.footer-credit a:hover {
+  text-decoration: none;
 }
