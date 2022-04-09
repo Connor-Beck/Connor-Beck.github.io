@@ -6,9 +6,108 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="canvas1"></canvas>
-<script src="particles.js"></script>
-<script src="jquery.min.js"></script>
-<script src="scripts.js"></script>
+    <!-- Navigation Menu -->
+    <header>
+      <a class="site-logo" href="rendered-index.html"></a>
+        <nav class="site-nav">
+            <ul>
+                <li><a href="rendered-index.html">Home</a></li>
+                <li><a href="HTML/About.html">About Me</a></li>
+                <li><a href="HTML/Research.html">Research</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- Main Content -->
+    <main>
+        <!-- Title -->
+        <section class="Title">
+        		<canvas id="canvas1"></canvas>
+				<script src="particles.js"></script>
+        </section>
+        <!-- Intro -->
+		<section class="About Me">
+			<article class="Image">
+			  <a href="About.html">
+			  <div class="AboutMe">
+						<figure>
+							<img src="images/Me.jpg">
+						</figure>
+					</div>
+					<h2 class="AboutMe-title">About Me</h2>
+			  </a>
+			  <a href="About.html">
+				<div class="AboutMe-description">
+					<p class="AboutMe-text">I am a 3rd Year Ph.D. student at Montana State University. My passions include developing analytics software for neuronal systems, hiking/running in the mountains, and cooking good food! </p>
+				</div>
+			  </a>
+			</article>
+		</section>
+        <!-- Research -->
+        <section class="Research">
+            <article class="TimeDynamics">
+				<a href="Calcium_Dynamics.html">
+					<div class="CalciumDynamics">
+						<figure>
+							<img src="images/TimeCalcium.png">
+						</figure>
+					</div>
+				<a/>
+				<a href="Calcium_Dynamics.html">
+					<div class="CalciumDynamics-description">
+						<h2 class="CalciumDynamics-title">Intercellular Calcium Dynamics</h2>
+						<p class="CalciumDynamics-text">The chemical element, Calcium, plays a crucial role in the fundamental processes that provide our brain its function. I have developed analytics tools to track network wide communication utilizing calcium imaging.</p>
+					</div>
+				</a>
+            </article>
+            <article class="Nanoparticles">
+				<a href="Force_Mediation.html">
+					<div class="Force_Mediation-description">
+						<h2 class="Force_Mediation-title" href="Force_Mediation.html">Force Mediated Magnetic Nanoparticles</h2>
+						<p class="Force_Mediation-text" href="Force_Mediation.html">At the frontiers of mechanical nanosurgery, magnetic particles around 100 nm in diameter &#40;over 100 times smaller than the width of a human hair&#41; can be directed to specific components of the cell through surface coatings. Magnetic fields can be applied to manipulate the targeted cellular components.</p>
+					</div>
+				</a>
+				<a href="Force_Mediation.html">
+					<div class="Force_Mediation" href="Force_Mediation.html">
+
+						<figure>
+							<img src="images/MitoNPCa.png">
+						</figure>
+					</div>
+				</a>
+            </article>
+        </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer>
+    <div class="footer-content">
+            <ul class="footer-social">
+                <li>
+                    <a href="#">
+                        <img class="social-default" src="images/social-facebook.png">
+                        <img class="social-hover" src="images/social-facebook-hover.png">
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img class="social-default" src="images/social-pinterest.png">
+                        <img class="social-hover" src="images/social-pinterest-hover.png">
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img class="social-default" src="images/social-twitter.png">
+                        <img class="social-hover" src="images/social-twitter-hover.png">
+                    </a>
+                </li>
+            </ul>
+            <div class="footer-info">
+                <p class="footer-credit">Website design by <a href="#">Connor Beck</a></p>
+                <p class="footer-legal">&copy; 2019 Adobe Systems Incorporated. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
 </body>
 </html>
