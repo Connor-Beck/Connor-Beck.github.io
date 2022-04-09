@@ -64,7 +64,7 @@ window.addEventListener('mousemove',
 		mouse.y=event.y;
 });
 
-window.addEventListener('click',function(){ChangeMode()});
+//window.addEventListener('click',function(){ChangeMode()});
 
 //create particle
 class Particle{
@@ -343,25 +343,25 @@ function connect(){
 	
 	
 }
-function timed_ChangeMode() {
-	setTimeout(function(){
-		mode='FiveNode';
-		shift=true;
-		for (let z=0; z< particlesArray.length; z++){
-			particlesArray[z].x_origin=scaling*(Math.random()-Math.random())/100+scaling*Fivenode_x_coords[z]+centering;
-			particlesArray[z].y_origin=scaling*(Math.random()-Math.random())/100+scaling*Fivenode_y_coords[z];
-		}
-		setTimeout(function(){
-			mode='CBR';
-			shift=true;
-			for (let z=0; z< particlesArray.length; z++){
-				particlesArray[z].x_origin=scaling*(Math.random()-Math.random())/100+scaling*CBR_x_coords[z]+centering;
-				particlesArray[z].y_origin=scaling*(Math.random()-Math.random())/100+scaling*CBR_y_coords[z];
-			}
-		}, 7000);
-	}, 3000);
-}
+//function timed_ChangeMode() {
+//	setTimeout(function(){
+//		mode='FiveNode';
+//		shift=true;
+//		for (let z=0; z< particlesArray.length; z++){
+//			particlesArray[z].x_origin=scaling*(Math.random()-Math.random())/100+scaling*Fivenode_x_coords[z]+centering;
+//			particlesArray[z].y_origin=scaling*(Math.random()-Math.random())/100+scaling*Fivenode_y_coords[z];
+//		}
+//		setTimeout(function(){
+//			mode='CBR';
+//			shift=true;
+//			for (let z=0; z< particlesArray.length; z++){
+//				particlesArray[z].x_origin=scaling*(Math.random()-Math.random())/100+scaling*CBR_x_coords[z]+centering;
+//				particlesArray[z].y_origin=scaling*(Math.random()-Math.random())/100+scaling*CBR_y_coords[z];
+//			}
+//		}, 7000);
+//	}, 3000);
+//}
 
 init();
 animate();
-timed_ChangeMode();
+//timed_ChangeMode();
