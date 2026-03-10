@@ -362,6 +362,30 @@
     };
   };
 
+  const stimulateNearestElectrode = (x, y, intensity) => {
+    if (!state.electrodes.length) {
+      return;
+    }
+
+    let nearest = null;
+    let nearestDist2 = Infinity;
+    state.electrodes.forEach((electrode) => {
+      const dx = electrode.near.x - x;
+      const dy = electrode.near.y - y;
+      const dist2 = dx * dx + dy * dy;
+      if (dist2 < nearestDist2) {
+        nearestDist2 = dist2;
+        nearest = electrode;
+      }
+    });
+
+    if (!nearest) {
+      return;
+    }
+
+    nearest.activity = clamp(nearest.activity + intensity, 0, 1.9);
+  };
+
   const sampleNeighbors = (index, count, exclude = -1) => {
     const particle = state.particles[index];
     if (!particle) {
@@ -512,6 +536,10 @@
     if (Math.random() < 0.016 && state.particles.length) {
       const randomIndex = Math.floor(Math.random() * state.particles.length);
       excite(randomIndex, "spontaneous", 0.95);
+      if (Math.random() < 0.36) {
+        const source = state.particles[randomIndex];
+        stimulateNearestElectrode(source.x, source.y, 0.34 + Math.random() * 0.33);
+      }
     }
 
     for (let i = state.spikes.length - 1; i >= 0; i -= 1) {
@@ -536,8 +564,12 @@
           hits += 1;
         }
       });
-      const localActivity = hits ? sum / hits : 0;
-      electrode.activity = electrode.activity * 0.88 + clamp(localActivity, 0, 1.5) * 0.12;
+      const localActivity = clamp(hits ? sum / hits : 0, 0, 1.6);
+      if (localActivity > electrode.activity) {
+        electrode.activity = electrode.activity * 0.84 + localActivity * 0.16;
+      } else {
+        electrode.activity = electrode.activity * 0.962 + localActivity * 0.038;
+      }
     });
 
     state.pulses = state.pulses
@@ -586,16 +618,16 @@
       drawSegment(segB, segC, lenAB, lenAB + lenBC);
 
       const level = clamp((electrode.activity - 0.23) / 0.75, 0, 1);
-      const r = Math.round(lerp(110, 224, level));
-      const g = Math.round(lerp(126, 182, level));
-      const b = Math.round(lerp(138, 72, level));
-      const radius = 6.9 + level * 3.1;
+      const r = Math.round(lerp(110, 146, level));
+      const g = Math.round(lerp(126, 210, level));
+      const b = Math.round(lerp(138, 232, level));
+      const radius = 8.28 + level * 3.72;
 
       ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
-      ctx.strokeStyle = `rgba(${Math.round(lerp(74, 132, level))}, ${Math.round(
-        lerp(86, 96, level)
-      )}, ${Math.round(lerp(98, 30, level))}, ${0.8 + level * 0.17})`;
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = `rgba(${Math.round(lerp(74, 98, level))}, ${Math.round(
+        lerp(86, 142, level)
+      )}, ${Math.round(lerp(98, 156, level))}, ${0.82 + level * 0.16})`;
+      ctx.lineWidth = 1.35;
       ctx.beginPath();
       ctx.arc(segC.x, segC.y, radius, 0, Math.PI * 2);
       ctx.fill();
