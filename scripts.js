@@ -37,7 +37,8 @@
     pointer: { x: 0, y: 0, active: false },
     propagationFactor: 1.63,
     clickSplitBoost: 0,
-    last: 0
+    last: 0,
+    maskAspect: 1.2
   };
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -58,6 +59,7 @@
   ];
 
   const fallbackPoints = () => {
+    state.maskAspect = 1.2;
     const points = [];
     const count = 760;
     for (let i = 0; i < count; i += 1) {
@@ -123,6 +125,7 @@
 
     const width = Math.max(0.0001, maxX - minX);
     const height = Math.max(0.0001, maxY - minY);
+    state.maskAspect = clamp(width / height, 0.65, 1.85);
 
     return points.map((point) => ({
       x: (point.x - minX) / width,
@@ -332,8 +335,15 @@
     const drawWidth = Math.max(1, state.width - padX * 2);
     const drawHeight = Math.max(1, state.height - padY * 2);
     const brainScale = 0.64;
-    const brainWidth = Math.max(1, drawWidth * brainScale);
-    const brainHeight = Math.max(1, drawHeight * brainScale);
+    const maskAspect = clamp(state.maskAspect || 1.2, 0.65, 1.85);
+    const maxBrainWidth = Math.max(1, drawWidth * brainScale);
+    const maxBrainHeight = Math.max(1, drawHeight * brainScale);
+    let brainWidth = maxBrainWidth;
+    let brainHeight = brainWidth / maskAspect;
+    if (brainHeight > maxBrainHeight) {
+      brainHeight = maxBrainHeight;
+      brainWidth = brainHeight * maskAspect;
+    }
     const originX = padX + (drawWidth - brainWidth) * 0.5;
     const originY = padY + (drawHeight - brainHeight) * 0.5;
     const jitter = Math.max(12, Math.min(brainWidth, brainHeight) * 0.028);
@@ -873,11 +883,12 @@
 
     particles.forEach((particle) => {
       const glow = clamp(particle.charge, 0, 1.6);
-      const red = Math.floor(50 + glow * 44);
-      const green = Math.floor(126 + glow * 108);
-      const blue = Math.floor(80 + glow * 70);
-      const alpha = clamp(0.78 + glow * 0.28, 0.78, 1);
-      const size = particle.size + glow * 1.58;
+      const active = clamp(glow / 1.6, 0, 1);
+      const red = Math.floor(active * 56);
+      const green = Math.floor(active * 244);
+      const blue = Math.floor(active * 68);
+      const alpha = clamp(0.84 + active * 0.16, 0.84, 1);
+      const size = particle.size + active * 2.22;
       ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
       ctx.beginPath();
       ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
