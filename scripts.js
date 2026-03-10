@@ -328,7 +328,7 @@
     const padY = state.height * 0.012;
     const drawWidth = Math.max(1, state.width - padX * 2);
     const drawHeight = Math.max(1, state.height - padY * 2);
-    const brainScale = 0.49;
+    const brainScale = 0.64;
     const brainWidth = Math.max(1, drawWidth * brainScale);
     const brainHeight = Math.max(1, drawHeight * brainScale);
     const originX = padX + (drawWidth - brainWidth) * 0.5;
@@ -601,7 +601,7 @@
       particle.y += particle.vy * step;
 
       particle.refractory = Math.max(0, particle.refractory - step);
-      particle.charge *= 0.92;
+      particle.charge *= 0.955;
     });
 
     if (Math.random() < 0.016 && state.particles.length) {
@@ -705,7 +705,7 @@
         x: pulse.x,
         y: pulse.y,
         radius: pulse.radius + 3.2 * step,
-        life: pulse.life - 0.02 * step
+        life: pulse.life - 0.014 * step
       }))
       .filter((pulse) => pulse.life > 0);
   };
