@@ -754,29 +754,13 @@
       const segA = electrode.near;
       const segB = electrode.elbow;
       const segC = electrode.terminal;
-      const lenAB = Math.hypot(segB.x - segA.x, segB.y - segA.y);
-      const lenBC = Math.hypot(segC.x - segB.x, segC.y - segB.y);
-      const fadeDistance = Math.max(36, Math.min(state.width, state.height) * 0.09);
-      const wireRgb = "110, 126, 138";
-      const maxAlpha = 0.9;
-
-      const alphaAt = (distanceFromBrain) =>
-        clamp((distanceFromBrain / fadeDistance) * maxAlpha, 0, maxAlpha);
-
-      const drawSegment = (start, end, d0, d1) => {
-        const gradient = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
-        gradient.addColorStop(0, `rgba(${wireRgb}, ${alphaAt(d0)})`);
-        gradient.addColorStop(1, `rgba(${wireRgb}, ${alphaAt(d1)})`);
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 3.1;
-        ctx.beginPath();
-        ctx.moveTo(start.x, start.y);
-        ctx.lineTo(end.x, end.y);
-        ctx.stroke();
-      };
-
-      drawSegment(segA, segB, 0, lenAB);
-      drawSegment(segB, segC, lenAB, lenAB + lenBC);
+      ctx.strokeStyle = "rgba(110, 126, 138, 0.88)";
+      ctx.lineWidth = 3.1;
+      ctx.beginPath();
+      ctx.moveTo(segA.x, segA.y);
+      ctx.lineTo(segB.x, segB.y);
+      ctx.lineTo(segC.x, segC.y);
+      ctx.stroke();
 
       const level = getElectrodeLevel(electrode);
       const r = Math.round(lerp(110, 146, level));
@@ -828,16 +812,11 @@
         electrode.rect = { x: drawX, y: drawY, w: drawW, h: drawH };
         placedRects.push({ x: targetX, y: targetY, w: boxW, h: boxH });
 
-        ctx.lineWidth = 1.05;
         ctx.fillStyle = `rgba(${Math.round(lerp(84, 120, level))}, ${Math.round(
           lerp(102, 185, level)
         )}, ${Math.round(lerp(114, 216, level))}, 0.96)`;
-        ctx.strokeStyle = `rgba(${Math.round(lerp(70, 118, level))}, ${Math.round(
-          lerp(86, 162, level)
-        )}, ${Math.round(lerp(100, 196, level))}, 0.98)`;
         drawRoundedRect(drawX, drawY, drawW, drawH, rr);
         ctx.fill();
-        ctx.stroke();
 
         const textAlpha = clamp((morphT - 0.28) / 0.72, 0, 1);
         if (textAlpha > 0.02) {
@@ -848,14 +827,9 @@
         }
       } else {
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
-        ctx.strokeStyle = `rgba(${Math.round(lerp(74, 98, level))}, ${Math.round(
-          lerp(86, 142, level)
-        )}, ${Math.round(lerp(98, 156, level))}, ${0.82 + level * 0.16})`;
-        ctx.lineWidth = 1.35;
         ctx.beginPath();
         ctx.arc(segC.x, segC.y, radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.stroke();
         electrode.rect = null;
       }
     });
@@ -884,10 +858,16 @@
     particles.forEach((particle) => {
       const glow = clamp(particle.charge, 0, 1.6);
       const active = clamp(glow / 1.6, 0, 1);
-      const red = Math.floor((50 + glow * 44) * active);
-      const green = Math.floor(Math.min(255, 126 + glow * 108) * active);
-      const blue = Math.floor((80 + glow * 70) * active);
-      const alpha = clamp(0.84 + active * 0.16, 0.84, 1);
+      const baseR = 182;
+      const baseG = 208;
+      const baseB = 190;
+      const litR = 50 + glow * 44;
+      const litG = Math.min(255, 126 + glow * 108);
+      const litB = 80 + glow * 70;
+      const red = Math.floor(lerp(baseR, litR, active));
+      const green = Math.floor(lerp(baseG, litG, active));
+      const blue = Math.floor(lerp(baseB, litB, active));
+      const alpha = clamp(0.88 + active * 0.12, 0.88, 1);
       const size = particle.size + active * 2.22;
       ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
       ctx.beginPath();
