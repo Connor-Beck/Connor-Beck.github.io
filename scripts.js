@@ -47,9 +47,7 @@
   const ELECTRODE_SECTIONS = [
     { label: "About", href: "about.html" },
     { label: "Publications", href: "publications.html" },
-    { label: "Neural Syntax", href: "neural-syntax.html" },
-    { label: "Nano-neuro interfaces", href: "nano-neuro-interfaces.html" },
-    { label: "Brain and Behavior", href: "brain-behavior.html" },
+    { label: "Research", href: "research.html" },
     { label: "Tutorials", href: "tutorials.html" },
     { label: "Software", href: "software.html" },
     { label: "3D printing tools", href: "tools.html#three-d-printing-tools" },
@@ -198,7 +196,7 @@
       return;
     }
 
-    const angles = [-152, -124, -104, -64, -26, 26, 58, 92, 124];
+    const angles = [-152, -124, -56, -16, 34, 88, 138];
     const baseScale = Math.min(frame.width, frame.height);
     const baseLeg1 = Math.max(20, baseScale * 0.09);
     const baseLeg2 = Math.max(28, baseScale * 0.125);
@@ -277,12 +275,6 @@
         y: clamp(elbow.y + diagY * Math.SQRT1_2 * baseLeg2, edgePad, state.height - edgePad)
       };
 
-      if (section.label === "Neural Syntax") {
-        near.y = clamp(near.y - 10, edgePad, state.height - edgePad);
-        elbow.y = clamp(elbow.y - 16, edgePad, state.height - edgePad);
-        terminal.y = clamp(terminal.y - 28, edgePad, state.height - edgePad);
-      }
-
       return {
         label: section.label,
         href: section.href,
@@ -294,10 +286,26 @@
         openUntil: 0,
         openReason: "spontaneous",
         hoverCloseAt: 0,
+        morph: 0,
         rect: null,
         hoverLatched: false
       };
     });
+
+    const publications = state.electrodes.find((electrode) => electrode.label === "Publications");
+    const research = state.electrodes.find((electrode) => electrode.label === "Research");
+    if (publications && research) {
+      const alignDy = publications.near.y - research.near.y;
+      research.near.y = clamp(research.near.y + alignDy, edgePad, state.height - edgePad);
+      research.elbow.y = clamp(research.elbow.y + alignDy, edgePad, state.height - edgePad);
+      research.terminal.y = clamp(research.terminal.y + alignDy, edgePad, state.height - edgePad);
+
+      if (research.terminal.x < research.near.x + 8) {
+        const shift = research.near.x + 8 - research.terminal.x;
+        research.elbow.x = clamp(research.elbow.x + shift, edgePad, state.width - edgePad);
+        research.terminal.x = clamp(research.terminal.x + shift, edgePad, state.width - edgePad);
+      }
+    }
   };
 
   const rebuildParticles = () => {
@@ -654,12 +662,19 @@
         }
       }
 
+      const morphTarget = electrode.expanded ? 1 : 0;
+      const morphSpeed = electrode.expanded ? 0.24 : 0.28;
+      electrode.morph += (morphTarget - electrode.morph) * Math.min(1, morphSpeed * step);
+      electrode.morph = clamp(electrode.morph, 0, 1);
+
       let hovered = false;
       if (state.pointer.active) {
         const dx = state.pointer.x - electrode.terminal.x;
         const dy = state.pointer.y - electrode.terminal.y;
         const terminalHit = dx * dx + dy * dy <= Math.pow(getElectrodeRadius(electrode) + 5, 2);
-        const rectHit = Boolean(electrode.expanded && electrode.rect && pointInRect(state.pointer, electrode.rect));
+        const rectHit = Boolean(
+          electrode.expanded && electrode.rect && electrode.morph > 0.18 && pointInRect(state.pointer, electrode.rect)
+        );
         hovered = terminalHit || rectHit;
         if (rectHit) {
           pointerOnLink = true;
@@ -699,6 +714,20 @@
     ctx.clearRect(0, 0, state.width, state.height);
 
     const particles = state.particles;
+    const drawRoundedRect = (x, y, w, h, radius) => {
+      const rr = clamp(radius, 0, Math.min(w, h) * 0.5 - 0.25);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.lineTo(x + w - rr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+      ctx.lineTo(x + w, y + h - rr);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+      ctx.lineTo(x + rr, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+      ctx.lineTo(x, y + rr);
+      ctx.quadraticCurveTo(x, y, x + rr, y);
+      ctx.closePath();
+    };
 
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -736,8 +765,9 @@
       const g = Math.round(lerp(126, 210, level));
       const b = Math.round(lerp(138, 232, level));
       const radius = getElectrodeRadius(electrode);
+      const morphT = clamp(electrode.morph, 0, 1);
 
-      if (electrode.expanded) {
+      if (electrode.expanded || morphT > 0.02) {
         ctx.font = '600 12px "Sora", "Avenir Next", sans-serif';
         const textWidth = Math.ceil(ctx.measureText(electrode.label).width);
         const padX = 11;
@@ -745,30 +775,41 @@
         const boxW = textWidth + padX * 2;
         const frame = state.brainFrame || { cx: state.width * 0.5 };
         const dirX = Math.sign(segC.x - frame.cx) || 1;
-        let boxX = segC.x + (dirX > 0 ? 12 : -(boxW + 12));
-        let boxY = segC.y - boxH * 0.5;
-        boxX = clamp(boxX, 8, state.width - boxW - 8);
-        boxY = clamp(boxY, 8, state.height - boxH - 8);
+        const connectorInset = Math.max(4, radius * 0.95);
+        let targetX = dirX > 0 ? segC.x - connectorInset : segC.x - boxW + connectorInset;
+        let targetY = segC.y - boxH * 0.5;
+        targetX = clamp(targetX, 8, state.width - boxW - 8);
+        targetY = clamp(targetY, 8, state.height - boxH - 8);
 
         const spacing = 6;
         for (let i = 0; i < placedRects.length; i += 1) {
           const placed = placedRects[i];
-          const overlapX = boxX < placed.x + placed.w + spacing && boxX + boxW + spacing > placed.x;
-          const overlapY = boxY < placed.y + placed.h + spacing && boxY + boxH + spacing > placed.y;
+          const overlapX =
+            targetX < placed.x + placed.w + spacing && targetX + boxW + spacing > placed.x;
+          const overlapY =
+            targetY < placed.y + placed.h + spacing && targetY + boxH + spacing > placed.y;
           if (overlapX && overlapY) {
             if (segC.y >= placed.y) {
-              boxY = placed.y + placed.h + spacing;
+              targetY = placed.y + placed.h + spacing;
             } else {
-              boxY = placed.y - boxH - spacing;
+              targetY = placed.y - boxH - spacing;
             }
-            boxY = clamp(boxY, 8, state.height - boxH - 8);
+            targetY = clamp(targetY, 8, state.height - boxH - 8);
           }
         }
 
-        electrode.rect = { x: boxX, y: boxY, w: boxW, h: boxH };
-        placedRects.push(electrode.rect);
+        const startX = segC.x - radius;
+        const startY = segC.y - radius;
+        const startW = radius * 2;
+        const startH = radius * 2;
+        const drawX = lerp(startX, targetX, morphT);
+        const drawY = lerp(startY, targetY, morphT);
+        const drawW = lerp(startW, boxW, morphT);
+        const drawH = lerp(startH, boxH, morphT);
+        const rr = lerp(radius, 10, morphT);
+        electrode.rect = { x: drawX, y: drawY, w: drawW, h: drawH };
+        placedRects.push({ x: targetX, y: targetY, w: boxW, h: boxH });
 
-        const rr = 10;
         ctx.lineWidth = 1.05;
         ctx.fillStyle = `rgba(${Math.round(lerp(84, 120, level))}, ${Math.round(
           lerp(102, 185, level)
@@ -776,24 +817,17 @@
         ctx.strokeStyle = `rgba(${Math.round(lerp(70, 118, level))}, ${Math.round(
           lerp(86, 162, level)
         )}, ${Math.round(lerp(100, 196, level))}, 0.98)`;
-        ctx.beginPath();
-        ctx.moveTo(boxX + rr, boxY);
-        ctx.lineTo(boxX + boxW - rr, boxY);
-        ctx.quadraticCurveTo(boxX + boxW, boxY, boxX + boxW, boxY + rr);
-        ctx.lineTo(boxX + boxW, boxY + boxH - rr);
-        ctx.quadraticCurveTo(boxX + boxW, boxY + boxH, boxX + boxW - rr, boxY + boxH);
-        ctx.lineTo(boxX + rr, boxY + boxH);
-        ctx.quadraticCurveTo(boxX, boxY + boxH, boxX, boxY + boxH - rr);
-        ctx.lineTo(boxX, boxY + rr);
-        ctx.quadraticCurveTo(boxX, boxY, boxX + rr, boxY);
-        ctx.closePath();
+        drawRoundedRect(drawX, drawY, drawW, drawH, rr);
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = "rgba(237, 246, 250, 0.98)";
-        ctx.textBaseline = "middle";
-        ctx.textAlign = "left";
-        ctx.fillText(electrode.label, boxX + padX, boxY + boxH * 0.5 + 0.2);
+        const textAlpha = clamp((morphT - 0.28) / 0.72, 0, 1);
+        if (textAlpha > 0.02) {
+          ctx.fillStyle = `rgba(237, 246, 250, ${0.98 * textAlpha})`;
+          ctx.textBaseline = "middle";
+          ctx.textAlign = "left";
+          ctx.fillText(electrode.label, drawX + padX, drawY + drawH * 0.5 + 0.2);
+        }
       } else {
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
         ctx.strokeStyle = `rgba(${Math.round(lerp(74, 98, level))}, ${Math.round(
