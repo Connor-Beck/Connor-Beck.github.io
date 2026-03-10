@@ -29,6 +29,8 @@
     height: 0,
     points: [],
     particles: [],
+    brainFrame: null,
+    electrodes: [],
     links: [],
     spikes: [],
     pulses: [],
@@ -39,6 +41,7 @@
   };
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const lerp = (a, b, t) => a + (b - a) * t;
 
   const fallbackPoints = () => {
     const points = [];
@@ -175,6 +178,56 @@
     }
   };
 
+  const buildElectrodes = () => {
+    const frame = state.brainFrame;
+    if (!frame) {
+      state.electrodes = [];
+      return;
+    }
+
+    const angles = [-152, -125, -98, -67, -30, 30, 67, 98, 125, 152];
+    const baseLeg1 = Math.max(26, Math.min(state.width, state.height) * 0.07);
+    const baseLeg2 = Math.max(36, Math.min(state.width, state.height) * 0.09);
+    const edgePad = Math.max(10, Math.min(state.width, state.height) * 0.025);
+
+    state.electrodes = angles.map((deg, idx) => {
+      const theta = (deg * Math.PI) / 180;
+      const near = {
+        x: frame.cx + Math.cos(theta) * frame.rx,
+        y: frame.cy + Math.sin(theta) * frame.ry
+      };
+
+      const dx = near.x - frame.cx;
+      const dy = near.y - frame.cy;
+
+      let axis = { x: 0, y: 0 };
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        axis.x = Math.sign(dx) || (idx % 2 ? -1 : 1);
+      } else {
+        axis.y = Math.sign(dy) || (idx < 5 ? -1 : 1);
+      }
+
+      const elbow = {
+        x: near.x + axis.x * baseLeg1,
+        y: near.y + axis.y * baseLeg1
+      };
+
+      const diagX = Math.sign(dx) || (idx % 2 ? -1 : 1);
+      const diagY = Math.sign(dy) || (idx < 5 ? -1 : 1);
+      const terminal = {
+        x: clamp(elbow.x + diagX * Math.SQRT1_2 * baseLeg2, edgePad, state.width - edgePad),
+        y: clamp(elbow.y + diagY * Math.SQRT1_2 * baseLeg2, edgePad, state.height - edgePad)
+      };
+
+      return {
+        near,
+        elbow,
+        terminal,
+        activity: 0
+      };
+    });
+  };
+
   const rebuildParticles = () => {
     const isMobile = window.innerWidth < 768;
     const maxParticles = isMobile ? 420 : 720;
@@ -195,16 +248,32 @@
     const padY = state.height * 0.012;
     const drawWidth = Math.max(1, state.width - padX * 2);
     const drawHeight = Math.max(1, state.height - padY * 2);
-    const jitter = Math.max(16, Math.min(drawWidth, drawHeight) * 0.035);
+    const brainScale = 0.7;
+    const brainWidth = Math.max(1, drawWidth * brainScale);
+    const brainHeight = Math.max(1, drawHeight * brainScale);
+    const originX = padX + (drawWidth - brainWidth) * 0.5;
+    const originY = padY + (drawHeight - brainHeight) * 0.5;
+    const jitter = Math.max(12, Math.min(brainWidth, brainHeight) * 0.028);
+
+    state.brainFrame = {
+      x: originX,
+      y: originY,
+      width: brainWidth,
+      height: brainHeight,
+      cx: originX + brainWidth * 0.5,
+      cy: originY + brainHeight * 0.5,
+      rx: brainWidth * 0.54,
+      ry: brainHeight * 0.51
+    };
 
     state.particles = selected.map((point) => {
       const ox = clamp(
-        padX + point.x * drawWidth + (Math.random() - 0.5) * jitter,
+        originX + point.x * brainWidth + (Math.random() - 0.5) * jitter,
         0,
         state.width
       );
       const oy = clamp(
-        padY + point.y * drawHeight + (Math.random() - 0.5) * jitter,
+        originY + point.y * brainHeight + (Math.random() - 0.5) * jitter,
         0,
         state.height
       );
@@ -223,6 +292,7 @@
     });
 
     buildGraph();
+    buildElectrodes();
     state.spikes = [];
     state.pulses = [];
   };
@@ -273,8 +343,9 @@
 
   const propagateSpontaneous = (index, from, strength) => {
     const factor = state.propagationFactor;
-    const pThree = clamp(0.1 * factor, 0, 0.45);
-    const pOne = clamp(0.5 * factor, 0, 0.98 - pThree);
+    const boost = state.clickSplitBoost;
+    const pThree = clamp((0.1 + boost) * factor, 0, 0.5);
+    const pOne = clamp((0.5 + boost * 0.7) * factor, 0, 0.98 - pThree);
     const roll = Math.random();
     let fanout = 0;
 
@@ -408,6 +479,23 @@
       }
     }
 
+    const senseRadius = Math.max(24, Math.min(state.width, state.height) * 0.055);
+    const senseRadius2 = senseRadius * senseRadius;
+    state.electrodes.forEach((electrode) => {
+      let sum = 0;
+      let hits = 0;
+      state.particles.forEach((particle) => {
+        const dx = particle.x - electrode.near.x;
+        const dy = particle.y - electrode.near.y;
+        if (dx * dx + dy * dy <= senseRadius2) {
+          sum += particle.charge;
+          hits += 1;
+        }
+      });
+      const localActivity = hits ? sum / hits : 0;
+      electrode.activity = electrode.activity * 0.88 + clamp(localActivity, 0, 1.5) * 0.12;
+    });
+
     state.pulses = state.pulses
       .map((pulse) => ({
         x: pulse.x,
@@ -422,6 +510,51 @@
     ctx.clearRect(0, 0, state.width, state.height);
 
     const particles = state.particles;
+
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    state.electrodes.forEach((electrode) => {
+      const segA = electrode.near;
+      const segB = electrode.elbow;
+      const segC = electrode.terminal;
+      const lenAB = Math.hypot(segB.x - segA.x, segB.y - segA.y);
+      const lenBC = Math.hypot(segC.x - segB.x, segC.y - segB.y);
+      const fadeDistance = Math.max(36, Math.min(state.width, state.height) * 0.09);
+      const wireRgb = "132, 150, 142";
+      const maxAlpha = 0.85;
+
+      const alphaAt = (distanceFromBrain) =>
+        clamp((distanceFromBrain / fadeDistance) * maxAlpha, 0, maxAlpha);
+
+      const drawSegment = (start, end, d0, d1) => {
+        const gradient = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
+        gradient.addColorStop(0, `rgba(${wireRgb}, ${alphaAt(d0)})`);
+        gradient.addColorStop(1, `rgba(${wireRgb}, ${alphaAt(d1)})`);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 1.9;
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke();
+      };
+
+      drawSegment(segA, segB, 0, lenAB);
+      drawSegment(segB, segC, lenAB, lenAB + lenBC);
+
+      const level = clamp((electrode.activity - 0.23) / 0.75, 0, 1);
+      const r = Math.round(lerp(212, 78, level));
+      const g = Math.round(lerp(175, 226, level));
+      const b = Math.round(lerp(74, 255, level));
+      const radius = 4.6 + level * 2.3;
+
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
+      ctx.strokeStyle = `rgba(112, 94, 38, ${0.75 + level * 0.2})`;
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.arc(segC.x, segC.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
 
     ctx.lineWidth = 0.56;
     state.links.forEach(([a, b]) => {
