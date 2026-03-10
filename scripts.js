@@ -42,6 +42,18 @@
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (a, b, t) => a + (b - a) * t;
+  const ELECTRODE_ACTIVE_MS = 10000;
+  const ELECTRODE_SECTIONS = [
+    { label: "About", href: "about.html" },
+    { label: "Publications", href: "publications.html" },
+    { label: "Neural Languages", href: "neural-languages.html" },
+    { label: "Nano-neuro interfaces", href: "nano-neuro-interfaces.html" },
+    { label: "Brain and Behavior", href: "brain-behavior.html" },
+    { label: "Tutorials", href: "tutorials.html" },
+    { label: "Software", href: "software.html" },
+    { label: "3D printing tools", href: "tools.html#three-d-printing-tools" },
+    { label: "Behavioral Platforms", href: "tools.html#behavioral-platforms" }
+  ];
 
   const fallbackPoints = () => {
     const points = [];
@@ -185,7 +197,7 @@
       return;
     }
 
-    const angles = [-152, -125, -98, -67, -30, 30, 67, 98, 125, 152];
+    const angles = [-152, -124, -94, -64, -26, 26, 64, 94, 124];
     const baseScale = Math.min(frame.width, frame.height);
     const baseLeg1 = Math.max(20, baseScale * 0.09);
     const baseLeg2 = Math.max(28, baseScale * 0.125);
@@ -238,6 +250,7 @@
     };
 
     state.electrodes = angles.map((deg, idx) => {
+      const section = ELECTRODE_SECTIONS[idx % ELECTRODE_SECTIONS.length];
       const theta = (deg * Math.PI) / 180;
       const near = pickContourPoint(theta);
 
@@ -264,10 +277,16 @@
       };
 
       return {
+        label: section.label,
+        href: section.href,
         near,
         elbow,
         terminal,
-        activity: 0
+        activity: 0,
+        expanded: false,
+        openUntil: 0,
+        rect: null,
+        hoverLatched: false
       };
     });
   };
@@ -362,7 +381,22 @@
     };
   };
 
-  const stimulateNearestElectrode = (x, y, intensity) => {
+  const getElectrodeLevel = (electrode) => clamp((electrode.activity - 0.23) / 0.75, 0, 1);
+  const getElectrodeRadius = (electrode) => 8.28 + getElectrodeLevel(electrode) * 3.72;
+
+  const pointInRect = (point, rect) =>
+    point.x >= rect.x && point.x <= rect.x + rect.w && point.y >= rect.y && point.y <= rect.y + rect.h;
+
+  const activateElectrode = (electrode, intensity = 0.3, now = performance.now()) => {
+    electrode.activity = clamp(electrode.activity + intensity, 0, 1.9);
+    if (!electrode.expanded) {
+      electrode.expanded = true;
+      electrode.openUntil = now + ELECTRODE_ACTIVE_MS;
+      electrode.rect = null;
+    }
+  };
+
+  const stimulateNearestElectrode = (x, y, intensity, openLink = false, now = performance.now()) => {
     if (!state.electrodes.length) {
       return;
     }
@@ -384,6 +418,19 @@
     }
 
     nearest.activity = clamp(nearest.activity + intensity, 0, 1.9);
+    if (openLink) {
+      activateElectrode(nearest, intensity * 0.45, now);
+    }
+  };
+
+  const findExpandedElectrodeAtPoint = (point) => {
+    for (let i = state.electrodes.length - 1; i >= 0; i -= 1) {
+      const electrode = state.electrodes[i];
+      if (electrode.expanded && electrode.rect && pointInRect(point, electrode.rect)) {
+        return electrode;
+      }
+    }
+    return null;
   };
 
   const sampleNeighbors = (index, count, exclude = -1) => {
@@ -504,7 +551,7 @@
     addPulse(x, y);
   };
 
-  const update = (step) => {
+  const update = (step, now = performance.now()) => {
     const repelRadius = Math.max(54, Math.min(state.width, state.height) * 0.12);
     state.clickSplitBoost = Math.max(0, state.clickSplitBoost - 0.00075 * step);
 
@@ -538,7 +585,7 @@
       excite(randomIndex, "spontaneous", 0.95);
       if (Math.random() < 0.36) {
         const source = state.particles[randomIndex];
-        stimulateNearestElectrode(source.x, source.y, 0.34 + Math.random() * 0.33);
+        stimulateNearestElectrode(source.x, source.y, 0.34 + Math.random() * 0.33, true, now);
       }
     }
 
@@ -553,6 +600,7 @@
 
     const senseRadius = Math.max(24, Math.min(state.width, state.height) * 0.055);
     const senseRadius2 = senseRadius * senseRadius;
+    let pointerOnLink = false;
     state.electrodes.forEach((electrode) => {
       let sum = 0;
       let hits = 0;
@@ -570,7 +618,39 @@
       } else {
         electrode.activity = electrode.activity * 0.962 + localActivity * 0.038;
       }
+
+      if (!electrode.expanded && electrode.activity > 0.82 && Math.random() < 0.035 * step) {
+        activateElectrode(electrode, 0.08, now);
+      }
+
+      if (electrode.expanded && now >= electrode.openUntil) {
+        electrode.expanded = false;
+        electrode.rect = null;
+        electrode.activity = Math.min(electrode.activity, 0.42);
+      }
+
+      let hovered = false;
+      if (state.pointer.active) {
+        const dx = state.pointer.x - electrode.terminal.x;
+        const dy = state.pointer.y - electrode.terminal.y;
+        const terminalHit = dx * dx + dy * dy <= Math.pow(getElectrodeRadius(electrode) + 5, 2);
+        const rectHit = Boolean(electrode.expanded && electrode.rect && pointInRect(state.pointer, electrode.rect));
+        hovered = terminalHit || rectHit;
+        if (rectHit) {
+          pointerOnLink = true;
+        }
+      }
+
+      if (hovered && !electrode.hoverLatched) {
+        injectAt(electrode.near.x, electrode.near.y);
+        activateElectrode(electrode, 0.45, now);
+        electrode.hoverLatched = true;
+      } else if (!hovered) {
+        electrode.hoverLatched = false;
+      }
     });
+
+    canvas.style.cursor = pointerOnLink ? "pointer" : "default";
 
     state.pulses = state.pulses
       .map((pulse) => ({
@@ -617,11 +697,11 @@
       drawSegment(segA, segB, 0, lenAB);
       drawSegment(segB, segC, lenAB, lenAB + lenBC);
 
-      const level = clamp((electrode.activity - 0.23) / 0.75, 0, 1);
+      const level = getElectrodeLevel(electrode);
       const r = Math.round(lerp(110, 146, level));
       const g = Math.round(lerp(126, 210, level));
       const b = Math.round(lerp(138, 232, level));
-      const radius = 8.28 + level * 3.72;
+      const radius = getElectrodeRadius(electrode);
 
       ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
       ctx.strokeStyle = `rgba(${Math.round(lerp(74, 98, level))}, ${Math.round(
@@ -632,6 +712,50 @@
       ctx.arc(segC.x, segC.y, radius, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
+
+      if (electrode.expanded) {
+        ctx.font = '600 12px "Sora", "Avenir Next", sans-serif';
+        const textWidth = Math.ceil(ctx.measureText(electrode.label).width);
+        const padX = 11;
+        const boxH = 26;
+        const boxW = textWidth + padX * 2;
+        const frame = state.brainFrame || { cx: state.width * 0.5 };
+        const dirX = Math.sign(segC.x - frame.cx) || 1;
+        let boxX = segC.x + (dirX > 0 ? 12 : -(boxW + 12));
+        let boxY = segC.y - boxH * 0.5;
+        boxX = clamp(boxX, 8, state.width - boxW - 8);
+        boxY = clamp(boxY, 8, state.height - boxH - 8);
+        electrode.rect = { x: boxX, y: boxY, w: boxW, h: boxH };
+
+        const rr = 10;
+        ctx.lineWidth = 1.05;
+        ctx.fillStyle = `rgba(${Math.round(lerp(84, 120, level))}, ${Math.round(
+          lerp(102, 185, level)
+        )}, ${Math.round(lerp(114, 216, level))}, 0.96)`;
+        ctx.strokeStyle = `rgba(${Math.round(lerp(70, 118, level))}, ${Math.round(
+          lerp(86, 162, level)
+        )}, ${Math.round(lerp(100, 196, level))}, 0.98)`;
+        ctx.beginPath();
+        ctx.moveTo(boxX + rr, boxY);
+        ctx.lineTo(boxX + boxW - rr, boxY);
+        ctx.quadraticCurveTo(boxX + boxW, boxY, boxX + boxW, boxY + rr);
+        ctx.lineTo(boxX + boxW, boxY + boxH - rr);
+        ctx.quadraticCurveTo(boxX + boxW, boxY + boxH, boxX + boxW - rr, boxY + boxH);
+        ctx.lineTo(boxX + rr, boxY + boxH);
+        ctx.quadraticCurveTo(boxX, boxY + boxH, boxX, boxY + boxH - rr);
+        ctx.lineTo(boxX, boxY + rr);
+        ctx.quadraticCurveTo(boxX, boxY, boxX + rr, boxY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "rgba(237, 246, 250, 0.98)";
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "left";
+        ctx.fillText(electrode.label, boxX + padX, boxY + boxH * 0.5 + 0.2);
+      } else {
+        electrode.rect = null;
+      }
     });
 
     ctx.lineWidth = 0.56;
@@ -675,7 +799,7 @@
     const delta = Math.min(33, time - state.last);
     state.last = time;
 
-    update(delta / 16.67);
+    update(delta / 16.67, time);
     draw();
 
     window.requestAnimationFrame(tick);
@@ -699,6 +823,11 @@
 
     canvas.addEventListener("click", (event) => {
       const point = toCanvasPoint(event.clientX, event.clientY);
+      const linkedElectrode = findExpandedElectrodeAtPoint(point);
+      if (linkedElectrode) {
+        window.location.href = linkedElectrode.href;
+        return;
+      }
       injectAt(point.x, point.y);
     });
 
@@ -710,6 +839,11 @@
           return;
         }
         const point = toCanvasPoint(touch.clientX, touch.clientY);
+        const linkedElectrode = findExpandedElectrodeAtPoint(point);
+        if (linkedElectrode) {
+          window.location.href = linkedElectrode.href;
+          return;
+        }
         injectAt(point.x, point.y);
       },
       { passive: true }
