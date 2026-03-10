@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Connor Beck | Tutorials</title>
-  <meta name="description" content="Tutorials and practical guides for neuroscience software and laboratory workflows.">
+  <meta name="description" content="Calcium imaging and image processing tutorial adapted from the Calcium-imaging-intro repository.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -22,8 +22,9 @@
           <li><a href="about.html">About</a></li>
           <li><a href="publications.html">Publications</a></li>
           <li><a href="research.html">Research</a></li>
-          <li><a class="nav-subtle-accent" href="software.html">Software</a></li>
-          <li><a class="nav-subtle-accent" href="tools.html">Lab Tools</a></li>
+          <li><a href="tutorials.html" aria-current="page">Tutorials</a></li>
+          <li><a href="software.html">Software</a></li>
+          <li><a href="tools.html">Lab Tools</a></li>
         </ul>
       </nav>
     </div>
@@ -32,20 +33,130 @@
   <main id="main-content">
     <section class="page-hero">
       <div class="container">
-        <p class="eyebrow">Coming Soon</p>
-        <h1>Tutorials</h1>
-        <p class="lead">This section will host practical tutorials for analysis pipelines, hardware setup, and reproducible workflows.</p>
+        <p class="eyebrow">Tutorials</p>
+        <h1>Calcium imaging and image processing introduction.</h1>
+        <p class="lead">
+          Adapted from your tutorial repository. This page currently includes Module 0 and Module 1 content from the
+          README, formatted for direct use on your site.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://github.com/Connor-Beck/Calcium-imaging-intro" target="_blank" rel="noopener noreferrer">Open Tutorial Repo</a>
+          <a class="button secondary" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/README.md" target="_blank" rel="noopener noreferrer">View Source README</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid-2">
+        <article class="text-panel">
+          <p class="kicker">Module 0</p>
+          <h2>Introduction to calcium imaging</h2>
+          <p>
+            Calcium imaging is used in neuroscience as a proxy for neural activity because calcium acts as a key
+            secondary signaling molecule in neural function. The method space is broad and can be hard to enter,
+            so this tutorial is designed to smooth that learning curve.
+          </p>
+          <h3 style="margin-top:1rem;">0.1 How calcium imaging works</h3>
+          <ul class="list">
+            <li>Host tissue: neurons in cultured systems or live animals.</li>
+            <li>Calcium indicators: chemical or genetically encoded sensors.</li>
+            <li>Optical imaging: 1-photon or 2-photon excitation systems.</li>
+            <li>Signal processing: extracting and interpreting fluorescence dynamics.</li>
+          </ul>
+          <p>
+            Recommended background review:
+            <a class="text-link" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/papers/Grienberger_and_Konnerth-Calcium.pdf" target="_blank" rel="noopener noreferrer">Grienberger and Konnerth</a>.
+          </p>
+        </article>
+
+        <article class="text-panel">
+          <p class="kicker">Signal Context</p>
+          <h2>Somatic vs dendritic signals</h2>
+          <p>
+            Somatic calcium imaging provides robust readouts of action-potential related calcium influx, while
+            dendritic imaging is critical for resolving synaptic-input structure and local processing.
+          </p>
+          <p>
+            Useful review:
+            <a class="text-link" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/papers/Ali_and_Kwan-CalciumToBehavior.pdf" target="_blank" rel="noopener noreferrer">Ali and Kwan</a>.
+          </p>
+          <img class="image-cover" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzRoa2F3NGw0aGVmN2V6NmZrb204ZnlpcXF3a29yMmVhN2czYmd1dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/N6944MoGCGbldk6POi/giphy.gif" alt="GCaMP6s somatic calcium activity example" style="margin-top:1rem; border-radius:12px;">
+          <p style="margin-top:0.8rem;">
+            Systems motivation review:
+            <a class="text-link" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/papers/Yuste-NeurontoNetwork.pdf" target="_blank" rel="noopener noreferrer">Yuste: neuron-to-network perspective</a>.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <p class="eyebrow">Module 1</p>
+        <h2>Exploring somatic calcium dynamics</h2>
+        <p class="lead">This module walks through practical processing tasks starting from extracted calcium traces.</p>
+        <div class="grid-2" style="margin-top:1.2rem;">
+          <article class="text-panel">
+            <h3>Task 1.0: Importing data</h3>
+            <p>
+              Use the provided fluorescence dataset:
+              <a class="text-link" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/data/Fluorescent%20Data.csv" target="_blank" rel="noopener noreferrer">Fluorescent Data.csv</a>.
+            </p>
+            <ul class="list">
+              <li>Dimensions: <strong>324 neurons x 15000 frames</strong>.</li>
+              <li>Signal: raw mean intensity from GCaMP6s neurons.</li>
+              <li>Sampling rate: 4.8 Hz.</li>
+            </ul>
+
+            <h3 style="margin-top:1rem;">Task 1.1: Signal cleaning</h3>
+            <ul class="list">
+              <li>Normalize using <code>DeltaF/F = (F[t] - F0) / F0</code>.</li>
+              <li>Subtract slow background fluctuations (&gt;20 s scale).</li>
+              <li>Denoise traces (wavelet denoising is a common strategy).</li>
+            </ul>
+            <p>Deliverable: show representative traces before/after each step.</p>
+          </article>
+
+          <article class="text-panel">
+            <h3>Task 1.2: Detect transient events</h3>
+            <p>
+              Detect short-timescale calcium transients (not exact spikes), for example using neuron-specific
+              thresholding such as high-SD cutoff from baseline.
+            </p>
+            <ul class="list">
+              <li>Plot traces with event markers.</li>
+              <li>Create neuron-by-time scatter raster of events.</li>
+              <li>Extract quantitative transient features and summary metrics.</li>
+            </ul>
+            <p>
+              Reference on spike deconvolution limits and methods:
+              <a class="text-link" href="https://www.jneurosci.org/content/38/37/7976" target="_blank" rel="noopener noreferrer">Theis et al.</a>.
+            </p>
+
+            <h3 style="margin-top:1rem;">Task 1.3: Network and ensemble features</h3>
+            <ul class="list">
+              <li>Compute coactivity in short time bins (e.g., 500 ms).</li>
+              <li>Build null distributions using circular shuffle controls.</li>
+              <li>Identify significant ensemble events and contributor neurons.</li>
+              <li>Compare events via Jaccard similarity and cluster recurring motifs.</li>
+            </ul>
+            <p>
+              Ensemble analysis reference:
+              <a class="text-link" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/papers/Wenzel_and_Hamm-Ensembles.pdf" target="_blank" rel="noopener noreferrer">Wenzel and Hamm</a>.
+            </p>
+          </article>
+        </div>
       </div>
     </section>
 
     <section class="section">
       <div class="container text-panel">
-        <h2>Planned content</h2>
+        <p class="kicker">Methods Reference</p>
+        <h2>Recommended additional reading</h2>
         <ul class="list">
-          <li>Step-by-step analysis tutorials with downloadable examples.</li>
-          <li>Lab setup guides for behavior and recording platforms.</li>
-          <li>Short methods notes for reusable neuroscience toolchains.</li>
+          <li><a class="text-link" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/papers/Saito_etal-NeuralCode2P.pdf" target="_blank" rel="noopener noreferrer">Saito et al. on 2P neural code extraction</a></li>
+          <li><a class="text-link" href="https://github.com/MouseLand/suite2p" target="_blank" rel="noopener noreferrer">Suite2P for extraction and preprocessing</a></li>
         </ul>
+        <p style="margin-top:0.8rem;">Repository license: <a class="text-link" href="https://github.com/Connor-Beck/Calcium-imaging-intro/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT</a>.</p>
       </div>
     </section>
   </main>
