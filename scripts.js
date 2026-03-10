@@ -43,10 +43,11 @@
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (a, b, t) => a + (b - a) * t;
   const ELECTRODE_ACTIVE_MS = 10000;
+  const ELECTRODE_HOVER_CLOSE_MS = 500;
   const ELECTRODE_SECTIONS = [
     { label: "About", href: "about.html" },
     { label: "Publications", href: "publications.html" },
-    { label: "Neural Languages", href: "neural-languages.html" },
+    { label: "Neural Syntax", href: "neural-syntax.html" },
     { label: "Nano-neuro interfaces", href: "nano-neuro-interfaces.html" },
     { label: "Brain and Behavior", href: "brain-behavior.html" },
     { label: "Tutorials", href: "tutorials.html" },
@@ -197,7 +198,7 @@
       return;
     }
 
-    const angles = [-152, -124, -94, -64, -26, 26, 64, 94, 124];
+    const angles = [-152, -124, -104, -64, -26, 26, 58, 92, 124];
     const baseScale = Math.min(frame.width, frame.height);
     const baseLeg1 = Math.max(20, baseScale * 0.09);
     const baseLeg2 = Math.max(28, baseScale * 0.125);
@@ -276,6 +277,12 @@
         y: clamp(elbow.y + diagY * Math.SQRT1_2 * baseLeg2, edgePad, state.height - edgePad)
       };
 
+      if (section.label === "Neural Syntax") {
+        near.y = clamp(near.y - 10, edgePad, state.height - edgePad);
+        elbow.y = clamp(elbow.y - 16, edgePad, state.height - edgePad);
+        terminal.y = clamp(terminal.y - 28, edgePad, state.height - edgePad);
+      }
+
       return {
         label: section.label,
         href: section.href,
@@ -285,6 +292,8 @@
         activity: 0,
         expanded: false,
         openUntil: 0,
+        openReason: "spontaneous",
+        hoverCloseAt: 0,
         rect: null,
         hoverLatched: false
       };
@@ -387,11 +396,18 @@
   const pointInRect = (point, rect) =>
     point.x >= rect.x && point.x <= rect.x + rect.w && point.y >= rect.y && point.y <= rect.y + rect.h;
 
-  const activateElectrode = (electrode, intensity = 0.3, now = performance.now()) => {
+  const activateElectrode = (
+    electrode,
+    reason = "spontaneous",
+    intensity = 0.3,
+    now = performance.now()
+  ) => {
     electrode.activity = clamp(electrode.activity + intensity, 0, 1.9);
     if (!electrode.expanded) {
       electrode.expanded = true;
-      electrode.openUntil = now + ELECTRODE_ACTIVE_MS;
+      electrode.openReason = reason;
+      electrode.openUntil = reason === "hover" ? 0 : now + ELECTRODE_ACTIVE_MS;
+      electrode.hoverCloseAt = reason === "hover" ? now + ELECTRODE_HOVER_CLOSE_MS : 0;
       electrode.rect = null;
     }
   };
@@ -419,7 +435,7 @@
 
     nearest.activity = clamp(nearest.activity + intensity, 0, 1.9);
     if (openLink) {
-      activateElectrode(nearest, intensity * 0.45, now);
+      activateElectrode(nearest, "spontaneous", intensity * 0.45, now);
     }
   };
 
@@ -620,13 +636,22 @@
       }
 
       if (!electrode.expanded && electrode.activity > 0.82 && Math.random() < 0.035 * step) {
-        activateElectrode(electrode, 0.08, now);
+        activateElectrode(electrode, "spontaneous", 0.08, now);
       }
 
-      if (electrode.expanded && now >= electrode.openUntil) {
-        electrode.expanded = false;
-        electrode.rect = null;
-        electrode.activity = Math.min(electrode.activity, 0.42);
+      if (electrode.expanded) {
+        if (electrode.openReason === "spontaneous" && now >= electrode.openUntil) {
+          electrode.expanded = false;
+          electrode.rect = null;
+          electrode.activity = Math.min(electrode.activity, 0.42);
+        }
+        if (electrode.openReason === "hover") {
+          if (electrode.hoverCloseAt > 0 && now >= electrode.hoverCloseAt) {
+            electrode.expanded = false;
+            electrode.rect = null;
+            electrode.activity = Math.min(electrode.activity, 0.4);
+          }
+        }
       }
 
       let hovered = false;
@@ -643,10 +668,18 @@
 
       if (hovered && !electrode.hoverLatched) {
         injectAt(electrode.near.x, electrode.near.y);
-        activateElectrode(electrode, 0.45, now);
+        activateElectrode(electrode, "hover", 0.45, now);
         electrode.hoverLatched = true;
       } else if (!hovered) {
         electrode.hoverLatched = false;
+      }
+
+      if (electrode.expanded && electrode.openReason === "hover") {
+        if (hovered) {
+          electrode.hoverCloseAt = now + ELECTRODE_HOVER_CLOSE_MS;
+        } else if (electrode.hoverCloseAt === 0) {
+          electrode.hoverCloseAt = now + ELECTRODE_HOVER_CLOSE_MS;
+        }
       }
     });
 
@@ -669,6 +702,7 @@
 
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
+    const placedRects = [];
     state.electrodes.forEach((electrode) => {
       const segA = electrode.near;
       const segB = electrode.elbow;
@@ -703,16 +737,6 @@
       const b = Math.round(lerp(138, 232, level));
       const radius = getElectrodeRadius(electrode);
 
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
-      ctx.strokeStyle = `rgba(${Math.round(lerp(74, 98, level))}, ${Math.round(
-        lerp(86, 142, level)
-      )}, ${Math.round(lerp(98, 156, level))}, ${0.82 + level * 0.16})`;
-      ctx.lineWidth = 1.35;
-      ctx.beginPath();
-      ctx.arc(segC.x, segC.y, radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
       if (electrode.expanded) {
         ctx.font = '600 12px "Sora", "Avenir Next", sans-serif';
         const textWidth = Math.ceil(ctx.measureText(electrode.label).width);
@@ -725,7 +749,24 @@
         let boxY = segC.y - boxH * 0.5;
         boxX = clamp(boxX, 8, state.width - boxW - 8);
         boxY = clamp(boxY, 8, state.height - boxH - 8);
+
+        const spacing = 6;
+        for (let i = 0; i < placedRects.length; i += 1) {
+          const placed = placedRects[i];
+          const overlapX = boxX < placed.x + placed.w + spacing && boxX + boxW + spacing > placed.x;
+          const overlapY = boxY < placed.y + placed.h + spacing && boxY + boxH + spacing > placed.y;
+          if (overlapX && overlapY) {
+            if (segC.y >= placed.y) {
+              boxY = placed.y + placed.h + spacing;
+            } else {
+              boxY = placed.y - boxH - spacing;
+            }
+            boxY = clamp(boxY, 8, state.height - boxH - 8);
+          }
+        }
+
         electrode.rect = { x: boxX, y: boxY, w: boxW, h: boxH };
+        placedRects.push(electrode.rect);
 
         const rr = 10;
         ctx.lineWidth = 1.05;
@@ -754,6 +795,15 @@
         ctx.textAlign = "left";
         ctx.fillText(electrode.label, boxX + padX, boxY + boxH * 0.5 + 0.2);
       } else {
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
+        ctx.strokeStyle = `rgba(${Math.round(lerp(74, 98, level))}, ${Math.round(
+          lerp(86, 142, level)
+        )}, ${Math.round(lerp(98, 156, level))}, ${0.82 + level * 0.16})`;
+        ctx.lineWidth = 1.35;
+        ctx.beginPath();
+        ctx.arc(segC.x, segC.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
         electrode.rect = null;
       }
     });
