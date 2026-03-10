@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connor Beck | Tutorial: Calcium Imaging</title>
+  <meta name="description" content="Introduction to calcium imaging and image processing tutorial.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=8">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="site-logo" href="./">Connor Beck</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="./">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="publications.html">Publications</a></li>
+          <li><a href="research.html">Research</a></li>
+          <li><a href="tutorials.html" aria-current="page">Tutorials</a></li>
+          <li><a href="software.html">Software</a></li>
+          <li><a href="tools.html">Lab Tools</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="container">
+        <p class="eyebrow">Tutorial</p>
+        <h1>Introduction to Calcium Imaging</h1>
+        <p class="lead">
+          Developed by Connor L. Beck. Updated July 2025. This page currently contains Module 0 and Module 1.
+        </p>
+        <div class="hero-actions">
+          <a class="button secondary" href="tutorials.html">Back To Tutorials</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid-2">
+        <article class="text-panel">
+          <p class="kicker">Module 0</p>
+          <h2>Introduction to calcium imaging</h2>
+          <p>
+            Calcium imaging is used in neuroscience as a proxy for neural activity, since calcium acts as a
+            secondary signaling molecule in neural function. The objective of this module is to introduce
+            biological and technical fundamentals before data processing.
+          </p>
+          <h3 style="margin-top:1rem;">0.1 How does calcium imaging work?</h3>
+          <ul class="list">
+            <li>Host tissue: neurons in vivo or cultured systems.</li>
+            <li>Calcium-sensitive sensors: genetically encoded or chemical indicators.</li>
+            <li>Optical system: microscope and fluorescence detection setup.</li>
+            <li>Signal processing: extracting and interpreting fluorescence dynamics.</li>
+          </ul>
+          <h3 style="margin-top:1rem;">0.2 Understanding calcium signals in neurons</h3>
+          <p>
+            We focus primarily on somatic calcium signals while emphasizing how dendritic signals capture
+            synaptic and compartment-specific information.
+          </p>
+          <h3 style="margin-top:1rem;">0.3 Why calcium and neural dynamics?</h3>
+          <p>
+            Systems-level neuroscience depends on linking population activity to behavior and identifying
+            recurring ensemble-level motifs across state transitions.
+          </p>
+        </article>
+
+        <article class="text-panel">
+          <p class="kicker">Module 1</p>
+          <h2>Exploring somatic calcium dynamics</h2>
+          <p>
+            This module introduces practical signal processing steps using extracted traces.
+          </p>
+          <h3 style="margin-top:1rem;">Task 1.0 Import data</h3>
+          <ul class="list">
+            <li>Expected dimensions: 324 neurons x 15000 frames.</li>
+            <li>Recorded at 4.8 frames per second.</li>
+          </ul>
+          <h3 style="margin-top:1rem;">Task 1.1 Signal cleaning</h3>
+          <ul class="list">
+            <li>Normalize with DeltaF/F.</li>
+            <li>Remove slow background trends.</li>
+            <li>Denoise while preserving transient events.</li>
+          </ul>
+          <h3 style="margin-top:1rem;">Task 1.2 Detect transient events</h3>
+          <ul class="list">
+            <li>Event thresholding and trace-level validation.</li>
+            <li>Event raster visualization across neurons and time.</li>
+            <li>Feature extraction (rates, distributions, custom metrics).</li>
+          </ul>
+          <h3 style="margin-top:1rem;">Task 1.3 Ensemble features</h3>
+          <ul class="list">
+            <li>Coactivity in short bins (for example 500 ms).</li>
+            <li>Null distributions from shuffled event trains.</li>
+            <li>Jaccard similarity and clustering of ensemble events.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container text-panel">
+        <p class="kicker">References</p>
+        <h2>Primary reading links</h2>
+        <ul class="list">
+          <li><a class="text-link" href="https://www.spiedigitallibrary.org/journals/neurophotonics/volume-7/issue-01/011402/Interpreting-in-vivo-calcium-signals-from-neuronal-cell-bodies-axons/10.1117/1.NPh.7.1.011402.full" target="_blank" rel="noopener noreferrer">Ali and Kwan: Interpreting in vivo calcium signals</a></li>
+          <li><a class="text-link" href="https://www.sciencedirect.com/science/article/pii/S0896627312001729?via%3Dihub" target="_blank" rel="noopener noreferrer">Grienberger and Konnerth: Imaging calcium in neurons</a></li>
+          <li><a class="text-link" href="https://www.frontiersin.org/journals/cellular-neuroscience/articles/10.3389/fncel.2024.1440588/full" target="_blank" rel="noopener noreferrer">Hanzel and Yuste: Ensembles to engrams</a></li>
+          <li><a class="text-link" href="https://www.nature.com/articles/nn.4418" target="_blank" rel="noopener noreferrer">Holtmaat and Caroni: Learning theory and plasticity</a></li>
+          <li><a class="text-link" href="https://academic.oup.com/jmicro/article/74/3/146/8015912?login=true" target="_blank" rel="noopener noreferrer">Saito et al.: 2P neural code analysis</a></li>
+          <li><a class="text-link" href="https://www.sciencedirect.com/science/article/abs/pii/S0165027020304696?via%3Dihub" target="_blank" rel="noopener noreferrer">Wenzel and Hamm: Identifying neuronal ensembles</a></li>
+          <li><a class="text-link" href="https://www.nature.com/articles/nrn3962" target="_blank" rel="noopener noreferrer">Yuste: From the neuron doctrine to neural networks</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-wrap">
+      <div>
+        <p class="footer-title">Connor Beck</p>
+        <p class="footer-copy">Neuroscience, neural dynamics, behavior, and open experimental systems.</p>
+      </div>
+      <div class="footer-links">
+        <a href="cv.html">CV</a>
+        <a href="contact.html">Contact</a>
+        <a href="https://scholar.google.com/citations?user=sr5Bp4kAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Scholar</a>
+        <a href="https://github.com/Connor-Beck" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://linkedin.com/in/connor-b-a59908a8" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="mailto:BeckCL@purdue.edu">Email</a>
+      </div>
+      <p class="footer-copy">&copy; <span data-year></span> Connor Beck</p>
+    </div>
+  </footer>
+
+  <script src="scripts.js?v=14"></script>
+</body>
+</html>
