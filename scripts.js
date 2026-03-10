@@ -186,16 +186,60 @@
     }
 
     const angles = [-152, -125, -98, -67, -30, 30, 67, 98, 125, 152];
-    const baseLeg1 = Math.max(26, Math.min(state.width, state.height) * 0.07);
-    const baseLeg2 = Math.max(36, Math.min(state.width, state.height) * 0.09);
-    const edgePad = Math.max(10, Math.min(state.width, state.height) * 0.025);
+    const baseScale = Math.min(frame.width, frame.height);
+    const baseLeg1 = Math.max(20, baseScale * 0.09);
+    const baseLeg2 = Math.max(28, baseScale * 0.125);
+    const edgePad = Math.max(10, Math.min(state.width, state.height) * 0.02);
+    const contourPoints = state.points.map((point) => ({
+      x: frame.x + point.x * frame.width,
+      y: frame.y + point.y * frame.height
+    }));
+    const angleWindowCos = Math.cos((28 * Math.PI) / 180);
 
-    state.electrodes = angles.map((deg, idx) => {
-      const theta = (deg * Math.PI) / 180;
-      const near = {
+    const pickContourPoint = (theta) => {
+      const dirX = Math.cos(theta);
+      const dirY = Math.sin(theta);
+      let bestScore = -Infinity;
+      let bestPoint = null;
+
+      contourPoints.forEach((point) => {
+        const vx = point.x - frame.cx;
+        const vy = point.y - frame.cy;
+        const mag = Math.hypot(vx, vy);
+        if (mag < 1) {
+          return;
+        }
+
+        const alignment = (vx * dirX + vy * dirY) / mag;
+        if (alignment < angleWindowCos) {
+          return;
+        }
+
+        const radial = vx * dirX + vy * dirY;
+        const perpendicular = Math.abs(vx * dirY - vy * dirX);
+        const score = radial - perpendicular * 0.3;
+        if (score > bestScore) {
+          bestScore = score;
+          bestPoint = point;
+        }
+      });
+
+      if (bestPoint) {
+        return {
+          x: bestPoint.x + dirX * 2,
+          y: bestPoint.y + dirY * 2
+        };
+      }
+
+      return {
         x: frame.cx + Math.cos(theta) * frame.rx,
         y: frame.cy + Math.sin(theta) * frame.ry
       };
+    };
+
+    state.electrodes = angles.map((deg, idx) => {
+      const theta = (deg * Math.PI) / 180;
+      const near = pickContourPoint(theta);
 
       const dx = near.x - frame.cx;
       const dy = near.y - frame.cy;
@@ -248,7 +292,7 @@
     const padY = state.height * 0.012;
     const drawWidth = Math.max(1, state.width - padX * 2);
     const drawHeight = Math.max(1, state.height - padY * 2);
-    const brainScale = 0.7;
+    const brainScale = 0.49;
     const brainWidth = Math.max(1, drawWidth * brainScale);
     const brainHeight = Math.max(1, drawHeight * brainScale);
     const originX = padX + (drawWidth - brainWidth) * 0.5;
@@ -520,8 +564,8 @@
       const lenAB = Math.hypot(segB.x - segA.x, segB.y - segA.y);
       const lenBC = Math.hypot(segC.x - segB.x, segC.y - segB.y);
       const fadeDistance = Math.max(36, Math.min(state.width, state.height) * 0.09);
-      const wireRgb = "132, 150, 142";
-      const maxAlpha = 0.85;
+      const wireRgb = "110, 126, 138";
+      const maxAlpha = 0.9;
 
       const alphaAt = (distanceFromBrain) =>
         clamp((distanceFromBrain / fadeDistance) * maxAlpha, 0, maxAlpha);
@@ -531,7 +575,7 @@
         gradient.addColorStop(0, `rgba(${wireRgb}, ${alphaAt(d0)})`);
         gradient.addColorStop(1, `rgba(${wireRgb}, ${alphaAt(d1)})`);
         ctx.strokeStyle = gradient;
-        ctx.lineWidth = 1.9;
+        ctx.lineWidth = 3.1;
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
@@ -542,14 +586,16 @@
       drawSegment(segB, segC, lenAB, lenAB + lenBC);
 
       const level = clamp((electrode.activity - 0.23) / 0.75, 0, 1);
-      const r = Math.round(lerp(212, 78, level));
-      const g = Math.round(lerp(175, 226, level));
-      const b = Math.round(lerp(74, 255, level));
-      const radius = 4.6 + level * 2.3;
+      const r = Math.round(lerp(110, 224, level));
+      const g = Math.round(lerp(126, 182, level));
+      const b = Math.round(lerp(138, 72, level));
+      const radius = 6.9 + level * 3.1;
 
       ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.97)`;
-      ctx.strokeStyle = `rgba(112, 94, 38, ${0.75 + level * 0.2})`;
-      ctx.lineWidth = 1.1;
+      ctx.strokeStyle = `rgba(${Math.round(lerp(74, 132, level))}, ${Math.round(
+        lerp(86, 96, level)
+      )}, ${Math.round(lerp(98, 30, level))}, ${0.8 + level * 0.17})`;
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.arc(segC.x, segC.y, radius, 0, Math.PI * 2);
       ctx.fill();
