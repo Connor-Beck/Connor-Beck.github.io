@@ -33,10 +33,21 @@
     spikes: [],
     pulses: [],
     pointer: { x: 0, y: 0, active: false },
+    propagationFactor: 1,
     last: 0
   };
 
+  const synfireSlider = document.getElementById("synfire-slider");
+
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+  const factorFromSlider = (sliderValue) => {
+    const t = clamp(sliderValue, 0, 1);
+    if (t <= 0.33) {
+      return 0.5 + (t / 0.33) * 0.5;
+    }
+    return 1 + ((t - 0.33) / 0.67) * 0.9;
+  };
 
   const fallbackPoints = () => {
     const points = [];
@@ -161,23 +172,25 @@
       return;
     }
 
-    const stride = Math.max(1, Math.floor(points.length / maxParticles));
-    const selected = [];
-    for (let i = 0; i < points.length; i += stride) {
-      selected.push(points[i]);
+    const shuffled = points.slice();
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
+    const selected = shuffled.slice(0, Math.min(maxParticles, shuffled.length));
 
     const padX = state.width * 0.08;
     const padY = state.height * 0.1;
     const drawWidth = Math.max(1, state.width - padX * 2);
     const drawHeight = Math.max(1, state.height - padY * 2);
+    const jitter = Math.max(10, Math.min(drawWidth, drawHeight) * 0.025);
 
     state.particles = selected.map((point) => {
-      const ox = padX + point.x * drawWidth;
-      const oy = padY + point.y * drawHeight;
+      const ox = padX + point.x * drawWidth + (Math.random() - 0.5) * jitter;
+      const oy = padY + point.y * drawHeight + (Math.random() - 0.5) * jitter;
       return {
-        x: ox + (Math.random() - 0.5) * 9,
-        y: oy + (Math.random() - 0.5) * 9,
+        x: ox + (Math.random() - 0.5) * jitter * 0.9,
+        y: oy + (Math.random() - 0.5) * jitter * 0.9,
         ox,
         oy,
         vx: (Math.random() - 0.5) * 0.36,
@@ -239,12 +252,15 @@
   };
 
   const propagateSpontaneous = (index, from, strength) => {
+    const factor = state.propagationFactor;
+    const pThree = clamp(0.1 * factor, 0, 0.45);
+    const pOne = clamp(0.5 * factor, 0, 0.98 - pThree);
     const roll = Math.random();
     let fanout = 0;
 
-    if (roll < 0.1) {
+    if (roll < pThree) {
       fanout = 3;
-    } else if (roll < 0.6) {
+    } else if (roll < pThree + pOne) {
       fanout = 1;
     }
 
@@ -260,8 +276,12 @@
   };
 
   const propagateClick = (index, from, strength, isRoot = false) => {
+    const factor = state.propagationFactor;
+    const rootChance = clamp(0.9 * factor, 0.05, 0.995);
+    const chainChance = clamp(0.6 * factor, 0.05, 0.985);
+
     if (isRoot) {
-      if (Math.random() >= 0.9) {
+      if (Math.random() >= rootChance) {
         return;
       }
       const targets = sampleNeighbors(index, 3, from);
@@ -272,7 +292,7 @@
       return;
     }
 
-    if (Math.random() >= 0.6) {
+    if (Math.random() >= chainChance) {
       return;
     }
 
@@ -340,7 +360,7 @@
         const dist2 = dx * dx + dy * dy;
         if (dist2 < repelRadius * repelRadius) {
           const dist = Math.sqrt(dist2) || 0.001;
-          const force = (1 - dist / repelRadius) * 0.55;
+          const force = (1 - dist / repelRadius) * 0.15;
           ax += (dx / dist) * force;
           ay += (dy / dist) * force;
         }
@@ -489,6 +509,15 @@
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(resizeCanvas, 120);
     });
+
+    if (synfireSlider) {
+      const initial = Number(synfireSlider.value) / 100;
+      state.propagationFactor = factorFromSlider(initial);
+      synfireSlider.addEventListener("input", () => {
+        const normalized = Number(synfireSlider.value) / 100;
+        state.propagationFactor = factorFromSlider(normalized);
+      });
+    }
   };
 
   bindEvents();
