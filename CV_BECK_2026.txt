@@ -1,0 +1,71 @@
+Connor Beck
+Curriculum Vitae
+Current to March 2026
+Email: beckcl@purdue.edu
+Phone: +1 (360) 584-0796
+Research Interests
+	•	Neural circuit adaptation; Neuronal recording technologies, neuronal signal processing, neural dynamics, in vivo cortical encoding and consolidation, circuit flexibility
+	•	Neuronal biophysics; mechanical regulation of neuronal function, mechanical interfacing technologies, computational neuron models
+	•	Engineering in vitro neuronal microsystems; micropatterning technologies for neural circuit development, in vitro network models
+Relevant Work Experience
+01/2025-current 	Postdoctoral scholar, Purdue University, West Lafayette, USA
+08/2022-12/2024;	Graduate Research Assistantship (GRA), Montana State University (MSU),
+08/2019-08/2021	Bozeman, Montana, USA
+08/2021-05/2022	Graduate Teaching Assistantship (GTA), Montana State University (MSU), Bozeman, Montana, USA
+01/2017-08/2019	Undergraduate Research Assistantship, Montana State University (MSU), Bozeman, Montana, USA
+Education
+08/2019-12/2024	Montana State University (MSU), Electrical Engineering, Bozeman, Montana, USA
+	Doctor of Electrical Engineering, (Ph.D.)
+08/2015-05/2019	Montana State University (MSU), Chemical Engineering, Bozeman, Montana, USA
+	Bachelor of Science (B.Sc.) in Chemical Engineering
+Peer-Reviewed Publications
+Peer-Reviewed Journal Publications
+	•	Beck, C.L. & Kunze, A. Parallelized mechanical stimulation of neuronal calcium through cell-internal nanomagnetic forces provokes lasting shifts in the network activity state. Small, 2406678. (2025). 10.1002/smll.202406678
+	•	Beck, C.L., Kirby, A.M., Roberts, S., & Kunze, A. Multimodal Characterization of Cortical Neuron Response to Permanent Magnetic 3 Field Induced Nanomagnetic Force Maps. ACS Nano, (2024). 10.1021/acsnano.4c09542
+	•	Beck, C.L., Johnson, S,C., Kileen, C.T., & Kunze, A., Nanomagnetic guidance shapes the structure–function relationship of developing cortical networks. Nano letters, (2024). 10.1021/acs.nanolett.4c03156
+	•	Khan, H., Beck, C.L. & Kunze, A. Multi-curvature micropatterns unveil distinct calcium and mitochondrial dynamics in neuronal networks. Lab Chip 21-6, 1164-1174 (2021). 10.1039/D0LC01205J 
+	•	Beck, C.L., Hickman, C.J. & Kunze, A. Low-cost calcium fluorometry for long-term nanoparticle studies in living cells. Sci Rep 10, 12568 (2020). 10.1038/s41598-020-69412-1
+Peer-reviewed Conference Publications
+	•	Thompson, M., Beck, C., & Kunze, A. Microembossing Hydrogel Meso-Circuits for Patterning Dissociated Neurons Promotes Ensemble Formation; IEEE EMBS NER; 2025, San Diego, CA
+	•	Beck, C., & Kunze, A. Optimizing precision nanoparticle delivery for magneto-mechanically-based calcium modulation; Biophysical Journal; 2023, San Diego, CA
+	•	Beck, C., Kunze, A., & Zosso, D. Archetypal Analysis for neuronal clique detection in low-rate calcium fluorometry IEEE EMBS; 2022, Glasglow, Scotland, UK
+	•	Killeen, C. Beck, C., & Kunze A. Directing spatiotemporal firing patterns in primary neuron networks using nanomagnetic forces; Biophysical Journal; 2022, San Francisco, CA
+Presentations
+Talk, “Activity Dependency of Calcium Modulation via Nanomagnetic Force with Starch-Amine Magnetic Nanoparticles in Primary Rat Cortical Neurons, Biomedical Engineering Society Annual Meeting; 2023 October; Seattle, WA
+Poster, “Biomechanical Modulation of Calcium Event Rates in Soft Matter Neuro Patterns, MicroTAS; 2021 October; Palm Springs, CA
+Poster, “Activating calcium firing rates using macro-scaled symmetric magnetic force patterns”, Biomedical Engineering Society Annual Meeting; 2019 October; Philadelphia, PA
+Poster, “Optimizing Long-Term Imaging in vitro”, Undergraduate Scholars Program; 2018 August; Bozeman, MT
+Talk, “Growing Neurons in Organized Patterns: Towards Repressing Alzheimer’s Disease with Magnetic Stimulations”, INBRE; 2018 August; Bozeman, MT
+Poster, “A Portable, Low-Cost Imaging System for Long-Term Fluorescent Imaging of Live Cells in Incubation, Biomedical Engineering Society Annual Meeting; 2017 October; Phoenix, AZ
+Poster, “A Portable Incubator-Fluorescent Imaging System”, OPTEC Conference, 2017 September; Bozeman MT
+Talk, “A Computational Toolbox for the Quantification of Calcium Influx and Connectivity of Neural Networks through Optical Methods”, INBRE; 2017 August; Bozeman, MT
+Awards and Competitions
+2023; INBRE, ECE, Graduate School Travel Support
+2023; Capocaccia Neuromorphic Computing Workshop
+2023; 3 Minute Thesis College of Engineering Finalist
+2022; Donald A. Pierre Graduate Student Publication Award Conference Paper, Montana State University; IEEE EMBS
+2019; Meritorious Award, Montana State University
+2018; Victor Thayer Memorial Scholarship
+2015; Western Undergraduate Exchange Program
+Teaching and Mentoring
+Teaching Assistantship
+ 08/2021 – 05/2022 	EELE 201: Circuits 1 (Lab)
+	Basic breadboard use. Common RC circuits and measurements. KVL, KCL, Node Voltage, Mesh Current.
+08/2021 – 05/2022 	EELE 261: Introduction to Logic Circuits (Lab)
+	Digital logic circuits. Prime number detector, Binary to Hexadecimal display, Next state logic, FPGA programming.
+01/2021 – 05/2021	EELE 418: An introduction to BioMEMs (Lab - Remote)
+	Lab design and execution of multimodal signal processing with simultaneous electrode recordings and optical calcium signals.
+Undergraduate Mentoring
+*Work resulted in publication
+01/2024 – 12/2024	Bryn Littlefield – Neuron-nanomaterial interactions
+09/2023 – 12/2024	Mckennah Thompson – Soft matter neural circuit guidance 
+02/2023 – 05/2024	Samuel Roberts – Neural circuit-nanomaterial interactions
+05/2023 – 08/2023	Sara Johnson* – Tissue engineering and electrophysiological dynamics
+01/2020 – 05/2022 	Conner Killeen* – Tissue engineering and electrophysiological dynamics
+11/2019 – 08/2021	Jesse Rector – Nanomaterials and Image Processing
+Community Activities
+2023-2025		Montana State FIRST Lego League Championship Judge
+2020-present 		Big Brother Big Sister (BBBS)
+2018-2019		Montana State University Nanoland 
+2017-2018		INBRE/MAP mentorship program
+2016-2017		Hawthorne Elementary Math Engagement program
