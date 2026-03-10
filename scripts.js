@@ -601,7 +601,7 @@
       particle.y += particle.vy * step;
 
       particle.refractory = Math.max(0, particle.refractory - step);
-      particle.charge *= 0.955;
+      particle.charge *= 0.972;
     });
 
     if (Math.random() < 0.016 && state.particles.length) {
@@ -705,7 +705,7 @@
         x: pulse.x,
         y: pulse.y,
         radius: pulse.radius + 3.2 * step,
-        life: pulse.life - 0.014 * step
+        life: pulse.life - 0.009 * step
       }))
       .filter((pulse) => pulse.life > 0);
   };
@@ -847,8 +847,8 @@
       const p1 = particles[a];
       const p2 = particles[b];
       const linkCharge = clamp((p1.charge + p2.charge) * 0.3, 0, 0.72);
-      const alpha = 0.12 + linkCharge * 0.85;
-      ctx.strokeStyle = `rgba(56, 142, 106, ${alpha})`;
+      const alpha = 0.18 + linkCharge * 0.95;
+      ctx.strokeStyle = `rgba(74, 184, 138, ${alpha})`;
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.lineTo(p2.x, p2.y);
@@ -856,8 +856,8 @@
     });
 
     state.pulses.forEach((pulse) => {
-      ctx.strokeStyle = `rgba(120, 255, 190, ${0.42 * pulse.life})`;
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = `rgba(142, 255, 206, ${0.6 * pulse.life})`;
+      ctx.lineWidth = 1.45;
       ctx.beginPath();
       ctx.arc(pulse.x, pulse.y, pulse.radius, 0, Math.PI * 2);
       ctx.stroke();
@@ -865,10 +865,10 @@
 
     particles.forEach((particle) => {
       const glow = clamp(particle.charge, 0, 1.6);
-      const green = Math.floor(70 + glow * 98);
-      const alpha = clamp(0.52 + glow * 0.35, 0.52, 0.96);
-      const size = particle.size + glow * 0.78;
-      ctx.fillStyle = `rgba(38, ${green}, 52, ${alpha})`;
+      const green = Math.floor(88 + glow * 118);
+      const alpha = clamp(0.62 + glow * 0.43, 0.62, 0.99);
+      const size = particle.size + glow * 0.9;
+      ctx.fillStyle = `rgba(52, ${green}, 78, ${alpha})`;
       ctx.beginPath();
       ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
       ctx.fill();
