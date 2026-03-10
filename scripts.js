@@ -1,6 +1,13 @@
 (() => {
   "use strict";
 
+  if (window.location.pathname.endsWith("/index.html")) {
+    const normalizedPath = window.location.pathname.replace(/index\.html$/, "");
+    const targetPath = normalizedPath || "/";
+    const target = `${targetPath}${window.location.search}${window.location.hash}`;
+    window.history.replaceState({}, "", target);
+  }
+
   document.querySelectorAll("[data-year]").forEach((node) => {
     node.textContent = String(new Date().getFullYear());
   });
@@ -26,7 +33,6 @@
     spikes: [],
     pulses: [],
     pointer: { x: 0, y: 0, active: false },
-    time: 0,
     last: 0
   };
 
@@ -34,7 +40,7 @@
 
   const fallbackPoints = () => {
     const points = [];
-    const count = 700;
+    const count = 760;
     for (let i = 0; i < count; i += 1) {
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.sqrt(Math.random());
@@ -81,7 +87,7 @@
       }
     }
 
-    return points.length > 160 ? points : fallbackPoints();
+    return points.length > 180 ? points : fallbackPoints();
   };
 
   const loadMaskPoints = () =>
@@ -100,9 +106,9 @@
       return;
     }
 
-    const maxLinkDistance = Math.max(22, Math.min(state.width, state.height) * 0.12);
+    const maxLinkDistance = Math.max(22, Math.min(state.width, state.height) * 0.13);
     const maxLinkDistance2 = maxLinkDistance * maxLinkDistance;
-    const targetDegree = 4;
+    const targetDegree = 5;
 
     particles.forEach((particle) => {
       particle.neighbors = [];
@@ -125,10 +131,7 @@
       distances.sort((a, b) => a.dist2 - b.dist2);
       const limit = Math.min(targetDegree, distances.length);
       for (let k = 0; k < limit; k += 1) {
-        const neighbor = distances[k].j;
-        if (!particles[i].neighbors.includes(neighbor)) {
-          particles[i].neighbors.push(neighbor);
-        }
+        particles[i].neighbors.push(distances[k].j);
       }
     }
 
@@ -173,14 +176,14 @@
       const ox = padX + point.x * drawWidth;
       const oy = padY + point.y * drawHeight;
       return {
-        x: ox + (Math.random() - 0.5) * 10,
-        y: oy + (Math.random() - 0.5) * 10,
+        x: ox + (Math.random() - 0.5) * 9,
+        y: oy + (Math.random() - 0.5) * 9,
         ox,
         oy,
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        size: 1.1 + Math.random() * 1.6,
-        charge: Math.random() * 0.12,
+        vx: (Math.random() - 0.5) * 0.36,
+        vy: (Math.random() - 0.5) * 0.36,
+        size: 1 + Math.random() * 1.5,
+        charge: Math.random() * 0.08,
         refractory: 0,
         neighbors: []
       };
@@ -212,29 +215,88 @@
     };
   };
 
-  const excite = (index, strength, from = -1) => {
+  const sampleNeighbors = (index, count, exclude = -1) => {
+    const particle = state.particles[index];
+    if (!particle) {
+      return [];
+    }
+
+    const candidates = particle.neighbors.filter((n) => n !== exclude);
+    if (!candidates.length) {
+      return [];
+    }
+
+    for (let i = candidates.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+
+    return candidates.slice(0, Math.min(count, candidates.length));
+  };
+
+  const queueSpike = (index, from, mode, strength, delay) => {
+    state.spikes.push({ index, from, mode, strength, delay });
+  };
+
+  const propagateSpontaneous = (index, from, strength) => {
+    const roll = Math.random();
+    let fanout = 0;
+
+    if (roll < 0.1) {
+      fanout = 3;
+    } else if (roll < 0.6) {
+      fanout = 1;
+    }
+
+    if (fanout === 0) {
+      return;
+    }
+
+    const targets = sampleNeighbors(index, fanout, from);
+    const baseDelay = 0.8 + Math.random() * 0.8;
+    targets.forEach((target) => {
+      queueSpike(target, index, "spontaneous", strength * 0.92, baseDelay + Math.random() * 0.2);
+    });
+  };
+
+  const propagateClick = (index, from, strength, isRoot = false) => {
+    if (isRoot) {
+      if (Math.random() >= 0.9) {
+        return;
+      }
+      const targets = sampleNeighbors(index, 3, from);
+      const baseDelay = 0.45 + Math.random() * 0.35;
+      targets.forEach((target) => {
+        queueSpike(target, index, "click", strength * 0.95, baseDelay + Math.random() * 0.08);
+      });
+      return;
+    }
+
+    if (Math.random() >= 0.6) {
+      return;
+    }
+
+    const target = sampleNeighbors(index, 1, from)[0];
+    if (typeof target === "number") {
+      queueSpike(target, index, "click", strength * 0.94, 0.45 + Math.random() * 0.45);
+    }
+  };
+
+  const excite = (index, mode, strength, from = -1, root = false) => {
     const particle = state.particles[index];
     if (!particle || strength < 0.12 || particle.refractory > 0) {
       return;
     }
 
     particle.charge = Math.max(particle.charge, Math.min(1.5, strength));
-    particle.refractory = 5 + Math.random() * 7;
+    particle.refractory = 4 + Math.random() * 6;
 
-    particle.neighbors.forEach((neighbor) => {
-      if (neighbor === from) {
-        return;
-      }
-      const transmitted = strength * (0.58 + Math.random() * 0.26);
-      if (transmitted > 0.13 && Math.random() < 0.88) {
-        state.spikes.push({
-          index: neighbor,
-          from: index,
-          delay: 0.8 + Math.random() * 2.4,
-          strength: transmitted
-        });
-      }
-    });
+    if (mode === "spontaneous") {
+      propagateSpontaneous(index, from, strength);
+      return;
+    }
+
+    propagateClick(index, from, strength, root);
   };
 
   const addPulse = (x, y) => {
@@ -261,31 +323,12 @@
       }
     }
 
-    excite(nearest, 1.45);
-
-    const localRadius = Math.max(35, Math.min(state.width, state.height) * 0.11);
-    for (let i = 0; i < state.particles.length; i += 1) {
-      const dx = state.particles[i].x - x;
-      const dy = state.particles[i].y - y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < localRadius) {
-        const strength = 1.15 * (1 - dist / localRadius);
-        if (strength > 0.2) {
-          state.spikes.push({
-            index: i,
-            from: -1,
-            delay: dist / 26,
-            strength
-          });
-        }
-      }
-    }
-
+    excite(nearest, "click", 1.45, -1, true);
     addPulse(x, y);
   };
 
   const update = (step) => {
-    const repelRadius = Math.max(75, Math.min(state.width, state.height) * 0.17);
+    const repelRadius = Math.max(72, Math.min(state.width, state.height) * 0.16);
 
     state.particles.forEach((particle) => {
       let ax = (particle.ox - particle.x) * 0.024;
@@ -297,7 +340,7 @@
         const dist2 = dx * dx + dy * dy;
         if (dist2 < repelRadius * repelRadius) {
           const dist = Math.sqrt(dist2) || 0.001;
-          const force = (1 - dist / repelRadius) * 0.65;
+          const force = (1 - dist / repelRadius) * 0.55;
           ax += (dx / dist) * force;
           ay += (dy / dist) * force;
         }
@@ -312,16 +355,16 @@
       particle.charge *= 0.92;
     });
 
-    if (Math.random() < 0.018 && state.particles.length) {
+    if (Math.random() < 0.016 && state.particles.length) {
       const randomIndex = Math.floor(Math.random() * state.particles.length);
-      excite(randomIndex, 0.95);
+      excite(randomIndex, "spontaneous", 0.95);
     }
 
     for (let i = state.spikes.length - 1; i >= 0; i -= 1) {
       const spike = state.spikes[i];
       spike.delay -= step;
       if (spike.delay <= 0) {
-        excite(spike.index, spike.strength, spike.from);
+        excite(spike.index, spike.mode, spike.strength, spike.from, false);
         state.spikes.splice(i, 1);
       }
     }
@@ -330,8 +373,8 @@
       .map((pulse) => ({
         x: pulse.x,
         y: pulse.y,
-        radius: pulse.radius + 3.4 * step,
-        life: pulse.life - 0.021 * step
+        radius: pulse.radius + 3.2 * step,
+        life: pulse.life - 0.02 * step
       }))
       .filter((pulse) => pulse.life > 0);
   };
@@ -341,13 +384,13 @@
 
     const particles = state.particles;
 
-    ctx.lineWidth = 0.55;
+    ctx.lineWidth = 0.56;
     state.links.forEach(([a, b]) => {
       const p1 = particles[a];
       const p2 = particles[b];
-      const linkCharge = clamp((p1.charge + p2.charge) * 0.32, 0, 0.7);
-      const alpha = 0.08 + linkCharge;
-      ctx.strokeStyle = `rgba(96, 255, 170, ${alpha})`;
+      const linkCharge = clamp((p1.charge + p2.charge) * 0.3, 0, 0.72);
+      const alpha = 0.07 + linkCharge;
+      ctx.strokeStyle = `rgba(90, 255, 165, ${alpha})`;
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.lineTo(p2.x, p2.y);
@@ -355,7 +398,7 @@
     });
 
     state.pulses.forEach((pulse) => {
-      ctx.strokeStyle = `rgba(120, 255, 190, ${0.45 * pulse.life})`;
+      ctx.strokeStyle = `rgba(120, 255, 190, ${0.42 * pulse.life})`;
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.arc(pulse.x, pulse.y, pulse.radius, 0, Math.PI * 2);
@@ -364,8 +407,8 @@
 
     particles.forEach((particle) => {
       const glow = clamp(particle.charge, 0, 1.6);
-      const green = Math.floor(92 + glow * 110);
-      const alpha = clamp(0.24 + glow * 0.5, 0.22, 0.95);
+      const green = Math.floor(88 + glow * 112);
+      const alpha = clamp(0.22 + glow * 0.55, 0.2, 0.95);
       const size = particle.size + glow * 0.9;
       ctx.fillStyle = `rgba(120, ${green}, 145, ${alpha})`;
       ctx.beginPath();
@@ -381,7 +424,6 @@
 
     const delta = Math.min(33, time - state.last);
     state.last = time;
-    state.time += delta;
 
     update(delta / 16.67);
     draw();
