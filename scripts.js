@@ -44,6 +44,9 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const ELECTRODE_ACTIVE_MS = 10000;
   const ELECTRODE_HOVER_CLOSE_MS = 500;
+  const PARTICLE_CHARGE_DECAY = 0.978;
+  const ACTIVATION_VISUAL_BASE = 0.72;
+  const ACTIVATION_VISUAL_GAIN = 1.22;
   const ELECTRODE_SECTIONS = [
     { label: "About", href: "about.html" },
     { label: "Publications", href: "publications.html" },
@@ -514,7 +517,7 @@
       const targets = sampleNeighbors(index, 3, from);
       const baseDelay = 0.45 + Math.random() * 0.35;
       targets.forEach((target) => {
-        queueSpike(target, index, "click", strength * 0.95, baseDelay + Math.random() * 0.08, depth + 1);
+        queueSpike(target, index, "click", strength * 0.92, baseDelay + Math.random() * 0.08, depth + 1);
       });
       return;
     }
@@ -525,7 +528,7 @@
 
     const target = sampleNeighbors(index, 1, from)[0];
     if (typeof target === "number") {
-      queueSpike(target, index, "click", strength * 0.94, 0.45 + Math.random() * 0.45, depth + 1);
+      queueSpike(target, index, "click", strength * 0.92, 0.45 + Math.random() * 0.45, depth + 1);
     }
   };
 
@@ -535,7 +538,12 @@
       return;
     }
 
-    particle.charge = Math.max(particle.charge, Math.min(1.5, strength));
+    const visualCharge = clamp(
+      ACTIVATION_VISUAL_BASE + strength * ACTIVATION_VISUAL_GAIN,
+      0,
+      1.6
+    );
+    particle.charge = Math.max(particle.charge, visualCharge);
     particle.refractory = 4 + Math.random() * 6;
 
     if (mode === "spontaneous") {
@@ -571,7 +579,7 @@
     }
 
     state.clickSplitBoost = Math.min(0.4, state.clickSplitBoost + 0.1);
-    excite(nearest, "click", 1.45, -1, 0);
+    excite(nearest, "click", 0.95, -1, 0);
     addPulse(x, y);
   };
 
@@ -601,7 +609,7 @@
       particle.y += particle.vy * step;
 
       particle.refractory = Math.max(0, particle.refractory - step);
-      particle.charge *= 0.972;
+      particle.charge *= PARTICLE_CHARGE_DECAY;
     });
 
     if (Math.random() < 0.016 && state.particles.length) {
@@ -842,13 +850,13 @@
       }
     });
 
-    ctx.lineWidth = 0.56;
+    ctx.lineWidth = 1.14;
     state.links.forEach(([a, b]) => {
       const p1 = particles[a];
       const p2 = particles[b];
-      const linkCharge = clamp((p1.charge + p2.charge) * 0.3, 0, 0.72);
-      const alpha = 0.18 + linkCharge * 0.95;
-      ctx.strokeStyle = `rgba(74, 184, 138, ${alpha})`;
+      const linkCharge = clamp((p1.charge + p2.charge) * 0.44, 0, 1);
+      const alpha = 0.28 + linkCharge * 0.78;
+      ctx.strokeStyle = `rgba(88, 210, 164, ${alpha})`;
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.lineTo(p2.x, p2.y);
@@ -865,10 +873,12 @@
 
     particles.forEach((particle) => {
       const glow = clamp(particle.charge, 0, 1.6);
-      const green = Math.floor(88 + glow * 118);
-      const alpha = clamp(0.62 + glow * 0.43, 0.62, 0.99);
-      const size = particle.size + glow * 0.9;
-      ctx.fillStyle = `rgba(52, ${green}, 78, ${alpha})`;
+      const red = Math.floor(50 + glow * 44);
+      const green = Math.floor(126 + glow * 108);
+      const blue = Math.floor(80 + glow * 70);
+      const alpha = clamp(0.78 + glow * 0.28, 0.78, 1);
+      const size = particle.size + glow * 1.58;
+      ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
       ctx.beginPath();
       ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
       ctx.fill();

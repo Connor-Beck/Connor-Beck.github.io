@@ -2,7 +2,6 @@ Connor Beck
 Curriculum Vitae
 Current to March 2026
 Email: beckcl@purdue.edu
-Phone: +1 (360) 584-0796
 Research Interests
 	•	Neural circuit adaptation; Neuronal recording technologies, neuronal signal processing, neural dynamics, in vivo cortical encoding and consolidation, circuit flexibility
 	•	Neuronal biophysics; mechanical regulation of neuronal function, mechanical interfacing technologies, computational neuron models
