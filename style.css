@@ -132,10 +132,10 @@ main {
   min-height: min(760px, calc(100vh - 74px));
   padding: 3.8rem 0 3.2rem;
   display: grid;
-  grid-template-columns: minmax(360px, 1fr) minmax(320px, 560px);
+  grid-template-columns: minmax(340px, 1fr) minmax(420px, 620px);
   justify-content: space-between;
   align-items: center;
-  gap: 1.6rem;
+  gap: 2rem;
 }
 
 .hero-copy {
@@ -151,16 +151,13 @@ main {
   isolation: isolate;
   justify-self: end;
   width: 100%;
-  max-width: 560px;
-  min-height: 420px;
-  height: min(560px, 60vh);
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(80, 220, 150, 0.06), transparent 45%),
-    radial-gradient(circle at 76% 70%, rgba(80, 220, 150, 0.05), transparent 40%),
-    var(--bg);
-  border: 1px solid rgba(29, 91, 73, 0.14);
-  box-shadow: 0 14px 32px rgba(17, 32, 25, 0.12);
+  max-width: 620px;
+  min-height: 500px;
+  height: min(640px, 72vh);
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -169,57 +166,7 @@ main {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.synfire-control {
-  position: absolute;
-  left: 1rem;
-  right: 1rem;
-  bottom: 0.9rem;
-  z-index: 4;
-  pointer-events: none;
-}
-
-.synfire-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 20px;
-  background: transparent;
-  pointer-events: auto;
-}
-
-.synfire-slider::-webkit-slider-runnable-track {
-  height: 2px;
-  border-radius: 999px;
-  background: rgba(17, 32, 25, 0.34);
-}
-
-.synfire-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  margin-top: -6px;
-  border-radius: 50%;
-  background: #1d5b49;
-  border: 2px solid #f4f6f5;
-  box-shadow: 0 0 0 3px rgba(29, 91, 73, 0.15);
-}
-
-.synfire-slider::-moz-range-track {
-  height: 2px;
-  border-radius: 999px;
-  background: rgba(17, 32, 25, 0.34);
-}
-
-.synfire-slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #1d5b49;
-  border: 2px solid #f4f6f5;
-  box-shadow: 0 0 0 3px rgba(29, 91, 73, 0.15);
+  background: transparent !important;
 }
 
 .eyebrow {
@@ -556,8 +503,8 @@ h3 {
   .hero-visual {
     justify-self: stretch;
     max-width: none;
-    min-height: 360px;
-    height: min(460px, 50vh);
+    min-height: 420px;
+    height: min(520px, 56vh);
   }
 }
 
@@ -584,8 +531,8 @@ h3 {
   }
 
   .hero-visual {
-    min-height: 290px;
-    height: 44vh;
+    min-height: 330px;
+    height: 46vh;
   }
 
   .grid-2,

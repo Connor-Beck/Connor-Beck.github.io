@@ -33,21 +33,12 @@
     spikes: [],
     pulses: [],
     pointer: { x: 0, y: 0, active: false },
-    propagationFactor: 1,
+    propagationFactor: 1.63,
+    clickSplitBoost: 0,
     last: 0
   };
 
-  const synfireSlider = document.getElementById("synfire-slider");
-
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
-  const factorFromSlider = (sliderValue) => {
-    const t = clamp(sliderValue, 0, 1);
-    if (t <= 0.33) {
-      return 0.5 + (t / 0.33) * 0.5;
-    }
-    return 1 + ((t - 0.33) / 0.67) * 0.9;
-  };
 
   const fallbackPoints = () => {
     const points = [];
@@ -98,7 +89,28 @@
       }
     }
 
-    return points.length > 180 ? points : fallbackPoints();
+    if (points.length <= 180) {
+      return fallbackPoints();
+    }
+
+    let minX = 1;
+    let minY = 1;
+    let maxX = 0;
+    let maxY = 0;
+    points.forEach((point) => {
+      if (point.x < minX) minX = point.x;
+      if (point.y < minY) minY = point.y;
+      if (point.x > maxX) maxX = point.x;
+      if (point.y > maxY) maxY = point.y;
+    });
+
+    const width = Math.max(0.0001, maxX - minX);
+    const height = Math.max(0.0001, maxY - minY);
+
+    return points.map((point) => ({
+      x: (point.x - minX) / width,
+      y: (point.y - minY) / height
+    }));
   };
 
   const loadMaskPoints = () =>
@@ -165,7 +177,7 @@
 
   const rebuildParticles = () => {
     const isMobile = window.innerWidth < 768;
-    const maxParticles = isMobile ? 340 : 560;
+    const maxParticles = isMobile ? 420 : 720;
     const points = state.points;
 
     if (!points.length) {
@@ -179,22 +191,30 @@
     }
     const selected = shuffled.slice(0, Math.min(maxParticles, shuffled.length));
 
-    const padX = state.width * 0.08;
-    const padY = state.height * 0.1;
+    const padX = state.width * 0.008;
+    const padY = state.height * 0.012;
     const drawWidth = Math.max(1, state.width - padX * 2);
     const drawHeight = Math.max(1, state.height - padY * 2);
-    const jitter = Math.max(10, Math.min(drawWidth, drawHeight) * 0.025);
+    const jitter = Math.max(16, Math.min(drawWidth, drawHeight) * 0.035);
 
     state.particles = selected.map((point) => {
-      const ox = padX + point.x * drawWidth + (Math.random() - 0.5) * jitter;
-      const oy = padY + point.y * drawHeight + (Math.random() - 0.5) * jitter;
+      const ox = clamp(
+        padX + point.x * drawWidth + (Math.random() - 0.5) * jitter,
+        0,
+        state.width
+      );
+      const oy = clamp(
+        padY + point.y * drawHeight + (Math.random() - 0.5) * jitter,
+        0,
+        state.height
+      );
       return {
-        x: ox + (Math.random() - 0.5) * jitter * 0.9,
-        y: oy + (Math.random() - 0.5) * jitter * 0.9,
+        x: clamp(ox + (Math.random() - 0.5) * jitter * 0.7, 0, state.width),
+        y: clamp(oy + (Math.random() - 0.5) * jitter * 0.7, 0, state.height),
         ox,
         oy,
-        vx: (Math.random() - 0.5) * 0.36,
-        vy: (Math.random() - 0.5) * 0.36,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: (Math.random() - 0.5) * 0.28,
         size: 1 + Math.random() * 1.5,
         charge: Math.random() * 0.08,
         refractory: 0,
@@ -247,8 +267,8 @@
     return candidates.slice(0, Math.min(count, candidates.length));
   };
 
-  const queueSpike = (index, from, mode, strength, delay) => {
-    state.spikes.push({ index, from, mode, strength, delay });
+  const queueSpike = (index, from, mode, strength, delay, depth = 0) => {
+    state.spikes.push({ index, from, mode, strength, delay, depth });
   };
 
   const propagateSpontaneous = (index, from, strength) => {
@@ -271,38 +291,35 @@
     const targets = sampleNeighbors(index, fanout, from);
     const baseDelay = 0.8 + Math.random() * 0.8;
     targets.forEach((target) => {
-      queueSpike(target, index, "spontaneous", strength * 0.92, baseDelay + Math.random() * 0.2);
+      queueSpike(target, index, "spontaneous", strength * 0.92, baseDelay + Math.random() * 0.2, 0);
     });
   };
 
-  const propagateClick = (index, from, strength, isRoot = false) => {
-    const factor = state.propagationFactor;
-    const rootChance = clamp(0.9 * factor, 0.05, 0.995);
-    const chainChance = clamp(0.6 * factor, 0.05, 0.985);
+  const propagateClick = (index, from, strength, depth = 0) => {
+    const splitChance = clamp(0.1 + state.clickSplitBoost - depth * 0.05, 0.02, 0.5);
+    const continueChance = 0.6;
+    const split = Math.random() < splitChance;
 
-    if (isRoot) {
-      if (Math.random() >= rootChance) {
-        return;
-      }
+    if (split) {
       const targets = sampleNeighbors(index, 3, from);
       const baseDelay = 0.45 + Math.random() * 0.35;
       targets.forEach((target) => {
-        queueSpike(target, index, "click", strength * 0.95, baseDelay + Math.random() * 0.08);
+        queueSpike(target, index, "click", strength * 0.95, baseDelay + Math.random() * 0.08, depth + 1);
       });
       return;
     }
 
-    if (Math.random() >= chainChance) {
+    if (Math.random() >= continueChance) {
       return;
     }
 
     const target = sampleNeighbors(index, 1, from)[0];
     if (typeof target === "number") {
-      queueSpike(target, index, "click", strength * 0.94, 0.45 + Math.random() * 0.45);
+      queueSpike(target, index, "click", strength * 0.94, 0.45 + Math.random() * 0.45, depth + 1);
     }
   };
 
-  const excite = (index, mode, strength, from = -1, root = false) => {
+  const excite = (index, mode, strength, from = -1, depth = 0) => {
     const particle = state.particles[index];
     if (!particle || strength < 0.12 || particle.refractory > 0) {
       return;
@@ -316,7 +333,7 @@
       return;
     }
 
-    propagateClick(index, from, strength, root);
+    propagateClick(index, from, strength, depth);
   };
 
   const addPulse = (x, y) => {
@@ -343,12 +360,14 @@
       }
     }
 
-    excite(nearest, "click", 1.45, -1, true);
+    state.clickSplitBoost = Math.min(0.4, state.clickSplitBoost + 0.1);
+    excite(nearest, "click", 1.45, -1, 0);
     addPulse(x, y);
   };
 
   const update = (step) => {
-    const repelRadius = Math.max(72, Math.min(state.width, state.height) * 0.16);
+    const repelRadius = Math.max(54, Math.min(state.width, state.height) * 0.12);
+    state.clickSplitBoost = Math.max(0, state.clickSplitBoost - 0.00075 * step);
 
     state.particles.forEach((particle) => {
       let ax = (particle.ox - particle.x) * 0.024;
@@ -360,7 +379,7 @@
         const dist2 = dx * dx + dy * dy;
         if (dist2 < repelRadius * repelRadius) {
           const dist = Math.sqrt(dist2) || 0.001;
-          const force = (1 - dist / repelRadius) * 0.15;
+          const force = (1 - dist / repelRadius) * 0.035;
           ax += (dx / dist) * force;
           ay += (dy / dist) * force;
         }
@@ -384,7 +403,7 @@
       const spike = state.spikes[i];
       spike.delay -= step;
       if (spike.delay <= 0) {
-        excite(spike.index, spike.mode, spike.strength, spike.from, false);
+        excite(spike.index, spike.mode, spike.strength, spike.from, spike.depth);
         state.spikes.splice(i, 1);
       }
     }
@@ -409,8 +428,8 @@
       const p1 = particles[a];
       const p2 = particles[b];
       const linkCharge = clamp((p1.charge + p2.charge) * 0.3, 0, 0.72);
-      const alpha = 0.07 + linkCharge;
-      ctx.strokeStyle = `rgba(90, 255, 165, ${alpha})`;
+      const alpha = 0.12 + linkCharge * 0.85;
+      ctx.strokeStyle = `rgba(56, 142, 106, ${alpha})`;
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.lineTo(p2.x, p2.y);
@@ -427,10 +446,10 @@
 
     particles.forEach((particle) => {
       const glow = clamp(particle.charge, 0, 1.6);
-      const green = Math.floor(88 + glow * 112);
-      const alpha = clamp(0.22 + glow * 0.55, 0.2, 0.95);
-      const size = particle.size + glow * 0.9;
-      ctx.fillStyle = `rgba(120, ${green}, 145, ${alpha})`;
+      const green = Math.floor(70 + glow * 98);
+      const alpha = clamp(0.52 + glow * 0.35, 0.52, 0.96);
+      const size = particle.size + glow * 0.78;
+      ctx.fillStyle = `rgba(38, ${green}, 52, ${alpha})`;
       ctx.beginPath();
       ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
       ctx.fill();
@@ -510,14 +529,6 @@
       resizeTimer = window.setTimeout(resizeCanvas, 120);
     });
 
-    if (synfireSlider) {
-      const initial = Number(synfireSlider.value) / 100;
-      state.propagationFactor = factorFromSlider(initial);
-      synfireSlider.addEventListener("input", () => {
-        const normalized = Number(synfireSlider.value) / 100;
-        state.propagationFactor = factorFromSlider(normalized);
-      });
-    }
   };
 
   bindEvents();
