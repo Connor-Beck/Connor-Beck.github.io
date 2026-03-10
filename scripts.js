@@ -18,27 +18,29 @@
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   const state = {
-    particles: [],
-    pulses: [],
-    pointer: { x: 0, y: 0, active: false },
     width: 0,
     height: 0,
+    points: [],
+    particles: [],
+    links: [],
+    spikes: [],
+    pulses: [],
+    pointer: { x: 0, y: 0, active: false },
     time: 0,
-    last: 0,
-    points: []
+    last: 0
   };
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
   const fallbackPoints = () => {
     const points = [];
-    const count = 620;
+    const count = 700;
     for (let i = 0; i < count; i += 1) {
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.sqrt(Math.random());
-      const x = 0.5 + Math.cos(angle) * 0.43 * radius;
-      const y = 0.52 + Math.sin(angle) * 0.34 * radius;
-      if (x > 0.08 && x < 0.94 && y > 0.12 && y < 0.93) {
+      const x = 0.5 + Math.cos(angle) * 0.42 * radius;
+      const y = 0.5 + Math.sin(angle) * 0.35 * radius;
+      if (x > 0.08 && x < 0.93 && y > 0.1 && y < 0.92) {
         points.push({ x, y });
       }
     }
@@ -61,11 +63,10 @@
     }
 
     offCtx.drawImage(img, 0, 0, sampleWidth, sampleHeight);
-    const image = offCtx.getImageData(0, 0, sampleWidth, sampleHeight);
-    const data = image.data;
+    const { data } = offCtx.getImageData(0, 0, sampleWidth, sampleHeight);
     const points = [];
+    const step = 5;
 
-    const step = 6;
     for (let y = 0; y < sampleHeight; y += step) {
       for (let x = 0; x < sampleWidth; x += step) {
         const idx = (y * sampleWidth + x) * 4;
@@ -80,7 +81,7 @@
       }
     }
 
-    return points.length > 100 ? points : fallbackPoints();
+    return points.length > 160 ? points : fallbackPoints();
   };
 
   const loadMaskPoints = () =>
@@ -91,9 +92,66 @@
       img.onerror = () => resolve(fallbackPoints());
     });
 
+  const buildGraph = () => {
+    state.links = [];
+    const particles = state.particles;
+    const n = particles.length;
+    if (n < 2) {
+      return;
+    }
+
+    const maxLinkDistance = Math.max(22, Math.min(state.width, state.height) * 0.12);
+    const maxLinkDistance2 = maxLinkDistance * maxLinkDistance;
+    const targetDegree = 4;
+
+    particles.forEach((particle) => {
+      particle.neighbors = [];
+    });
+
+    for (let i = 0; i < n; i += 1) {
+      const distances = [];
+      for (let j = 0; j < n; j += 1) {
+        if (i === j) {
+          continue;
+        }
+        const dx = particles[i].ox - particles[j].ox;
+        const dy = particles[i].oy - particles[j].oy;
+        const dist2 = dx * dx + dy * dy;
+        if (dist2 <= maxLinkDistance2) {
+          distances.push({ j, dist2 });
+        }
+      }
+
+      distances.sort((a, b) => a.dist2 - b.dist2);
+      const limit = Math.min(targetDegree, distances.length);
+      for (let k = 0; k < limit; k += 1) {
+        const neighbor = distances[k].j;
+        if (!particles[i].neighbors.includes(neighbor)) {
+          particles[i].neighbors.push(neighbor);
+        }
+      }
+    }
+
+    const linkSet = new Set();
+    for (let i = 0; i < n; i += 1) {
+      particles[i].neighbors.forEach((j) => {
+        const a = Math.min(i, j);
+        const b = Math.max(i, j);
+        const key = `${a}:${b}`;
+        if (!linkSet.has(key)) {
+          linkSet.add(key);
+          state.links.push([a, b]);
+          if (!particles[j].neighbors.includes(i)) {
+            particles[j].neighbors.push(i);
+          }
+        }
+      });
+    }
+  };
+
   const rebuildParticles = () => {
     const isMobile = window.innerWidth < 768;
-    const maxParticles = isMobile ? 360 : 560;
+    const maxParticles = isMobile ? 340 : 560;
     const points = state.points;
 
     if (!points.length) {
@@ -106,27 +164,31 @@
       selected.push(points[i]);
     }
 
-    const brainWidth = Math.min(state.width * (state.width > 980 ? 0.52 : 0.68), 640);
-    const brainHeight = brainWidth * 0.8;
-    const offsetX = state.width > 980 ? state.width * 0.18 : 0;
-    const originX = (state.width - brainWidth) / 2 + offsetX;
-    const originY = (state.height - brainHeight) / 2 + state.height * 0.02;
+    const padX = state.width * 0.08;
+    const padY = state.height * 0.1;
+    const drawWidth = Math.max(1, state.width - padX * 2);
+    const drawHeight = Math.max(1, state.height - padY * 2);
 
     state.particles = selected.map((point) => {
-      const ox = originX + point.x * brainWidth;
-      const oy = originY + point.y * brainHeight;
+      const ox = padX + point.x * drawWidth;
+      const oy = padY + point.y * drawHeight;
       return {
-        x: ox + (Math.random() - 0.5) * brainWidth * 0.2,
-        y: oy + (Math.random() - 0.5) * brainHeight * 0.2,
+        x: ox + (Math.random() - 0.5) * 10,
+        y: oy + (Math.random() - 0.5) * 10,
         ox,
         oy,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        size: 1 + Math.random() * 1.5,
-        charge: 0,
-        seed: Math.random() * Math.PI * 2
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        size: 1.1 + Math.random() * 1.6,
+        charge: Math.random() * 0.12,
+        refractory: 0,
+        neighbors: []
       };
     });
+
+    buildGraph();
+    state.spikes = [];
+    state.pulses = [];
   };
 
   const resizeCanvas = () => {
@@ -150,6 +212,31 @@
     };
   };
 
+  const excite = (index, strength, from = -1) => {
+    const particle = state.particles[index];
+    if (!particle || strength < 0.12 || particle.refractory > 0) {
+      return;
+    }
+
+    particle.charge = Math.max(particle.charge, Math.min(1.5, strength));
+    particle.refractory = 5 + Math.random() * 7;
+
+    particle.neighbors.forEach((neighbor) => {
+      if (neighbor === from) {
+        return;
+      }
+      const transmitted = strength * (0.58 + Math.random() * 0.26);
+      if (transmitted > 0.13 && Math.random() < 0.88) {
+        state.spikes.push({
+          index: neighbor,
+          from: index,
+          delay: 0.8 + Math.random() * 2.4,
+          strength: transmitted
+        });
+      }
+    });
+  };
+
   const addPulse = (x, y) => {
     state.pulses.push({ x, y, radius: 0, life: 1 });
     if (state.pulses.length > 5) {
@@ -157,56 +244,94 @@
     }
   };
 
+  const injectAt = (x, y) => {
+    if (!state.particles.length) {
+      return;
+    }
+
+    let nearest = 0;
+    let nearestDist2 = Infinity;
+    for (let i = 0; i < state.particles.length; i += 1) {
+      const dx = state.particles[i].x - x;
+      const dy = state.particles[i].y - y;
+      const dist2 = dx * dx + dy * dy;
+      if (dist2 < nearestDist2) {
+        nearest = i;
+        nearestDist2 = dist2;
+      }
+    }
+
+    excite(nearest, 1.45);
+
+    const localRadius = Math.max(35, Math.min(state.width, state.height) * 0.11);
+    for (let i = 0; i < state.particles.length; i += 1) {
+      const dx = state.particles[i].x - x;
+      const dy = state.particles[i].y - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < localRadius) {
+        const strength = 1.15 * (1 - dist / localRadius);
+        if (strength > 0.2) {
+          state.spikes.push({
+            index: i,
+            from: -1,
+            delay: dist / 26,
+            strength
+          });
+        }
+      }
+    }
+
+    addPulse(x, y);
+  };
+
   const update = (step) => {
-    const repelRadius = Math.max(90, Math.min(state.width, state.height) * 0.14);
+    const repelRadius = Math.max(75, Math.min(state.width, state.height) * 0.17);
 
     state.particles.forEach((particle) => {
-      let ax = (particle.ox - particle.x) * 0.026;
-      let ay = (particle.oy - particle.y) * 0.026;
+      let ax = (particle.ox - particle.x) * 0.024;
+      let ay = (particle.oy - particle.y) * 0.024;
 
       if (state.pointer.active) {
         const dx = particle.x - state.pointer.x;
         const dy = particle.y - state.pointer.y;
         const dist2 = dx * dx + dy * dy;
-
         if (dist2 < repelRadius * repelRadius) {
-          const dist = Math.sqrt(dist2) || 0.0001;
-          const force = (1 - dist / repelRadius) * 1.1;
+          const dist = Math.sqrt(dist2) || 0.001;
+          const force = (1 - dist / repelRadius) * 0.65;
           ax += (dx / dist) * force;
           ay += (dy / dist) * force;
-          particle.charge = Math.min(1, particle.charge + 0.12);
         }
       }
 
-      state.pulses.forEach((pulse) => {
-        const dx = particle.x - pulse.x;
-        const dy = particle.y - pulse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 0.0001;
-        const edgeDistance = Math.abs(dist - pulse.radius);
-        if (edgeDistance < 26) {
-          const force = (1 - edgeDistance / 26) * pulse.life * 1.6;
-          ax += (dx / dist) * force;
-          ay += (dy / dist) * force;
-          particle.charge = Math.min(1, particle.charge + force * 0.5);
-        }
-      });
-
-      ax += Math.sin(state.time * 0.0013 + particle.seed) * 0.014;
-      ay += Math.cos(state.time * 0.0011 + particle.seed) * 0.014;
-
-      particle.vx = (particle.vx + ax) * 0.88;
-      particle.vy = (particle.vy + ay) * 0.88;
+      particle.vx = (particle.vx + ax) * 0.9;
+      particle.vy = (particle.vy + ay) * 0.9;
       particle.x += particle.vx * step;
       particle.y += particle.vy * step;
-      particle.charge *= 0.95;
+
+      particle.refractory = Math.max(0, particle.refractory - step);
+      particle.charge *= 0.92;
     });
+
+    if (Math.random() < 0.018 && state.particles.length) {
+      const randomIndex = Math.floor(Math.random() * state.particles.length);
+      excite(randomIndex, 0.95);
+    }
+
+    for (let i = state.spikes.length - 1; i >= 0; i -= 1) {
+      const spike = state.spikes[i];
+      spike.delay -= step;
+      if (spike.delay <= 0) {
+        excite(spike.index, spike.strength, spike.from);
+        state.spikes.splice(i, 1);
+      }
+    }
 
     state.pulses = state.pulses
       .map((pulse) => ({
         x: pulse.x,
         y: pulse.y,
-        radius: pulse.radius + 2.8 * step,
-        life: pulse.life - 0.018 * step
+        radius: pulse.radius + 3.4 * step,
+        life: pulse.life - 0.021 * step
       }))
       .filter((pulse) => pulse.life > 0);
   };
@@ -215,39 +340,36 @@
     ctx.clearRect(0, 0, state.width, state.height);
 
     const particles = state.particles;
-    const connectDistance = Math.max(18, Math.min(state.width, state.height) * 0.038);
-    const connectDistance2 = connectDistance * connectDistance;
 
-    ctx.strokeStyle = "rgba(29, 91, 73, 0.18)";
-    ctx.lineWidth = 0.6;
-    ctx.beginPath();
-    for (let i = 0; i < particles.length; i += 1) {
-      for (let j = i + 1; j < particles.length; j += 1) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist2 = dx * dx + dy * dy;
-        if (dist2 < connectDistance2) {
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-        }
-      }
-    }
-    ctx.stroke();
+    ctx.lineWidth = 0.55;
+    state.links.forEach(([a, b]) => {
+      const p1 = particles[a];
+      const p2 = particles[b];
+      const linkCharge = clamp((p1.charge + p2.charge) * 0.32, 0, 0.7);
+      const alpha = 0.08 + linkCharge;
+      ctx.strokeStyle = `rgba(96, 255, 170, ${alpha})`;
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    });
 
     state.pulses.forEach((pulse) => {
-      ctx.strokeStyle = `rgba(15, 61, 49, ${0.3 * pulse.life})`;
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(120, 255, 190, ${0.45 * pulse.life})`;
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.arc(pulse.x, pulse.y, pulse.radius, 0, Math.PI * 2);
       ctx.stroke();
     });
 
     particles.forEach((particle) => {
-      const twinkle = 0.18 + Math.abs(Math.sin(state.time * 0.0017 + particle.seed)) * 0.22;
-      const alpha = clamp(0.22 + twinkle + particle.charge * 0.45, 0.18, 0.95);
-      ctx.fillStyle = `rgba(15, 61, 49, ${alpha})`;
+      const glow = clamp(particle.charge, 0, 1.6);
+      const green = Math.floor(92 + glow * 110);
+      const alpha = clamp(0.24 + glow * 0.5, 0.22, 0.95);
+      const size = particle.size + glow * 0.9;
+      ctx.fillStyle = `rgba(120, ${green}, 145, ${alpha})`;
       ctx.beginPath();
-      ctx.arc(particle.x, particle.y, particle.size + particle.charge * 0.9, 0, Math.PI * 2);
+      ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
       ctx.fill();
     });
   };
@@ -285,8 +407,21 @@
 
     canvas.addEventListener("click", (event) => {
       const point = toCanvasPoint(event.clientX, event.clientY);
-      addPulse(point.x, point.y);
+      injectAt(point.x, point.y);
     });
+
+    canvas.addEventListener(
+      "touchstart",
+      (event) => {
+        const touch = event.touches[0];
+        if (!touch) {
+          return;
+        }
+        const point = toCanvasPoint(touch.clientX, touch.clientY);
+        injectAt(point.x, point.y);
+      },
+      { passive: true }
+    );
 
     canvas.addEventListener(
       "touchmove",
@@ -303,19 +438,6 @@
       { passive: true }
     );
 
-    canvas.addEventListener(
-      "touchstart",
-      (event) => {
-        const touch = event.touches[0];
-        if (!touch) {
-          return;
-        }
-        const point = toCanvasPoint(touch.clientX, touch.clientY);
-        addPulse(point.x, point.y);
-      },
-      { passive: true }
-    );
-
     canvas.addEventListener("touchend", () => {
       state.pointer.active = false;
     });
@@ -323,9 +445,7 @@
     let resizeTimer;
     window.addEventListener("resize", () => {
       window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => {
-        resizeCanvas();
-      }, 120);
+      resizeTimer = window.setTimeout(resizeCanvas, 120);
     });
   };
 

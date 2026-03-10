@@ -22,6 +22,7 @@
           <li><a href="publications.html">Publications</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="research.html">Research</a></li>
+          <li><a href="software.html">Software</a></li>
           <li><a href="tools.html">Tools</a></li>
         </ul>
       </nav>
@@ -30,19 +31,24 @@
 
   <main id="main-content">
     <section class="hero">
-      <canvas id="brain-canvas" aria-hidden="true"></canvas>
-      <div class="container hero-content">
-        <p class="eyebrow">Neuroscience | Behavior | Engineering</p>
-        <h1>Systems-level neuroscience with open, practical tool building.</h1>
-        <p class="hero-text">
-          This site now includes your core structure and interactive particle background. Home content can be refined later,
-          while Publications, About, Research, and Tools are ready to edit immediately.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="research.html">Explore Research</a>
-          <a class="button secondary" href="publications.html">View Publications</a>
+      <div class="container hero-layout">
+        <div class="hero-copy">
+          <p class="eyebrow">Neuroscience | Behavior | Engineering</p>
+          <h1>Systems-level neuroscience with open, practical tool building.</h1>
+          <p class="hero-text">
+            I study neural dynamics and behavior with an emphasis on how population-level signals encode internal state,
+            flexibility, and adaptation. My approach combines in vivo and in vitro neuroscience, quantitative analysis,
+            and reusable engineering systems.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="research.html">Explore Research</a>
+            <a class="button secondary" href="publications.html">View Publications</a>
+          </div>
+          <p class="particle-note">Click inside the network to inject a spike and trigger propagating chain activity.</p>
         </div>
-        <p class="particle-note">Particle layer is interactive: move your cursor and click to trigger signal waves.</p>
+        <div class="hero-visual" aria-label="Interactive neural network">
+          <canvas id="brain-canvas" aria-hidden="true"></canvas>
+        </div>
       </div>
     </section>
 
@@ -62,17 +68,17 @@
           <article class="card">
             <img class="image-cover" src="images/MitoNPCa.png" alt="Illustration of nanoparticle neuroscience interface">
             <div class="card-body">
-              <h3>Methods + Platforms</h3>
-              <p>Calcium imaging, computational analysis, and engineering-first lab systems for scalable experiments.</p>
-              <a class="text-link" href="tools.html">Go to Tools</a>
+              <h3>Software + Analysis</h3>
+              <p>Open computational workflows, synchronization utilities, and reproducible processing pipelines.</p>
+              <a class="text-link" href="software.html">Go to Software</a>
             </div>
           </article>
           <article class="card">
             <img class="image-cover" src="images/brain.png" alt="Brain silhouette mask used for particle field">
             <div class="card-body">
-              <h3>Professional Profile</h3>
-              <p>Initial About, CV, and Contact pages are scaffolded so you can rapidly tune language and details.</p>
-              <a class="text-link" href="about.html">Go to About</a>
+              <h3>Laboratory Platforms</h3>
+              <p>Open hardware, 3D-print resources, and engineered behavioral systems for scalable experimentation.</p>
+              <a class="text-link" href="tools.html">Go to Tools</a>
             </div>
           </article>
         </div>
@@ -86,19 +92,19 @@
         <div class="quick-links">
           <a class="quick-link" href="about.html">
             <strong>About</strong>
-            Update personal bio, affiliations, and long-term goals.
+            Update bio language, affiliations, and long-term goals.
           </a>
           <a class="quick-link" href="research.html">
             <strong>Research</strong>
             Add active projects, grants, and project-level media.
           </a>
+          <a class="quick-link" href="software.html">
+            <strong>Software</strong>
+            Link code repositories, docs, and release notes.
+          </a>
           <a class="quick-link" href="tools.html">
             <strong>Tools</strong>
-            Link GitHub repos, protocols, and printable files.
-          </a>
-          <a class="quick-link" href="publications.html">
-            <strong>Publications</strong>
-            Replace placeholders with formatted citation lists.
+            Link 3D files, hardware builds, and fabrication guides.
           </a>
         </div>
       </div>
@@ -114,12 +120,15 @@
       <div class="footer-links">
         <a href="cv.html">CV</a>
         <a href="contact.html">Contact</a>
-        <a href="mailto:youremail@example.com">Email</a>
+        <a href="https://scholar.google.com/citations?user=sr5Bp4kAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Scholar</a>
+        <a href="https://github.com/Connor-Beck" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://linkedin.com/in/connor-b-a59908a8" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="mailto:BeckCL@purdue.edu">Email</a>
       </div>
       <p class="footer-copy">&copy; <span data-year></span> Connor Beck</p>
     </div>
   </footer>
 
-  <script src="scripts.js"></script>
+  <script src="scripts.js?v=3"></script>
 </body>
 </html>
