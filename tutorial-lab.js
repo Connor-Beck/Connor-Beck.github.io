@@ -356,25 +356,24 @@ del csv_text
     try {
       await queuePython(async () => {
         runtime.pyodide.globals.set("selected_neuron", selectedNeuron);
-        await runtime.pyodide.runPythonAsync(
-          `figure = None\nsummary = ""\n${lab.codeEl.value}\n` +
+        const payloadJson = await runtime.pyodide.runPythonAsync(
+          `import json\nimport math\nfigure = None\nsummary = ""\n${lab.codeEl.value}\n` +
             `\nif figure is None:\n` +
-            `    raise RuntimeError("Define a variable named 'figure' as a Plotly dict.")\n`
+            `    raise RuntimeError("Define a variable named 'figure' as a Plotly dict.")\n` +
+            `\ndef _sanitize_plotly(value):\n` +
+            `    if isinstance(value, float):\n` +
+            `        return value if math.isfinite(value) else None\n` +
+            `    if isinstance(value, dict):\n` +
+            `        return {str(k): _sanitize_plotly(v) for k, v in value.items()}\n` +
+            `    if isinstance(value, (list, tuple)):\n` +
+            `        return [_sanitize_plotly(v) for v in value]\n` +
+            `    return value\n` +
+            `\njson.dumps({"figure": _sanitize_plotly(figure), "summary": str(summary)})\n`
         );
 
-        const figureProxy = runtime.pyodide.globals.get("figure");
-        const figureObj =
-          figureProxy && typeof figureProxy.toJs === "function"
-            ? figureProxy.toJs({ dict_converter: Object.fromEntries })
-            : figureProxy;
-        destroyProxy(figureProxy);
-
-        const summaryProxy = runtime.pyodide.globals.get("summary");
-        const summaryValue = proxyToJs(summaryProxy);
-        destroyProxy(summaryProxy);
-
-        renderFigure(lab, figureObj);
-        setOutput(lab, String(summaryValue || "Run completed."));
+        const parsedPayload = JSON.parse(String(payloadJson));
+        renderFigure(lab, parsedPayload.figure);
+        setOutput(lab, String(parsedPayload.summary || "Run completed."));
       });
       setStatus(lab, "Ready", "ready");
     } catch (error) {
@@ -435,7 +434,7 @@ del csv_text
           `full CSV: ${runtime.fullNeurons} neurons x ${runtime.fullFrames} frames\n` +
           `interactive subset: ${runtime.subsetNeurons} neurons x ${runtime.subsetFrames} frames`
       );
-
+      setBusy(lab, false);
       await runLab(lab);
     } catch (error) {
       setStatus(lab, "Error", "error");
