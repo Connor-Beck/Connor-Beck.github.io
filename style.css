@@ -485,6 +485,102 @@ h3 {
   color: var(--muted);
 }
 
+.tutorial-lab {
+  display: grid;
+  gap: 1rem;
+}
+
+.tutorial-lab-toolbar {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.tutorial-lab-field {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.tutorial-lab-field label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tutorial-lab-input,
+.tutorial-lab-select {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.3rem 0.6rem;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+.tutorial-lab-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border-radius: 999px;
+  padding: 0.1rem 0.7rem;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.tutorial-lab-status.error {
+  background: rgba(166, 37, 37, 0.14);
+  color: #7d1c1c;
+}
+
+.tutorial-lab-status.ready {
+  background: rgba(29, 91, 73, 0.18);
+}
+
+.tutorial-lab-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+}
+
+.tutorial-lab-editor {
+  width: 100%;
+  min-height: 330px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #0f1720;
+  color: #e8f0ec;
+  font: 500 0.9rem/1.45 "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  padding: 0.9rem;
+}
+
+.tutorial-lab-plot {
+  min-height: 330px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.tutorial-lab-output {
+  margin: 0;
+  min-height: 108px;
+  max-height: 210px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: rgba(17, 32, 25, 0.06);
+  color: var(--muted);
+  font: 500 0.82rem/1.4 "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  white-space: pre-wrap;
+}
+
 @media (max-width: 960px) {
   .grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -537,7 +633,8 @@ h3 {
 
   .grid-2,
   .grid-3,
-  .quick-links {
+  .quick-links,
+  .tutorial-lab-grid {
     grid-template-columns: 1fr;
   }
 
