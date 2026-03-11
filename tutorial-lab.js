@@ -1,52 +1,58 @@
 (() => {
   "use strict";
 
-  const root = document.getElementById("tutorial-lab");
-  if (!root) {
-    return;
-  }
-
-  const moduleSelect = document.getElementById("lab-module");
-  const neuronInput = document.getElementById("lab-neuron");
-  const runButton = document.getElementById("lab-run");
-  const resetButton = document.getElementById("lab-reset");
-  const statusChip = document.getElementById("lab-status");
-  const codeArea = document.getElementById("lab-code");
-  const output = document.getElementById("lab-output");
-  const plot = document.getElementById("lab-plot");
-
-  if (
-    !moduleSelect ||
-    !neuronInput ||
-    !runButton ||
-    !resetButton ||
-    !statusChip ||
-    !codeArea ||
-    !output ||
-    !plot
-  ) {
-    return;
-  }
+  const labRoots = Array.from(document.querySelectorAll(".tutorial-lab"));
+  if (!labRoots.length) return;
 
   const templates = {
     normalize: `import numpy as np
 
-# Task 1.1.0: normalize one neuron with DeltaF/F
-trace = raw_data[selected_neuron].copy()
+# Task 1.1.0: normalize one neuron to ΔF/F
+trace = raw_data[selected_neuron].astype(float).copy()
 F0 = np.percentile(trace, 20)
 dff = (trace - F0) / (F0 + 1e-9)
+time = np.arange(trace.size) / fs
 
-result = {
-    "raw": trace,
-    "processed": dff,
-    "label": "DeltaF/F",
-    "events": []
+# Users can edit this Plotly figure dictionary directly
+figure = {
+    "data": [
+        {
+            "x": time.tolist(),
+            "y": trace.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "Raw fluorescence",
+            "line": {"width": 1.1, "color": "rgba(96, 114, 108, 0.65)"}
+        },
+        {
+            "x": time.tolist(),
+            "y": dff.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "ΔF/F",
+            "yaxis": "y2",
+            "line": {"width": 2.0, "color": "rgba(20, 143, 96, 0.95)"}
+        }
+    ],
+    "layout": {
+        "title": f"Neuron {selected_neuron}: raw vs ΔF/F",
+        "xaxis": {"title": "Time (s)"},
+        "yaxis": {"title": "Raw fluorescence (a.u.)"},
+        "yaxis2": {
+            "title": "ΔF/F",
+            "overlaying": "y",
+            "side": "right",
+            "showgrid": False
+        }
+    }
 }
+
+summary = f"Neuron {selected_neuron} | F0={F0:.2f} | mean ΔF/F={np.mean(dff):.4f}"
 `,
     background: `import numpy as np
 
-# Task 1.1.1: subtract slow baseline drift
-trace = raw_data[selected_neuron].copy()
+# Task 1.1.1: remove slow baseline drift
+trace = raw_data[selected_neuron].astype(float).copy()
 window_sec = 20
 window = max(3, int(window_sec * fs))
 if window % 2 == 0:
@@ -55,223 +61,285 @@ if window % 2 == 0:
 kernel = np.ones(window) / window
 baseline = np.convolve(trace, kernel, mode="same")
 corrected = trace - baseline
+time = np.arange(trace.size) / fs
 
-result = {
-    "raw": trace,
-    "processed": corrected,
-    "label": "Background subtracted",
-    "events": []
+figure = {
+    "data": [
+        {
+            "x": time.tolist(),
+            "y": trace.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "Raw",
+            "line": {"width": 1.1, "color": "rgba(96, 114, 108, 0.55)"}
+        },
+        {
+            "x": time.tolist(),
+            "y": baseline.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "Estimated baseline",
+            "line": {"width": 1.5, "color": "rgba(194, 114, 77, 0.9)"}
+        },
+        {
+            "x": time.tolist(),
+            "y": corrected.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "Background-subtracted",
+            "line": {"width": 2.0, "color": "rgba(20, 143, 96, 0.96)"}
+        }
+    ],
+    "layout": {
+        "title": f"Neuron {selected_neuron}: background subtraction",
+        "xaxis": {"title": "Time (s)"},
+        "yaxis": {"title": "Signal (a.u.)"}
+    }
 }
+
+summary = (
+    f"Neuron {selected_neuron} | window={window} frames ({window/fs:.1f} s) | "
+    f"corrected std={np.std(corrected):.3f}"
+)
 `,
     events: `import numpy as np
 
-# Task 1.2: detect transient events on a normalized trace
-trace = raw_data[selected_neuron].copy()
+# Task 1.2: detect calcium transients from ΔF/F
+trace = raw_data[selected_neuron].astype(float).copy()
 F0 = np.percentile(trace, 20)
 dff = (trace - F0) / (F0 + 1e-9)
-
 mu = np.mean(dff)
 sigma = np.std(dff)
-threshold = mu + 3.0 * sigma  # try changing 3.0 to 4.0 or 5.0
+threshold = mu + 3.0 * sigma
 events = np.where(dff > threshold)[0]
+time = np.arange(trace.size) / fs
 
-result = {
-    "raw": trace,
-    "processed": dff,
-    "label": f"DeltaF/F with events (threshold={threshold:.3f})",
-    "events": events
+figure = {
+    "data": [
+        {
+            "x": time.tolist(),
+            "y": trace.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "Raw fluorescence",
+            "line": {"width": 1.1, "color": "rgba(96, 114, 108, 0.55)"}
+        },
+        {
+            "x": time.tolist(),
+            "y": dff.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "ΔF/F",
+            "yaxis": "y2",
+            "line": {"width": 2.0, "color": "rgba(20, 143, 96, 0.96)"}
+        },
+        {
+            "x": (events / fs).tolist(),
+            "y": dff[events].tolist(),
+            "type": "scatter",
+            "mode": "markers",
+            "name": "Detected events",
+            "yaxis": "y2",
+            "marker": {"size": 7, "color": "rgba(218, 86, 80, 0.96)"}
+        }
+    ],
+    "layout": {
+        "title": f"Neuron {selected_neuron}: event detection",
+        "xaxis": {"title": "Time (s)"},
+        "yaxis": {"title": "Raw fluorescence (a.u.)"},
+        "yaxis2": {
+            "title": "ΔF/F",
+            "overlaying": "y",
+            "side": "right",
+            "showgrid": False
+        }
+    }
 }
+
+summary = (
+    f"Neuron {selected_neuron} | threshold={threshold:.3f} | "
+    f"events={events.size} | event rate={events.size / (trace.size / fs):.3f} Hz"
+)
+`,
+    ensemble: `import numpy as np
+
+# Task 1.3 starter: detect high coactivity ensemble-event bins
+# Edit these settings to explore behavior
+subset_neurons = min(raw_data.shape[0], 64)
+z_threshold = 2.5
+bin_sec = 0.5
+shuffle_count = 120
+percentile_cutoff = 99
+
+subset = raw_data[:subset_neurons].astype(float)
+F0 = np.percentile(subset, 20, axis=1, keepdims=True)
+dff = (subset - F0) / (F0 + 1e-9)
+
+z = (dff - np.mean(dff, axis=1, keepdims=True)) / (np.std(dff, axis=1, keepdims=True) + 1e-9)
+event_matrix = (z > z_threshold).astype(np.int8)
+
+bin_frames = max(1, int(round(bin_sec * fs)))
+trim = (event_matrix.shape[1] // bin_frames) * bin_frames
+event_matrix = event_matrix[:, :trim]
+
+binned = event_matrix.reshape(event_matrix.shape[0], -1, bin_frames).max(axis=2)
+coactivity = binned.sum(axis=0).astype(float)
+
+rng = np.random.default_rng(12)
+null = np.empty((shuffle_count, binned.shape[1]), dtype=float)
+for s in range(shuffle_count):
+    shifted = np.empty_like(event_matrix)
+    for n in range(event_matrix.shape[0]):
+        shift = int(rng.integers(0, event_matrix.shape[1]))
+        shifted[n] = np.roll(event_matrix[n], shift)
+    shifted_binned = shifted.reshape(shifted.shape[0], -1, bin_frames).max(axis=2)
+    null[s] = shifted_binned.sum(axis=0)
+
+threshold = float(np.percentile(null, percentile_cutoff))
+ensemble_bins = np.where(coactivity > threshold)[0]
+time_bins = np.arange(coactivity.size) * (bin_frames / fs)
+
+figure = {
+    "data": [
+        {
+            "x": time_bins.tolist(),
+            "y": coactivity.tolist(),
+            "type": "scatter",
+            "mode": "lines",
+            "name": "Coactivity (neurons/bin)",
+            "line": {"width": 2.0, "color": "rgba(20, 143, 96, 0.96)"}
+        },
+        {
+            "x": time_bins.tolist(),
+            "y": [threshold] * coactivity.size,
+            "type": "scatter",
+            "mode": "lines",
+            "name": f"Null {percentile_cutoff}th percentile",
+            "line": {"width": 1.6, "dash": "dash", "color": "rgba(194, 114, 77, 0.95)"}
+        },
+        {
+            "x": time_bins[ensemble_bins].tolist(),
+            "y": coactivity[ensemble_bins].tolist(),
+            "type": "scatter",
+            "mode": "markers",
+            "name": "Detected ensemble-event bins",
+            "marker": {"size": 8, "color": "rgba(180, 43, 43, 0.96)"}
+        }
+    ],
+    "layout": {
+        "title": "Task 1.3 starter: coactivity and ensemble-event bins",
+        "xaxis": {"title": "Time (s)"},
+        "yaxis": {"title": "Active neurons / bin"}
+    }
+}
+
+summary = (
+    f"neurons used={subset_neurons} | bin={bin_frames} frames ({bin_frames/fs:.3f} s) | "
+    f"threshold={threshold:.2f} | ensemble bins={ensemble_bins.size}"
+)
 `
   };
 
-  let pyodide = null;
-  let neuronCount = 0;
-  let frameCount = 0;
-  let fullNeuronCount = 0;
-  let fullFrameCount = 0;
-  let busy = false;
-  let samplingRate = Number.parseFloat(root.dataset.fs || "4.8");
-  if (!Number.isFinite(samplingRate) || samplingRate <= 0) {
-    samplingRate = 4.8;
-  }
-
-  const setBusy = (value) => {
-    busy = value;
-    runButton.disabled = value || !pyodide;
-    resetButton.disabled = value;
-    moduleSelect.disabled = value;
-    neuronInput.disabled = value || !pyodide;
+  const runtime = {
+    pyodide: null,
+    loadingPromise: null,
+    queue: Promise.resolve(),
+    fullNeurons: 0,
+    fullFrames: 0,
+    subsetNeurons: 0,
+    subsetFrames: 0,
+    fs: 4.8
   };
 
-  const setStatus = (message, mode = "pending") => {
-    statusChip.textContent = message;
-    statusChip.classList.remove("error", "ready");
+  const setStatus = (lab, message, mode = "pending") => {
+    lab.statusEl.textContent = message;
+    lab.statusEl.classList.remove("error", "ready");
     if (mode === "error") {
-      statusChip.classList.add("error");
+      lab.statusEl.classList.add("error");
     } else if (mode === "ready") {
-      statusChip.classList.add("ready");
+      lab.statusEl.classList.add("ready");
     }
   };
 
-  const setOutput = (message) => {
-    output.textContent = message;
+  const setOutput = (lab, message) => {
+    lab.outputEl.textContent = message;
   };
 
-  const toNumberArray = (value) => {
-    if (value == null) return [];
-    if (Array.isArray(value)) return value.map((item) => Number(item));
-    if (ArrayBuffer.isView(value)) return Array.from(value, (item) => Number(item));
-    if (typeof value === "number") return [Number(value)];
-    if (typeof value.toJs === "function") {
-      const converted = value.toJs();
-      if (typeof value.destroy === "function") value.destroy();
-      return toNumberArray(converted);
-    }
-    return [];
+  const setBusy = (lab, value) => {
+    lab.busy = value;
+    if (lab.runEl) lab.runEl.disabled = value || !runtime.pyodide;
+    if (lab.resetEl) lab.resetEl.disabled = value;
+    if (lab.neuronEl) lab.neuronEl.disabled = value || !runtime.pyodide;
   };
 
-  const clampNeuronIndex = () => {
-    const maxIndex = Math.max(0, neuronCount - 1);
-    const parsed = Number.parseInt(neuronInput.value, 10);
-    const clamped = Number.isFinite(parsed) ? Math.max(0, Math.min(maxIndex, parsed)) : 0;
-    neuronInput.value = String(clamped);
+  const clampNeuronIndex = (lab) => {
+    if (!lab.neuronEl) return 0;
+    const parsed = Number.parseInt(lab.neuronEl.value, 10);
+    const clamped = Number.isFinite(parsed)
+      ? Math.max(0, Math.min(runtime.subsetNeurons - 1, parsed))
+      : 0;
+    lab.neuronEl.value = String(clamped);
     return clamped;
   };
 
-  const resetTemplate = () => {
-    const selected = moduleSelect.value;
-    codeArea.value = templates[selected] || templates.normalize;
+  const resetTemplate = (lab) => {
+    lab.codeEl.value = templates[lab.template] || templates.normalize;
   };
 
-  const renderPlot = (result, selectedNeuron) => {
-    const raw = toNumberArray(result.raw);
-    const processed = toNumberArray(result.processed);
-    const events = toNumberArray(result.events);
+  const queuePython = (job) => {
+    runtime.queue = runtime.queue.then(job, job);
+    return runtime.queue;
+  };
 
-    if (!raw.length || !processed.length) {
-      throw new Error("result['raw'] and result['processed'] must be non-empty arrays.");
-    }
-
-    const n = Math.min(raw.length, processed.length);
-    const x = Array.from({ length: n }, (_, idx) => idx / samplingRate);
-    const rawTrace = raw.slice(0, n);
-    const procTrace = processed.slice(0, n);
-
-    const traces = [
+  const renderFigure = (lab, figureObj) => {
+    const figure = figureObj && typeof figureObj === "object" ? figureObj : {};
+    const data = Array.isArray(figure.data) ? figure.data : [];
+    const layout = Object.assign(
       {
-        x,
-        y: rawTrace,
-        mode: "lines",
-        name: "Raw",
-        line: { width: 1.1, color: "rgba(99, 116, 111, 0.65)" }
-      },
-      {
-        x,
-        y: procTrace,
-        mode: "lines",
-        name: result.label || "Processed",
-        line: { width: 2, color: "rgba(20, 143, 96, 0.96)" }
-      }
-    ];
-
-    if (events.length) {
-      const validEvents = events
-        .map((idx) => Math.trunc(Number(idx)))
-        .filter((idx) => Number.isFinite(idx) && idx >= 0 && idx < n);
-      traces.push({
-        x: validEvents.map((idx) => idx / samplingRate),
-        y: validEvents.map((idx) => procTrace[idx]),
-        mode: "markers",
-        name: "Events",
-        marker: { size: 7, color: "rgba(218, 86, 80, 0.95)" }
-      });
-    }
-
-    Plotly.newPlot(
-      plot,
-      traces,
-      {
-        margin: { l: 54, r: 16, t: 36, b: 48 },
+        margin: { l: 58, r: 24, t: 42, b: 48 },
         paper_bgcolor: "#ffffff",
         plot_bgcolor: "#ffffff",
         legend: { orientation: "h", y: 1.18 },
-        xaxis: { title: "Time (s)", zeroline: false },
-        yaxis: { title: "Signal", zeroline: false }
+        xaxis: { zeroline: false },
+        yaxis: { zeroline: false }
       },
-      { responsive: true, displayModeBar: false }
+      figure.layout || {}
     );
 
-    const rawMean = rawTrace.reduce((sum, val) => sum + val, 0) / n;
-    const procMean = procTrace.reduce((sum, val) => sum + val, 0) / n;
-    const eventCount = events.length ? events.length : 0;
-    setOutput(
-      `Neuron ${selectedNeuron} | points: ${n}\n` +
-        `raw mean: ${rawMean.toFixed(3)}\n` +
-        `processed mean: ${procMean.toFixed(3)}\n` +
-        `events: ${eventCount}`
-    );
+    Plotly.react(lab.plotEl, data, layout, {
+      responsive: true,
+      displayModeBar: true
+    });
   };
 
-  const runCode = async () => {
-    if (!pyodide || busy) return;
-    setBusy(true);
-    setStatus("Running...", "pending");
+  const ensureRuntime = async (csvPath, fs) => {
+    if (runtime.pyodide) return;
+    if (runtime.loadingPromise) return runtime.loadingPromise;
 
-    const selectedNeuron = clampNeuronIndex();
-    pyodide.globals.set("selected_neuron", selectedNeuron);
+    runtime.fs = fs;
+    runtime.loadingPromise = (async () => {
+      if (!window.loadPyodide || !window.Plotly) {
+        throw new Error("Pyodide or Plotly failed to load.");
+      }
 
-    try {
-      await pyodide.runPythonAsync(
-        `result = None\n${codeArea.value}\n` +
-          `\nif result is None:\n` +
-          `    raise RuntimeError("Create a variable named 'result' (dict with raw/processed arrays).")\n`
-      );
-
-      const resultProxy = pyodide.globals.get("result");
-      const result = resultProxy.toJs({ dict_converter: Object.fromEntries });
-      resultProxy.destroy();
-
-      renderPlot(result, selectedNeuron);
-      setStatus("Ready", "ready");
-    } catch (error) {
-      setStatus("Error", "error");
-      setOutput(String(error));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const initialize = async () => {
-    if (!window.loadPyodide || !window.Plotly) {
-      setStatus("Runtime unavailable", "error");
-      setOutput("Pyodide or Plotly did not load. Check network access and refresh.");
-      return;
-    }
-
-    setBusy(true);
-    setStatus("Loading Python runtime...", "pending");
-    resetTemplate();
-
-    try {
-      pyodide = await window.loadPyodide({
+      const pyodide = await window.loadPyodide({
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/"
       });
       await pyodide.loadPackage(["numpy"]);
 
-      setStatus("Loading calcium data...", "pending");
-      const csvPath = root.dataset.csv || "Fluorescent%20Data.csv";
       const response = await fetch(csvPath, { cache: "no-store" });
       if (!response.ok) {
         throw new Error(`Failed to load ${csvPath}: ${response.status}`);
       }
       const csvText = await response.text();
+
       pyodide.globals.set("csv_text", csvText);
-      pyodide.globals.set("fs", samplingRate);
+      pyodide.globals.set("fs", fs);
 
       await pyodide.runPythonAsync(`
 import numpy as np
 
-def _load_calcium_subset(csv_text, max_neurons=48, max_frames=2500):
+def _load_calcium_subset(csv_text, max_neurons=120, max_frames=2500):
     lines = [line.strip() for line in csv_text.splitlines() if line.strip()]
     if not lines:
         raise ValueError("CSV file appears empty.")
@@ -297,65 +365,145 @@ def _load_calcium_subset(csv_text, max_neurons=48, max_frames=2500):
     return data, full_neurons, full_frames
 
 raw_data, full_neurons, full_frames = _load_calcium_subset(csv_text)
-n_neurons, n_frames = raw_data.shape
+subset_neurons, subset_frames = raw_data.shape
 del csv_text
 `);
 
-      const neuronProxy = pyodide.globals.get("n_neurons");
-      const frameProxy = pyodide.globals.get("n_frames");
-      const fullNeuronProxy = pyodide.globals.get("full_neurons");
-      const fullFrameProxy = pyodide.globals.get("full_frames");
-      neuronCount = Number(typeof neuronProxy.toJs === "function" ? neuronProxy.toJs() : neuronProxy);
-      frameCount = Number(typeof frameProxy.toJs === "function" ? frameProxy.toJs() : frameProxy);
-      fullNeuronCount = Number(
-        typeof fullNeuronProxy.toJs === "function" ? fullNeuronProxy.toJs() : fullNeuronProxy
-      );
-      fullFrameCount = Number(
-        typeof fullFrameProxy.toJs === "function" ? fullFrameProxy.toJs() : fullFrameProxy
-      );
-      neuronProxy.destroy();
-      frameProxy.destroy();
-      fullNeuronProxy.destroy();
-      fullFrameProxy.destroy();
+      const fullNeuronsProxy = pyodide.globals.get("full_neurons");
+      const fullFramesProxy = pyodide.globals.get("full_frames");
+      const subsetNeuronsProxy = pyodide.globals.get("subset_neurons");
+      const subsetFramesProxy = pyodide.globals.get("subset_frames");
 
-      neuronInput.min = "0";
-      neuronInput.max = String(Math.max(0, neuronCount - 1));
-      neuronInput.value = "0";
+      runtime.fullNeurons = Number(fullNeuronsProxy.toJs());
+      runtime.fullFrames = Number(fullFramesProxy.toJs());
+      runtime.subsetNeurons = Number(subsetNeuronsProxy.toJs());
+      runtime.subsetFrames = Number(subsetFramesProxy.toJs());
 
-      setStatus("Ready", "ready");
-      setOutput(
-        `Dataset loaded.\n` +
-          `full CSV: ${fullNeuronCount} neurons x ${fullFrameCount} frames\n` +
-          `interactive subset: ${neuronCount} neurons x ${frameCount} frames`
-      );
+      fullNeuronsProxy.destroy();
+      fullFramesProxy.destroy();
+      subsetNeuronsProxy.destroy();
+      subsetFramesProxy.destroy();
 
-      await runCode();
+      runtime.pyodide = pyodide;
+    })();
+
+    return runtime.loadingPromise;
+  };
+
+  const runLab = async (lab) => {
+    if (!runtime.pyodide || lab.busy) return;
+    setBusy(lab, true);
+    setStatus(lab, "Running...", "pending");
+
+    const selectedNeuron = clampNeuronIndex(lab);
+
+    try {
+      await queuePython(async () => {
+        runtime.pyodide.globals.set("selected_neuron", selectedNeuron);
+        await runtime.pyodide.runPythonAsync(
+          `figure = None\nsummary = ""\n${lab.codeEl.value}\n` +
+            `\nif figure is None:\n` +
+            `    raise RuntimeError("Define a variable named 'figure' as a Plotly dict.")\n`
+        );
+
+        const figureProxy = runtime.pyodide.globals.get("figure");
+        const figure = figureProxy.toJs({ dict_converter: Object.fromEntries });
+        figureProxy.destroy();
+
+        const summaryProxy = runtime.pyodide.globals.get("summary");
+        const summaryValue = typeof summaryProxy.toJs === "function" ? summaryProxy.toJs() : summaryProxy;
+        if (typeof summaryProxy.destroy === "function") summaryProxy.destroy();
+
+        renderFigure(lab, figure);
+        setOutput(lab, String(summaryValue || "Run completed."));
+      });
+      setStatus(lab, "Ready", "ready");
     } catch (error) {
-      setStatus("Error", "error");
-      setOutput(String(error));
+      setStatus(lab, "Error", "error");
+      setOutput(lab, String(error));
     } finally {
-      setBusy(false);
-      runButton.disabled = !pyodide;
-      neuronInput.disabled = !pyodide;
+      setBusy(lab, false);
     }
   };
 
-  moduleSelect.addEventListener("change", () => {
-    resetTemplate();
+  const labs = labRoots
+    .map((root) => {
+      const codeEl = root.querySelector(".tutorial-lab-code");
+      const outputEl = root.querySelector(".tutorial-lab-output");
+      const plotEl = root.querySelector(".tutorial-lab-plot");
+      const runEl = root.querySelector(".tutorial-lab-run");
+      const resetEl = root.querySelector(".tutorial-lab-reset");
+      const statusEl = root.querySelector(".tutorial-lab-status");
+      const neuronEl = root.querySelector(".tutorial-lab-neuron");
+
+      if (!codeEl || !outputEl || !plotEl || !runEl || !resetEl || !statusEl) {
+        return null;
+      }
+
+      return {
+        root,
+        codeEl,
+        outputEl,
+        plotEl,
+        runEl,
+        resetEl,
+        statusEl,
+        neuronEl,
+        template: root.dataset.template || "normalize",
+        csvPath: root.dataset.csv || "Fluorescent%20Data.csv",
+        fs: Number.parseFloat(root.dataset.fs || "4.8") || 4.8,
+        busy: false
+      };
+    })
+    .filter(Boolean);
+
+  const initializeLab = async (lab) => {
+    setBusy(lab, true);
+    setStatus(lab, "Loading runtime...", "pending");
+    resetTemplate(lab);
+
+    try {
+      await ensureRuntime(lab.csvPath, lab.fs);
+
+      if (lab.neuronEl) {
+        lab.neuronEl.min = "0";
+        lab.neuronEl.max = String(Math.max(0, runtime.subsetNeurons - 1));
+        lab.neuronEl.value = "0";
+      }
+
+      setStatus(lab, "Ready", "ready");
+      setOutput(
+        lab,
+        `Dataset ready.\n` +
+          `full CSV: ${runtime.fullNeurons} neurons x ${runtime.fullFrames} frames\n` +
+          `interactive subset: ${runtime.subsetNeurons} neurons x ${runtime.subsetFrames} frames`
+      );
+      await runLab(lab);
+    } catch (error) {
+      setStatus(lab, "Error", "error");
+      setOutput(lab, String(error));
+      setBusy(lab, false);
+    }
+  };
+
+  labs.forEach((lab) => {
+    lab.runEl.addEventListener("click", () => {
+      runLab(lab);
+    });
+
+    lab.resetEl.addEventListener("click", () => {
+      resetTemplate(lab);
+      setOutput(lab, "Template restored.");
+    });
+
+    if (lab.neuronEl) {
+      lab.neuronEl.addEventListener("change", () => {
+        clampNeuronIndex(lab);
+      });
+    }
   });
 
-  resetButton.addEventListener("click", () => {
-    resetTemplate();
-    setOutput("Template restored.");
+  labs.forEach((lab) => {
+    initializeLab(lab);
   });
-
-  runButton.addEventListener("click", () => {
-    runCode();
-  });
-
-  neuronInput.addEventListener("change", () => {
-    clampNeuronIndex();
-  });
-
-  initialize();
 })();

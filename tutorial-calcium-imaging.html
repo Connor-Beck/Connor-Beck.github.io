@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -282,36 +282,100 @@
           <p class="kicker">Interactive Lab (Beta)</p>
           <h2>Code The Pipeline In Browser</h2>
           <p>
-            This in-page lab uses Python in the browser so users can edit code and immediately see updated calcium traces.
-            For speed, it loads an interactive subset from <code>Fluorescent Data.csv</code> while keeping your real dataset source.
+            Each module below has its own coding window. Edit Python directly, including the plotting dictionary, and rerun to see updates.
+            The lab loads your <code>Fluorescent Data.csv</code> and uses an interactive subset for browser speed.
           </p>
-          <div id="tutorial-lab" class="tutorial-lab" data-csv="Fluorescent%20Data.csv" data-fs="4.8">
-            <div class="tutorial-lab-toolbar">
-              <div class="tutorial-lab-field">
-                <label for="lab-module">Module</label>
-                <select id="lab-module" class="tutorial-lab-select">
-                  <option value="normalize">Task 1.1 - Normalize</option>
-                  <option value="background">Task 1.1 - Subtract background</option>
-                  <option value="events">Task 1.2 - Detect events</option>
-                </select>
-              </div>
-              <div class="tutorial-lab-field">
-                <label for="lab-neuron">Neuron index</label>
-                <input id="lab-neuron" class="tutorial-lab-input" type="number" min="0" step="1" value="0">
-              </div>
-              <button id="lab-run" class="button primary" type="button">Run Code</button>
-              <button id="lab-reset" class="button secondary" type="button">Reset Template</button>
-              <span id="lab-status" class="tutorial-lab-status">Loading runtime...</span>
-            </div>
-            <div class="tutorial-lab-grid">
-              <div>
-                <textarea id="lab-code" class="tutorial-lab-editor" spellcheck="false"></textarea>
-                <pre id="lab-output" class="tutorial-lab-output">Waiting for Python runtime...</pre>
-              </div>
-              <div id="lab-plot" class="tutorial-lab-plot" aria-label="Interactive calcium trace plot"></div>
-            </div>
-          </div>
         </article>
+
+        <div class="tutorial-lab-stack">
+          <article class="text-panel tutorial-lab-card">
+            <p class="kicker">Task 1.1.0</p>
+            <h3>Normalize To &Delta;F/F</h3>
+            <div class="tutorial-lab" data-template="normalize" data-csv="Fluorescent%20Data.csv" data-fs="4.8" data-neuron-input="true">
+              <div class="tutorial-lab-toolbar">
+                <div class="tutorial-lab-field">
+                  <label>Neuron index</label>
+                  <input class="tutorial-lab-input tutorial-lab-neuron" type="number" min="0" step="1" value="0">
+                </div>
+                <button class="button primary tutorial-lab-run" type="button">Run Code</button>
+                <button class="button secondary tutorial-lab-reset" type="button">Reset Template</button>
+                <span class="tutorial-lab-status">Loading runtime...</span>
+              </div>
+              <div class="tutorial-lab-grid">
+                <div>
+                  <textarea class="tutorial-lab-editor tutorial-lab-code" spellcheck="false"></textarea>
+                  <pre class="tutorial-lab-output">Waiting for Python runtime...</pre>
+                </div>
+                <div class="tutorial-lab-plot" aria-label="Task 1.1.0 interactive plot"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="text-panel tutorial-lab-card">
+            <p class="kicker">Task 1.1.1</p>
+            <h3>Background Subtraction</h3>
+            <div class="tutorial-lab" data-template="background" data-csv="Fluorescent%20Data.csv" data-fs="4.8" data-neuron-input="true">
+              <div class="tutorial-lab-toolbar">
+                <div class="tutorial-lab-field">
+                  <label>Neuron index</label>
+                  <input class="tutorial-lab-input tutorial-lab-neuron" type="number" min="0" step="1" value="0">
+                </div>
+                <button class="button primary tutorial-lab-run" type="button">Run Code</button>
+                <button class="button secondary tutorial-lab-reset" type="button">Reset Template</button>
+                <span class="tutorial-lab-status">Loading runtime...</span>
+              </div>
+              <div class="tutorial-lab-grid">
+                <div>
+                  <textarea class="tutorial-lab-editor tutorial-lab-code" spellcheck="false"></textarea>
+                  <pre class="tutorial-lab-output">Waiting for Python runtime...</pre>
+                </div>
+                <div class="tutorial-lab-plot" aria-label="Task 1.1.1 interactive plot"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="text-panel tutorial-lab-card">
+            <p class="kicker">Task 1.2</p>
+            <h3>Transient Event Detection</h3>
+            <div class="tutorial-lab" data-template="events" data-csv="Fluorescent%20Data.csv" data-fs="4.8" data-neuron-input="true">
+              <div class="tutorial-lab-toolbar">
+                <div class="tutorial-lab-field">
+                  <label>Neuron index</label>
+                  <input class="tutorial-lab-input tutorial-lab-neuron" type="number" min="0" step="1" value="0">
+                </div>
+                <button class="button primary tutorial-lab-run" type="button">Run Code</button>
+                <button class="button secondary tutorial-lab-reset" type="button">Reset Template</button>
+                <span class="tutorial-lab-status">Loading runtime...</span>
+              </div>
+              <div class="tutorial-lab-grid">
+                <div>
+                  <textarea class="tutorial-lab-editor tutorial-lab-code" spellcheck="false"></textarea>
+                  <pre class="tutorial-lab-output">Waiting for Python runtime...</pre>
+                </div>
+                <div class="tutorial-lab-plot" aria-label="Task 1.2 interactive plot"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="text-panel tutorial-lab-card">
+            <p class="kicker">Task 1.3</p>
+            <h3>Start Ensemble Event Detection</h3>
+            <div class="tutorial-lab" data-template="ensemble" data-csv="Fluorescent%20Data.csv" data-fs="4.8" data-neuron-input="false">
+              <div class="tutorial-lab-toolbar">
+                <button class="button primary tutorial-lab-run" type="button">Run Code</button>
+                <button class="button secondary tutorial-lab-reset" type="button">Reset Template</button>
+                <span class="tutorial-lab-status">Loading runtime...</span>
+              </div>
+              <div class="tutorial-lab-grid">
+                <div>
+                  <textarea class="tutorial-lab-editor tutorial-lab-code" spellcheck="false"></textarea>
+                  <pre class="tutorial-lab-output">Waiting for Python runtime...</pre>
+                </div>
+                <div class="tutorial-lab-plot" aria-label="Task 1.3 interactive coactivity plot"></div>
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -353,6 +417,6 @@
   <script src="scripts.js?v=18"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
-  <script src="tutorial-lab.js?v=1"></script>
+  <script src="tutorial-lab.js?v=2"></script>
 </body>
 </html>
