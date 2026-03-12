@@ -83,11 +83,18 @@ img {
 }
 
 .site-logo {
-  font-family: "Sora", "Avenir Next", sans-serif;
-  font-size: 1.04rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 10px;
+}
+
+.site-logo img {
+  width: auto;
+  height: clamp(34px, 4.2vw, 44px);
+  object-fit: contain;
+  filter: saturate(0.95) contrast(1.02);
 }
 
 .site-nav ul {
@@ -248,6 +255,124 @@ h3 {
   padding: 4.8rem 0 3rem;
   border-bottom: 1px solid var(--line);
   background: linear-gradient(160deg, rgba(29, 91, 73, 0.12), rgba(255, 255, 255, 0));
+}
+
+.about-intro {
+  padding: 4.4rem 0 3rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 15% 30%, rgba(29, 91, 73, 0.14), transparent 28%),
+    radial-gradient(circle at 86% 70%, rgba(41, 66, 83, 0.13), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(29, 91, 73, 0.04));
+}
+
+.about-intro-grid {
+  display: grid;
+  gap: 1.8rem;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: center;
+}
+
+.about-intro-copy p {
+  color: var(--muted);
+}
+
+.about-intro-copy .lead {
+  margin-top: 0.7rem;
+}
+
+.about-intro-visual {
+  position: relative;
+}
+
+.about-visual-frame {
+  position: relative;
+  min-height: clamp(320px, 50vw, 470px);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(201, 212, 206, 0.18));
+  border: 1px solid rgba(17, 32, 25, 0.12);
+  box-shadow: 0 22px 40px rgba(17, 32, 25, 0.16);
+  overflow: hidden;
+}
+
+.about-circuit-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.about-wire {
+  fill: none;
+  stroke: rgba(70, 94, 108, 0.75);
+  stroke-width: 5.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.about-node {
+  fill: rgba(170, 196, 183, 0.9);
+  stroke: rgba(57, 80, 66, 0.38);
+  stroke-width: 1.2;
+  transform-origin: center;
+  animation: aboutNodePulse 3.6s ease-in-out infinite;
+}
+
+.about-node-sm {
+  animation-duration: 4.4s;
+}
+
+.about-junction {
+  fill: rgba(48, 74, 90, 0.56);
+}
+
+.about-headshot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(200px, 38vw, 280px);
+  aspect-ratio: 1 / 1.12;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 16px 28px rgba(17, 32, 25, 0.34);
+}
+
+.about-headshot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-visual-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 0.9rem;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(17, 32, 25, 0.16);
+  border-radius: 999px;
+  padding: 0.24rem 0.7rem;
+}
+
+@keyframes aboutNodePulse {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
 }
 
 .section {
@@ -602,6 +727,14 @@ h3 {
     padding-top: 3.2rem;
   }
 
+  .about-intro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-visual-frame {
+    min-height: 390px;
+  }
+
   .hero-copy {
     padding-right: 0;
   }
@@ -634,6 +767,18 @@ h3 {
   .hero-layout {
     min-height: auto;
     padding: 2.7rem 0 2.2rem;
+  }
+
+  .about-intro {
+    padding: 3.3rem 0 2.4rem;
+  }
+
+  .about-visual-frame {
+    min-height: 330px;
+  }
+
+  .about-headshot {
+    width: min(72vw, 250px);
   }
 
   .hero-visual {

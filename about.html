@@ -8,14 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="site-header">
     <div class="container nav-wrap">
-      <a class="site-logo" href="./">Connor Beck</a>
+      <a class="site-logo" href="./" aria-label="Connor Beck home"><img src="websiteLogo.png" alt="Connor Beck"></a>
       <nav class="site-nav" aria-label="Main navigation">
         <ul>
           <li><a href="./">Home</a></li>
@@ -31,54 +31,94 @@
   </header>
 
   <main id="main-content">
-    <section class="page-hero">
-      <div class="container">
-        <p class="eyebrow">About</p>
-        <h1>Building practical neuroscience that connects neural dynamics to behavior.</h1>
-        <p class="lead">
-          I am a neuroscientist and engineer focused on how neural population activity and internal state shape behavior.
-          My work combines quantitative analysis, experimental neuroscience, and instrument development for freely moving systems.
-        </p>
+    <section class="about-intro">
+      <div class="container about-intro-grid">
+        <article class="about-intro-copy">
+          <p class="eyebrow">About</p>
+          <h1>Engineering neuroscience to decode neural dynamics and build practical tools for behavior research.</h1>
+          <p class="lead">
+            I work at the intersection of systems neuroscience and neuroengineering, with a focus on how population-level
+            signaling and internal state shape adaptive behavior.
+          </p>
+          <p>
+            My approach combines quantitative neural analysis, experiment design in freely moving systems, and hands-on
+            development of open software and laboratory platforms. I aim to make advanced methods more accessible,
+            reproducible, and usable across labs.
+          </p>
+          <div class="chips">
+            <span class="chip">Neural Population Dynamics</span>
+            <span class="chip">Behavior and State</span>
+            <span class="chip">Calcium and Circuit Analysis</span>
+            <span class="chip">Neuroengineering Systems</span>
+            <span class="chip">Open Neuroscience Tools</span>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="research.html">Explore Research</a>
+            <a class="button secondary" href="cv.html">View CV</a>
+          </div>
+        </article>
+
+        <aside class="about-intro-visual" aria-label="Connor Beck headshot and circuit motif">
+          <div class="about-visual-frame">
+            <svg class="about-circuit-svg" viewBox="0 0 460 440" role="presentation" aria-hidden="true">
+              <polyline class="about-wire" points="24,72 124,72 164,112"></polyline>
+              <polyline class="about-wire" points="22,220 112,220 164,172"></polyline>
+              <polyline class="about-wire" points="56,364 148,364 186,326"></polyline>
+              <polyline class="about-wire" points="436,84 330,84 296,122"></polyline>
+              <polyline class="about-wire" points="434,226 342,226 296,184"></polyline>
+              <polyline class="about-wire" points="404,354 318,354 282,314"></polyline>
+
+              <circle class="about-node about-node-lg" cx="24" cy="72" r="10"></circle>
+              <circle class="about-node about-node-sm" cx="22" cy="220" r="7"></circle>
+              <circle class="about-node about-node-lg" cx="56" cy="364" r="9"></circle>
+              <circle class="about-node about-node-sm" cx="436" cy="84" r="8"></circle>
+              <circle class="about-node about-node-lg" cx="434" cy="226" r="10"></circle>
+              <circle class="about-node about-node-sm" cx="404" cy="354" r="8"></circle>
+
+              <circle class="about-junction" cx="164" cy="112" r="5"></circle>
+              <circle class="about-junction" cx="164" cy="172" r="5"></circle>
+              <circle class="about-junction" cx="186" cy="326" r="5"></circle>
+              <circle class="about-junction" cx="296" cy="122" r="5"></circle>
+              <circle class="about-junction" cx="296" cy="184" r="5"></circle>
+              <circle class="about-junction" cx="282" cy="314" r="5"></circle>
+            </svg>
+
+            <figure class="about-headshot">
+              <img src="headshot_ConnorBeck.png" alt="Headshot of Connor Beck">
+            </figure>
+
+            <p class="about-visual-caption">Neural circuits, behavior, and open tool building.</p>
+          </div>
+        </aside>
       </div>
     </section>
 
     <section class="section">
       <div class="container grid-2">
         <article class="text-panel">
-          <p class="kicker">Brief Statement</p>
-          <h2>Research perspective</h2>
+          <p class="kicker">Research Perspective</p>
+          <h2>How I frame problems</h2>
           <p>
-            I am interested in the neural basis of adaptive behavior, with emphasis on population-level signaling,
-            sleep and state-dependent processing, and mechanisms of circuit dysfunction. I approach these questions
-            by blending calcium imaging, electrophysiology-aligned analysis, and computational modeling.
+            I am interested in the mechanisms that link neural activity to action selection, internal-state transitions,
+            and long-timescale adaptation. I focus on analyses that move from single-neuron descriptions toward interpretable
+            circuit-level features.
           </p>
-          <p>
-            A core part of my work is building tools that make previously hard-to-measure dynamics accessible,
-            reproducible, and shareable across labs.
-          </p>
-          <div class="chips">
-            <span class="chip">Neural Dynamics</span>
-            <span class="chip">Behavior</span>
-            <span class="chip">Calcium Imaging</span>
-            <span class="chip">Sleep</span>
-            <span class="chip">Neuroengineering</span>
-            <span class="chip">Open Methods</span>
-          </div>
+          <ul class="list">
+            <li>Track neural population motifs across behavior, arousal, and sleep-related dynamics.</li>
+            <li>Build analysis pipelines that remain transparent and testable across datasets.</li>
+            <li>Integrate engineering constraints early so methods stay practical for real experiments.</li>
+          </ul>
         </article>
 
         <article class="text-panel">
-          <p class="kicker">Background</p>
-          <h2>How I work</h2>
+          <p class="kicker">Working Style</p>
+          <h2>What I prioritize</h2>
           <ul class="list">
-            <li>Design experiments around ethologically relevant behavior and internal-state transitions.</li>
-            <li>Use computational pipelines to convert large neural recordings into interpretable circuit-level features.</li>
-            <li>Prototype hardware and software tools that improve throughput, repeatability, and data quality.</li>
-            <li>Prioritize open, reusable resources for the broader neuroscience community.</li>
+            <li>Quantitative rigor with reproducible code and clear validation checkpoints.</li>
+            <li>Experimental systems that scale from pilot studies to robust behavioral datasets.</li>
+            <li>Open resources that help trainees and collaborators build faster.</li>
+            <li>Tool choices that balance scientific value with practical lab constraints.</li>
           </ul>
-          <div class="hero-actions">
-            <a class="button primary" href="research.html">Read Research Themes</a>
-            <a class="button secondary" href="cv.html">View CV Page</a>
-          </div>
         </article>
       </div>
     </section>
