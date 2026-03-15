@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -34,42 +34,96 @@
     <section class="page-hero">
       <div class="container">
         <p class="eyebrow">Research</p>
-        <h1>Neural circuits, behavioral state, and experimental systems.</h1>
+        <h1>Bottom up engineering and top down neuroscience to map circuits across scales.</h1>
         <p class="lead">
-          My research integrates systems neuroscience, behavior analysis, and engineering to study how circuit dynamics
-          generate adaptive behavior and how those dynamics are altered in dysfunction.
+          My program combines controlled in vitro engineering and in vivo systems neuroscience. Each side informs the other:
+          mechanistic constraints from engineered models refine behavioral hypotheses, and behavioral observations guide
+          the next generation of circuit-building experiments.
         </p>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
-        <p class="eyebrow">Major Themes</p>
-        <div class="grid-3" style="margin-top:1rem;">
-          <article class="card">
-            <img class="image-cover" src="images/TimeCalcium.png" alt="Calcium imaging activity patterns over time">
-            <div class="card-body">
-              <h3>Neural population dynamics</h3>
+        <p class="eyebrow">Framework</p>
+        <div class="research-feedback-card">
+          <article class="research-domain research-domain-left">
+            <p class="kicker">Left side</p>
+            <h2>Bottom up engineering</h2>
+            <p>
+              Build controlled neural systems in vitro to understand how circuits form, adapt, and reorganize under defined
+              perturbations and interfaces.
+            </p>
+          </article>
+
+          <div class="research-loop" role="img" aria-label="Dynamic feedback loop between bottom up engineering and top down neuroscience">
+            <svg viewBox="0 0 180 146" aria-hidden="true">
+              <path class="research-path research-path-forward" d="M20 46 C 62 8, 118 8, 160 46"></path>
+              <path class="research-path research-path-return" d="M160 100 C 118 138, 62 138, 20 100"></path>
+              <polygon class="research-arrow" points="156,39 170,45 156,52"></polygon>
+              <polygon class="research-arrow" points="24,93 10,99 24,106"></polygon>
+            </svg>
+            <p>Dynamic feedback</p>
+          </div>
+
+          <article class="research-domain research-domain-right">
+            <p class="kicker">Right side</p>
+            <h2>Top down neuroscience</h2>
+            <p>
+              Identify how circuit-level activity patterns drive behavior, then use those insights to target mechanisms
+              and measurements in engineered preparations.
+            </p>
+          </article>
+        </div>
+        <p class="research-feedback-note">
+          The loop is iterative: bottom-up models reveal candidate mechanisms, top-down recordings test relevance in behavior,
+          and those outcomes feed directly back into the next engineering cycle.
+        </p>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <p class="eyebrow">Research Directions</p>
+        <div class="research-columns">
+          <article class="text-panel research-track">
+            <p class="kicker">Bottom up engineering</p>
+            <h2>Controlled systems and interface design</h2>
+
+            <div class="research-direction">
+              <h3>Neural circuit on chip</h3>
               <p>
-                Quantifying how population-level activity patterns emerge, stabilize, and reorganize across behavior and internal-state changes.
+                Engineer in vitro neural networks in constrained geometries to test how connectivity and plasticity emerge
+                under tightly controlled physical and biochemical conditions.
+              </p>
+            </div>
+
+            <div class="research-direction">
+              <h3>Nano-neuron interfaces</h3>
+              <p>
+                Develop nanoscale neural interfaces to probe and modulate local circuit signaling, with emphasis on measurable
+                mechanisms that can transfer to larger-scale neuroscience questions.
               </p>
             </div>
           </article>
-          <article class="card">
-            <img class="image-cover" src="images/MitoNPCa.png" alt="Nanoparticle-based neuronal interaction concept">
-            <div class="card-body">
-              <h3>Neurotechnology interfaces</h3>
+
+          <article class="text-panel research-track">
+            <p class="kicker">Top down neuroscience</p>
+            <h2>Circuit-level function in behavior</h2>
+
+            <div class="research-direction">
+              <h3>Decoding neural dynamics</h3>
               <p>
-                Developing and applying nanoscale or engineered interfaces to probe mechanistic links between physical signals and neural activity.
+                Extract interpretable population-level features from neural recordings to quantify state transitions,
+                ensemble structure, and behavior-linked activity motifs.
               </p>
             </div>
-          </article>
-          <article class="card">
-            <img class="image-cover" src="images/brain.png" alt="Brain silhouette used as a visual motif">
-            <div class="card-body">
-              <h3>Behavior and circuit function</h3>
+
+            <div class="research-direction">
+              <h3>Circuit functions driving behavior</h3>
               <p>
-                Investigating how neural representations support flexible behavior in freely moving paradigms and under changing task demands.
+                Determine how circuit motifs support action selection and adaptive performance in freely moving paradigms,
+                and use those insights to prioritize mechanistic tests.
               </p>
             </div>
           </article>
@@ -77,45 +131,15 @@
       </div>
     </section>
 
-    <section class="section alt">
-      <div class="container grid-2">
+    <section class="section">
+      <div class="container">
         <article class="text-panel">
-          <p class="kicker">Methods Stack</p>
-          <h2>Experimental and analytical approach</h2>
-          <table class="table-like" aria-label="Research methods">
-            <tbody>
-              <tr>
-                <th>Recording</th>
-                <td>Calcium imaging and population-level measurements in behaving preparations.</td>
-              </tr>
-              <tr>
-                <th>Behavior</th>
-                <td>Freely moving assays and custom behavioral systems with synchronized neural readouts.</td>
-              </tr>
-              <tr>
-                <th>Computation</th>
-                <td>Signal processing, dimensionality reduction, state-space analysis, and model-guided interpretation.</td>
-              </tr>
-              <tr>
-                <th>Engineering</th>
-                <td>Custom instrumentation, hardware prototyping, and robust data-acquisition pipelines.</td>
-              </tr>
-            </tbody>
-          </table>
-        </article>
-
-        <article class="text-panel">
-          <p class="kicker">Questions In Progress</p>
-          <h2>Where this work is heading</h2>
-          <ul class="list">
-            <li>How stable are population-level neural motifs across different behavioral contexts?</li>
-            <li>Which state variables best explain variability in neural-behavior coupling?</li>
-            <li>Can engineered platforms improve reproducibility in high-dimensional behavior assays?</li>
-            <li>What analysis abstractions most effectively translate large recordings into actionable hypotheses?</li>
-          </ul>
+          <p class="kicker">Integration Goal</p>
+          <h2>Closing the loop across scales</h2>
           <p>
-            This page is intentionally structured so you can plug in project-specific sections, grant-supported aims,
-            and figure panels as your current portfolio evolves.
+            These tracks are intentionally interdependent: engineered neural systems provide mechanistic leverage, and
+            behavioral circuit analyses provide ecological constraints. The long-term goal is a bidirectional framework
+            that improves both explanatory depth and practical translational utility.
           </p>
         </article>
       </div>

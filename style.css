@@ -285,93 +285,138 @@ h3 {
   position: relative;
 }
 
-.about-visual-frame {
-  position: relative;
-  min-height: clamp(320px, 50vw, 470px);
+.about-headshot-card {
+  margin: 0;
+  width: min(100%, 440px);
+  justify-self: end;
   border-radius: 22px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(201, 212, 206, 0.18));
+  overflow: hidden;
+  background: var(--surface);
   border: 1px solid rgba(17, 32, 25, 0.12);
   box-shadow: 0 22px 40px rgba(17, 32, 25, 0.16);
-  overflow: hidden;
 }
 
-.about-circuit-svg {
-  position: absolute;
-  inset: 0;
+.about-headshot-card img {
   width: 100%;
-  height: 100%;
-}
-
-.about-wire {
-  fill: none;
-  stroke: rgba(70, 94, 108, 0.75);
-  stroke-width: 5.3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.about-node {
-  fill: rgba(170, 196, 183, 0.9);
-  stroke: rgba(57, 80, 66, 0.38);
-  stroke-width: 1.2;
-  transform-origin: center;
-  animation: aboutNodePulse 3.6s ease-in-out infinite;
-}
-
-.about-node-sm {
-  animation-duration: 4.4s;
-}
-
-.about-junction {
-  fill: rgba(48, 74, 90, 0.56);
-}
-
-.about-headshot {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: clamp(200px, 38vw, 280px);
-  aspect-ratio: 1 / 1.12;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 16px 28px rgba(17, 32, 25, 0.34);
-}
-
-.about-headshot img {
-  width: 100%;
-  height: 100%;
+  aspect-ratio: 4 / 4.8;
+  object-position: center 26%;
   object-fit: cover;
 }
 
-.about-visual-caption {
-  position: absolute;
-  left: 50%;
-  bottom: 0.9rem;
-  transform: translateX(-50%);
+.about-headshot-card figcaption {
   margin: 0;
-  font-family: "Sora", "Avenir Next", sans-serif;
-  font-size: 0.82rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(17, 32, 25, 0.16);
-  border-radius: 999px;
-  padding: 0.24rem 0.7rem;
+  padding: 0.72rem 1rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
 }
 
-@keyframes aboutNodePulse {
-  0%,
-  100% {
-    opacity: 0.68;
-    transform: scale(1);
+.research-feedback-card {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.research-domain {
+  background: var(--surface);
+  border: 1px solid rgba(17, 32, 25, 0.09);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+}
+
+.research-domain h2 {
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+}
+
+.research-domain-left {
+  background: linear-gradient(150deg, rgba(29, 91, 73, 0.11), rgba(255, 255, 255, 0.82));
+}
+
+.research-domain-right {
+  background: linear-gradient(210deg, rgba(41, 66, 83, 0.11), rgba(255, 255, 255, 0.82));
+}
+
+.research-loop {
+  border-radius: 16px;
+  border: 1px solid rgba(17, 32, 25, 0.13);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(201, 212, 206, 0.42));
+  display: grid;
+  place-items: center;
+  padding: 0.6rem 0.3rem;
+}
+
+.research-loop svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.research-path {
+  fill: none;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-dasharray: 6 8;
+}
+
+.research-path-forward {
+  stroke: rgba(30, 112, 75, 0.92);
+  animation: flowForward 1.8s linear infinite;
+}
+
+.research-path-return {
+  stroke: rgba(50, 90, 130, 0.92);
+  animation: flowReturn 1.8s linear infinite;
+}
+
+.research-arrow {
+  fill: rgba(17, 32, 25, 0.6);
+}
+
+.research-loop p {
+  margin: 0.3rem 0 0;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.research-feedback-note {
+  margin: 1rem 0 0;
+  color: var(--muted);
+}
+
+.research-columns {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.research-track h2 {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+.research-direction + .research-direction {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.research-direction h3 {
+  margin-bottom: 0.35rem;
+}
+
+@keyframes flowForward {
+  to {
+    stroke-dashoffset: -14;
   }
-  50% {
-    opacity: 1;
-    transform: scale(1.18);
+}
+
+@keyframes flowReturn {
+  to {
+    stroke-dashoffset: 14;
   }
 }
 
@@ -731,8 +776,19 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .about-visual-frame {
-    min-height: 390px;
+  .about-headshot-card {
+    justify-self: start;
+    width: min(100%, 420px);
+  }
+
+  .research-feedback-card {
+    grid-template-columns: 1fr;
+  }
+
+  .research-loop {
+    max-width: 240px;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .hero-copy {
@@ -773,12 +829,8 @@ h3 {
     padding: 3.3rem 0 2.4rem;
   }
 
-  .about-visual-frame {
-    min-height: 330px;
-  }
-
-  .about-headshot {
-    width: min(72vw, 250px);
+  .about-headshot-card {
+    width: 100%;
   }
 
   .hero-visual {
@@ -788,6 +840,7 @@ h3 {
 
   .grid-2,
   .grid-3,
+  .research-columns,
   .quick-links,
   .tutorial-lab-grid {
     grid-template-columns: 1fr;
