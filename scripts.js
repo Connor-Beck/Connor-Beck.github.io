@@ -217,7 +217,7 @@
           return;
         }
 
-        ctx.strokeStyle = "rgba(198, 208, 202, 0.9)";
+        ctx.strokeStyle = "rgb(198, 208, 202)";
         ctx.lineWidth = left.r * 1.08;
         ctx.lineCap = "round";
         ctx.beginPath();
@@ -225,7 +225,7 @@
         ctx.lineTo(right.x, right.y);
         ctx.stroke();
 
-        ctx.fillStyle = "rgba(198, 208, 202, 0.9)";
+        ctx.fillStyle = "rgb(198, 208, 202)";
         state.circles.forEach((circle) => {
           ctx.beginPath();
           ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);

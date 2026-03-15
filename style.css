@@ -397,17 +397,18 @@ h3 {
 }
 
 .research-path-forward {
-  stroke: rgba(30, 112, 75, 0.92);
+  stroke: rgb(30, 112, 75);
   animation: flowForward 1.8s linear infinite;
 }
 
 .research-path-return {
-  stroke: rgba(50, 90, 130, 0.92);
+  stroke: rgb(50, 90, 130);
   animation: flowReturn 1.8s linear infinite;
 }
 
 .research-arrow {
-  fill: rgba(17, 32, 25, 0.62);
+  fill: context-stroke;
+  opacity: 1;
 }
 
 .research-feedback-note {
@@ -441,7 +442,7 @@ h3 {
 .research-project {
   border: 1px solid rgba(17, 32, 25, 0.09);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(29, 91, 73, 0.08);
   overflow: clip;
 }
 
@@ -507,9 +508,7 @@ h3 {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 18%, rgba(29, 91, 73, 0.16), transparent 32%),
-    linear-gradient(145deg, #dfe8e2, #f8faf9);
+  background: #ffffff;
   border: 1px solid rgba(17, 32, 25, 0.08);
   aspect-ratio: 16 / 10;
 }
