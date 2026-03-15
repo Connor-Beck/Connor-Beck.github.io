@@ -17,7 +17,6 @@
   const initResearchFrameworks = () => {
     const paleNode = "rgba(160, 188, 173, 0.95)";
     const activeGreen = "rgba(119, 224, 142, 1)";
-    const mutedLine = "rgba(77, 103, 91, 0.18)";
     const ensembleColors = [
       "#2f8f83",
       "#d56f52",
@@ -78,15 +77,18 @@
         nodes: [],
         links: [],
         last: 0,
-        circles: []
+        circles: [],
+        ensembles: []
       };
 
-      const activateNode = (index, amount = 1) => {
+      const activateNode = (index, amount = 1, color = activeGreen, allowEnsemble = true) => {
         const node = state.nodes[index];
         if (!node) {
           return;
         }
         node.charge = Math.max(node.charge, amount);
+        node.flashColor = color;
+        node.allowEnsemble = node.allowEnsemble || allowEnsemble;
       };
 
       const build = () => {
@@ -95,17 +97,18 @@
         state.height = size.height;
         const radius = Math.min(state.width * 0.19, state.height * 0.26);
         const cy = state.height * 0.5;
-        const leftCx = state.width * 0.31;
-        const rightCx = state.width * 0.69;
+        const leftCx = state.width * 0.25;
+        const rightCx = state.width * 0.75;
         state.circles = [
           { x: leftCx, y: cy, r: radius },
           { x: rightCx, y: cy, r: radius }
         ];
         state.nodes = [];
         state.links = [];
+        state.ensembles = [];
 
         state.circles.forEach((circle, cluster) => {
-          const count = 34;
+          const count = 52;
           for (let i = 0; i < count; i += 1) {
             const angle = Math.random() * Math.PI * 2;
             const distance = Math.sqrt(Math.random()) * (circle.r * 0.82);
@@ -115,7 +118,10 @@
               charge: Math.random() * 0.12,
               cooldown: Math.random() * 20,
               cluster,
-              neighbors: []
+              neighbors: [],
+              memberships: new Map(),
+              allowEnsemble: false,
+              flashColor: activeGreen
             });
           }
         });
@@ -143,6 +149,32 @@
             state.links.push([index, cross[0].index]);
           }
         });
+
+        for (let ensembleIndex = 0; ensembleIndex < 6; ensembleIndex += 1) {
+          const dominantCluster = ensembleIndex % 2;
+          const color = rgbaFromHex(ensembleColors[ensembleIndex], 1);
+          state.ensembles.push({ dominantCluster, color });
+          state.nodes.forEach((node) => {
+            const sameCluster = node.cluster === dominantCluster;
+            const chance = sameCluster ? 0.34 : 0.1;
+            if (Math.random() < chance) {
+              node.memberships.set(ensembleIndex, sameCluster ? 0.58 + Math.random() * 0.34 : 0.35 + Math.random() * 0.18);
+            }
+          });
+        }
+      };
+
+      const triggerEnsemble = (ensembleIndex) => {
+        const ensemble = state.ensembles[ensembleIndex];
+        if (!ensemble) {
+          return;
+        }
+        state.nodes.forEach((node, nodeIndex) => {
+          const weight = node.memberships.get(ensembleIndex) || 0;
+          if (weight > 0 && Math.random() < weight) {
+            activateNode(nodeIndex, 0.92, ensemble.color, false);
+          }
+        });
       };
 
       const fireNode = (index) => {
@@ -150,9 +182,30 @@
         if (!node) {
           return;
         }
+
+        if (node.allowEnsemble && node.memberships.size) {
+          const memberships = Array.from(node.memberships.entries());
+          const totalWeight = memberships.reduce((sum, entry) => sum + entry[1], 0);
+          let roll = Math.random() * totalWeight;
+          let chosen = memberships[0][0];
+          for (const [ensembleIndex, weight] of memberships) {
+            if (roll <= weight) {
+              chosen = ensembleIndex;
+              break;
+            }
+            roll -= weight;
+          }
+          const ensemble = state.ensembles[chosen];
+          if (ensemble) {
+            node.flashColor = ensemble.color;
+          }
+          triggerEnsemble(chosen);
+        }
+
+        node.allowEnsemble = false;
         node.neighbors.forEach((neighborIndex) => {
           if (Math.random() < 0.24) {
-            activateNode(neighborIndex, 0.86);
+            activateNode(neighborIndex, 0.86, node.flashColor || activeGreen, false);
           }
         });
       };
@@ -179,24 +232,9 @@
           ctx.fill();
         });
 
-        state.links.forEach(([a, b]) => {
-          const nodeA = state.nodes[a];
-          const nodeB = state.nodes[b];
-          if (!nodeA || !nodeB) {
-            return;
-          }
-          const lineAlpha = 0.12 + Math.max(nodeA.charge, nodeB.charge) * 0.38;
-          ctx.strokeStyle = `rgba(63, 89, 78, ${lineAlpha})`;
-          ctx.lineWidth = 1.4 + Math.max(nodeA.charge, nodeB.charge) * 1.5;
-          ctx.beginPath();
-          ctx.moveTo(nodeA.x, nodeA.y);
-          ctx.lineTo(nodeB.x, nodeB.y);
-          ctx.stroke();
-        });
-
         state.nodes.forEach((node) => {
           const radius = 2.6 + node.charge * 3.5;
-          ctx.fillStyle = node.charge > 0.04 ? activeGreen : paleNode;
+          ctx.fillStyle = node.charge > 0.04 ? node.flashColor : paleNode;
           ctx.beginPath();
           ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
           ctx.fill();
@@ -208,12 +246,15 @@
         state.last = now;
 
         if (Math.random() < 0.018 * delta) {
-          activateNode(Math.floor(Math.random() * state.nodes.length), 1);
+          activateNode(Math.floor(Math.random() * state.nodes.length), 1, activeGreen, true);
         }
 
         state.nodes.forEach((node, index) => {
           node.charge *= Math.pow(0.943, delta);
           node.cooldown -= delta;
+          if (node.charge < 0.05) {
+            node.flashColor = activeGreen;
+          }
           if (node.charge > 0.84 && node.cooldown <= 0) {
             node.cooldown = 16 + Math.random() * 8;
             fireNode(index);
@@ -227,7 +268,7 @@
       canvas.addEventListener("click", (event) => {
         const rect = canvas.getBoundingClientRect();
         const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-        activateNode(pickNearestNode(state.nodes, point), 1);
+        activateNode(pickNearestNode(state.nodes, point), 1, activeGreen, true);
       });
 
       window.addEventListener("resize", build);
@@ -358,21 +399,6 @@
         ctx.beginPath();
         ctx.arc(state.circle.x, state.circle.y, state.circle.r, 0, Math.PI * 2);
         ctx.fill();
-
-        state.links.forEach(([a, b]) => {
-          const nodeA = state.nodes[a];
-          const nodeB = state.nodes[b];
-          if (!nodeA || !nodeB) {
-            return;
-          }
-          const lineAlpha = 0.08 + Math.max(nodeA.charge, nodeB.charge) * 0.3;
-          ctx.strokeStyle = `rgba(58, 84, 75, ${lineAlpha})`;
-          ctx.lineWidth = 1.1 + Math.max(nodeA.charge, nodeB.charge) * 1.4;
-          ctx.beginPath();
-          ctx.moveTo(nodeA.x, nodeA.y);
-          ctx.lineTo(nodeB.x, nodeB.y);
-          ctx.stroke();
-        });
 
         state.nodes.forEach((node) => {
           const radius = 2.5 + node.charge * 3.8;

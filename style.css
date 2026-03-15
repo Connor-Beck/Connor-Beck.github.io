@@ -376,12 +376,10 @@ h3 {
 }
 
 .research-loop {
-  border-radius: 16px;
-  border: 1px solid rgba(17, 32, 25, 0.13);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(201, 212, 206, 0.42));
   display: grid;
   place-items: center;
-  padding: 0.6rem 0.3rem;
+  padding: 0;
+  background: transparent;
 }
 
 .research-loop svg {
@@ -394,6 +392,7 @@ h3 {
   fill: none;
   stroke-width: 3.4;
   stroke-linecap: round;
+  stroke-linejoin: round;
   stroke-dasharray: 6 8;
 }
 
@@ -408,16 +407,7 @@ h3 {
 }
 
 .research-arrow {
-  fill: rgba(17, 32, 25, 0.6);
-}
-
-.research-loop p {
-  margin: 0.3rem 0 0;
-  font-family: "Sora", "Avenir Next", sans-serif;
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
+  fill: rgba(17, 32, 25, 0.62);
 }
 
 .research-feedback-note {
@@ -680,7 +670,7 @@ h3 {
 
 @keyframes flowReturn {
   to {
-    stroke-dashoffset: 14;
+    stroke-dashoffset: -14;
   }
 }
 

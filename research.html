@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -34,11 +34,10 @@
     <section class="page-hero">
       <div class="container">
         <p class="eyebrow">Research</p>
-        <h1>Bottom up engineering and top down neuroscience to map circuits across scales.</h1>
+        <h1>Understanding the neural syntax that lets the brain compute information.</h1>
         <p class="lead">
-          My program combines controlled in vitro engineering and in vivo systems neuroscience. Each side informs the other:
-          mechanistic constraints from engineered models refine behavioral hypotheses, and behavioral observations guide
-          the next generation of circuit-building experiments.
+          I use bottom up engineering and top down neuroscience together to build a more holistic map of how neural
+          circuits organize, represent, and transform information.
         </p>
       </div>
     </section>
@@ -58,14 +57,19 @@
             </p>
           </article>
 
-          <div class="research-loop" role="img" aria-label="Dynamic feedback loop between bottom up engineering and top down neuroscience">
+          <div class="research-loop" role="img" aria-label="Bidirectional feedback between bottom up engineering and top down neuroscience">
             <svg viewBox="0 0 180 146" aria-hidden="true">
-              <path class="research-path research-path-forward" d="M20 46 C 62 8, 118 8, 160 46"></path>
-              <path class="research-path research-path-return" d="M160 100 C 118 138, 62 138, 20 100"></path>
-              <polygon class="research-arrow" points="156,39 170,45 156,52"></polygon>
-              <polygon class="research-arrow" points="24,93 10,99 24,106"></polygon>
+              <defs>
+                <marker id="research-arrow-head-forward" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                  <path class="research-arrow" d="M1 1 L11 6 L1 11 Z"></path>
+                </marker>
+                <marker id="research-arrow-head-return" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                  <path class="research-arrow" d="M1 1 L11 6 L1 11 Z"></path>
+                </marker>
+              </defs>
+              <path class="research-path research-path-forward" d="M20 46 C 62 8, 118 8, 160 46" marker-end="url(#research-arrow-head-forward)"></path>
+              <path class="research-path research-path-return" d="M160 100 C 118 138, 62 138, 20 100" marker-end="url(#research-arrow-head-return)"></path>
             </svg>
-            <p>Dynamic feedback</p>
           </div>
 
           <article class="research-domain research-domain-right research-domain-open">
@@ -80,8 +84,7 @@
           </article>
         </div>
         <p class="research-feedback-note">
-          The loop is iterative: bottom-up models reveal candidate mechanisms, top-down recordings test relevance in behavior,
-          and those outcomes feed directly back into the next engineering cycle.
+          These approaches constrain each other, linking controlled circuit construction to real neural computations.
         </p>
       </div>
     </section>
@@ -273,6 +276,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=21"></script>
+  <script src="scripts.js?v=22"></script>
 </body>
 </html>
