@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -84,117 +84,154 @@
 
     <section class="section alt">
       <div class="container">
-        <p class="eyebrow">Research Directions</p>
         <div class="research-columns">
-          <article class="text-panel research-track">
-            <p class="kicker">Bottom up engineering</p>
-            <h2>Controlled systems and interface design</h2>
+          <section class="research-column-group">
+            <h2 class="research-column-title">Bottom up engineering</h2>
+            <article class="text-panel research-track">
+              <section class="research-project" data-project>
+                <button class="research-project-toggle" type="button" data-project-toggle aria-expanded="false">
+                  <span>Structuring neuronal networks with magnetic nanoparticles</span>
+                </button>
+                <div class="research-project-body" data-project-body hidden>
+                  <section class="project-carousel" aria-label="Structuring neuronal networks with magnetic nanoparticles" data-carousel>
+                    <div class="project-carousel-stage">
+                      <article class="project-slide is-active" data-slide>
+                        <div class="project-slide-media">
+                          <img src="ForceGuidance-01.png" alt="Nano-neuron interface" data-slide-image>
+                          <div class="project-slide-fallback" aria-hidden="true">Nano-neuron interface</div>
+                          <button class="project-carousel-hit project-carousel-hit-prev" type="button" data-carousel-prev aria-label="Previous panel">
+                            <span>&larr;</span>
+                          </button>
+                          <button class="project-carousel-hit project-carousel-hit-next" type="button" data-carousel-next aria-label="Next panel">
+                            <span>&rarr;</span>
+                          </button>
+                        </div>
+                        <div class="project-slide-copy">
+                          <p class="project-slide-label">1. Nano-neuron interface</p>
+                          <p>Magnetic nanoparticles establish a controllable interface between engineered materials and developing neurons.</p>
+                        </div>
+                      </article>
 
-            <section class="project-carousel" aria-label="Structuring neuronal networks with magnetic nanoparticles" data-carousel>
-              <div class="project-carousel-head">
-                <div>
-                  <p class="kicker">Featured project</p>
-                  <h3>Structuring neuronal networks with magnetic nanoparticles</h3>
+                      <article class="project-slide" data-slide hidden>
+                        <div class="project-slide-media">
+                          <img src="ForceGuidance-02.png" alt="Force-guided neuronal growth" data-slide-image>
+                          <div class="project-slide-fallback" aria-hidden="true">Force-guided neuronal growth</div>
+                          <button class="project-carousel-hit project-carousel-hit-prev" type="button" data-carousel-prev aria-label="Previous panel">
+                            <span>&larr;</span>
+                          </button>
+                          <button class="project-carousel-hit project-carousel-hit-next" type="button" data-carousel-next aria-label="Next panel">
+                            <span>&rarr;</span>
+                          </button>
+                        </div>
+                        <div class="project-slide-copy">
+                          <p class="project-slide-label">2. Force-guided neuronal growth</p>
+                          <p>Applied nanomagnetic forces bias neurite extension during early growth and pathfinding.</p>
+                        </div>
+                      </article>
+
+                      <article class="project-slide" data-slide hidden>
+                        <div class="project-slide-media">
+                          <img src="ForceGuidance-03.png" alt="Force-guided neuronal structure" data-slide-image>
+                          <div class="project-slide-fallback" aria-hidden="true">Force-guided neuronal structure</div>
+                          <button class="project-carousel-hit project-carousel-hit-prev" type="button" data-carousel-prev aria-label="Previous panel">
+                            <span>&larr;</span>
+                          </button>
+                          <button class="project-carousel-hit project-carousel-hit-next" type="button" data-carousel-next aria-label="Next panel">
+                            <span>&rarr;</span>
+                          </button>
+                        </div>
+                        <div class="project-slide-copy">
+                          <p class="project-slide-label">3. Force-guided neuronal structure</p>
+                          <p>Directional force reshapes emergent network architecture into more ordered structural motifs.</p>
+                        </div>
+                      </article>
+
+                      <article class="project-slide" data-slide hidden>
+                        <div class="project-slide-media">
+                          <img src="ForceGuidance-04.png" alt="Large-scale network guidance" data-slide-image>
+                          <div class="project-slide-fallback" aria-hidden="true">Large-scale network guidance</div>
+                          <button class="project-carousel-hit project-carousel-hit-prev" type="button" data-carousel-prev aria-label="Previous panel">
+                            <span>&larr;</span>
+                          </button>
+                          <button class="project-carousel-hit project-carousel-hit-next" type="button" data-carousel-next aria-label="Next panel">
+                            <span>&rarr;</span>
+                          </button>
+                        </div>
+                        <div class="project-slide-copy">
+                          <p class="project-slide-label">4. Large-scale network guidance</p>
+                          <p>Guidance principles scale from local neurites to millimeter-scale organization across neuronal cultures.</p>
+                        </div>
+                      </article>
+                    </div>
+
+                    <div class="project-carousel-dots" aria-label="Slide selection" data-carousel-dots></div>
+
+                    <div class="project-carousel-footer">
+                      <p>Adapted from Beck et al. <em>Nano Letters</em> (2025), ACS</p>
+                      <div class="project-link-row">
+                        <a class="button secondary" href="https://scholar.google.com/scholar?q=10.1021%2Facs.nanolett.4c03156" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+                        <a class="button secondary" href="https://pubmed.ncbi.nlm.nih.gov/39432086/" target="_blank" rel="noopener noreferrer">PubMed</a>
+                        <a class="button secondary" href="https://pubs.acs.org/doi/full/10.1021/acs.nanolett.4c03156" target="_blank" rel="noopener noreferrer">ACS</a>
+                      </div>
+                    </div>
+                  </section>
                 </div>
-                <div class="project-carousel-controls" aria-label="Project image navigation">
-                  <button class="project-carousel-arrow" type="button" data-carousel-prev aria-label="Previous panel">&larr;</button>
-                  <button class="project-carousel-arrow" type="button" data-carousel-next aria-label="Next panel">&rarr;</button>
+              </section>
+
+              <section class="research-project" data-project>
+                <button class="research-project-toggle" type="button" data-project-toggle aria-expanded="false">
+                  <span>Neural circuit on chip</span>
+                </button>
+                <div class="research-project-body" data-project-body hidden>
+                  <p>
+                    Engineer in vitro neural networks in constrained geometries to test how connectivity and plasticity emerge
+                    under tightly controlled physical and biochemical conditions.
+                  </p>
                 </div>
-              </div>
+              </section>
 
-              <div class="project-carousel-stage">
-                <article class="project-slide is-active" data-slide>
-                  <div class="project-slide-media">
-                    <img src="ForceGuidance-01.png" alt="Nano-neuron interface" data-slide-image>
-                    <div class="project-slide-fallback" aria-hidden="true">Nano-neuron interface</div>
-                  </div>
-                  <div class="project-slide-copy">
-                    <p class="project-slide-label">1. Nano-neuron interface</p>
-                    <p>Magnetic nanoparticles establish a controllable interface between engineered materials and developing neurons.</p>
-                  </div>
-                </article>
-
-                <article class="project-slide" data-slide hidden>
-                  <div class="project-slide-media">
-                    <img src="ForceGuidance-02.png" alt="Force-guided neuronal growth" data-slide-image>
-                    <div class="project-slide-fallback" aria-hidden="true">Force-guided neuronal growth</div>
-                  </div>
-                  <div class="project-slide-copy">
-                    <p class="project-slide-label">2. Force-guided neuronal growth</p>
-                    <p>Applied nanomagnetic forces bias neurite extension during early growth and pathfinding.</p>
-                  </div>
-                </article>
-
-                <article class="project-slide" data-slide hidden>
-                  <div class="project-slide-media">
-                    <img src="ForceGuidance-03.png" alt="Force-guided neuronal structure" data-slide-image>
-                    <div class="project-slide-fallback" aria-hidden="true">Force-guided neuronal structure</div>
-                  </div>
-                  <div class="project-slide-copy">
-                    <p class="project-slide-label">3. Force-guided neuronal structure</p>
-                    <p>Directional force reshapes emergent network architecture into more ordered structural motifs.</p>
-                  </div>
-                </article>
-
-                <article class="project-slide" data-slide hidden>
-                  <div class="project-slide-media">
-                    <img src="ForceGuidance-04.png" alt="Large-scale network guidance" data-slide-image>
-                    <div class="project-slide-fallback" aria-hidden="true">Large-scale network guidance</div>
-                  </div>
-                  <div class="project-slide-copy">
-                    <p class="project-slide-label">4. Large-scale network guidance</p>
-                    <p>Guidance principles scale from local neurites to millimeter-scale organization across neuronal cultures.</p>
-                  </div>
-                </article>
-              </div>
-
-              <div class="project-carousel-footer">
-                <p>Adapted from Beck et al. <em>Nano Letters</em> (2025), ACS</p>
-                <div class="project-link-row">
-                  <a class="button secondary" href="https://scholar.google.com/scholar?q=10.1021%2Facs.nanolett.4c03156" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-                  <a class="button secondary" href="https://pubmed.ncbi.nlm.nih.gov/39432086/" target="_blank" rel="noopener noreferrer">PubMed</a>
-                  <a class="button secondary" href="https://pubs.acs.org/doi/full/10.1021/acs.nanolett.4c03156" target="_blank" rel="noopener noreferrer">ACS</a>
+              <section class="research-project" data-project>
+                <button class="research-project-toggle" type="button" data-project-toggle aria-expanded="false">
+                  <span>Nano-neuron interfaces</span>
+                </button>
+                <div class="research-project-body" data-project-body hidden>
+                  <p>
+                    Develop nanoscale neural interfaces to probe and modulate local circuit signaling, with emphasis on measurable
+                    mechanisms that can transfer to larger-scale neuroscience questions.
+                  </p>
                 </div>
-              </div>
-            </section>
+              </section>
+            </article>
+          </section>
 
-            <div class="research-direction">
-              <h3>Neural circuit on chip</h3>
-              <p>
-                Engineer in vitro neural networks in constrained geometries to test how connectivity and plasticity emerge
-                under tightly controlled physical and biochemical conditions.
-              </p>
-            </div>
+          <section class="research-column-group">
+            <h2 class="research-column-title">Top down neuroscience</h2>
+            <article class="text-panel research-track">
+              <section class="research-project" data-project>
+                <button class="research-project-toggle" type="button" data-project-toggle aria-expanded="false">
+                  <span>Decoding neural dynamics</span>
+                </button>
+                <div class="research-project-body" data-project-body hidden>
+                  <p>
+                    Extract interpretable population-level features from neural recordings to quantify state transitions,
+                    ensemble structure, and behavior-linked activity motifs.
+                  </p>
+                </div>
+              </section>
 
-            <div class="research-direction">
-              <h3>Nano-neuron interfaces</h3>
-              <p>
-                Develop nanoscale neural interfaces to probe and modulate local circuit signaling, with emphasis on measurable
-                mechanisms that can transfer to larger-scale neuroscience questions.
-              </p>
-            </div>
-          </article>
-
-          <article class="text-panel research-track">
-            <p class="kicker">Top down neuroscience</p>
-            <h2>Circuit-level function in behavior</h2>
-
-            <div class="research-direction">
-              <h3>Decoding neural dynamics</h3>
-              <p>
-                Extract interpretable population-level features from neural recordings to quantify state transitions,
-                ensemble structure, and behavior-linked activity motifs.
-              </p>
-            </div>
-
-            <div class="research-direction">
-              <h3>Circuit functions driving behavior</h3>
-              <p>
-                Determine how circuit motifs support action selection and adaptive performance in freely moving paradigms,
-                and use those insights to prioritize mechanistic tests.
-              </p>
-            </div>
-          </article>
+              <section class="research-project" data-project>
+                <button class="research-project-toggle" type="button" data-project-toggle aria-expanded="false">
+                  <span>Circuit functions driving behavior</span>
+                </button>
+                <div class="research-project-body" data-project-body hidden>
+                  <p>
+                    Determine how circuit motifs support action selection and adaptive performance in freely moving paradigms,
+                    and use those insights to prioritize mechanistic tests.
+                  </p>
+                </div>
+              </section>
+            </article>
+          </section>
         </div>
       </div>
     </section>
@@ -232,6 +269,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=19"></script>
+  <script src="scripts.js?v=20"></script>
 </body>
 </html>

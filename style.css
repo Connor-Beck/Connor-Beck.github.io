@@ -392,61 +392,79 @@ h3 {
   display: grid;
   gap: 1.25rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
 }
 
-.research-track h2 {
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+.research-column-group {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.research-column-title {
+  font-size: clamp(1.22rem, 2.3vw, 1.55rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.research-track {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.research-project {
+  border: 1px solid rgba(17, 32, 25, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  overflow: clip;
+}
+
+.research-project-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 1rem 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.research-project-toggle span {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 1rem;
+}
+
+.research-project-toggle::after {
+  content: "+";
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform 0.18s ease;
+}
+
+.research-project.is-open .research-project-toggle::after {
+  transform: rotate(45deg);
+}
+
+.research-project-body {
+  padding: 0 1.05rem 1.05rem;
+}
+
+.research-project-body p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .project-carousel {
-  margin: 1.2rem 0 1.05rem;
-  padding: 1rem;
-  border: 1px solid rgba(17, 32, 25, 0.1);
-  border-radius: 20px;
-  background:
-    linear-gradient(160deg, rgba(29, 91, 73, 0.08), rgba(255, 255, 255, 0.88)),
-    var(--surface);
-  box-shadow: 0 14px 30px rgba(17, 32, 25, 0.08);
-}
-
-.project-carousel-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.project-carousel-head h3 {
-  font-size: 1.08rem;
-}
-
-.project-carousel-controls {
-  display: flex;
-  gap: 0.45rem;
-}
-
-.project-carousel-arrow {
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(17, 32, 25, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--text);
-  font: inherit;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
-}
-
-.project-carousel-arrow:hover,
-.project-carousel-arrow:focus-visible {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(17, 32, 25, 0.24);
+  padding-top: 0.2rem;
 }
 
 .project-carousel-stage {
-  margin-top: 0.9rem;
+  margin-top: 0.15rem;
 }
 
 .project-slide {
@@ -472,7 +490,8 @@ h3 {
 .project-slide-media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   background: transparent;
 }
 
@@ -502,6 +521,68 @@ h3 {
   gap: 0.25rem;
 }
 
+.project-carousel-hit {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 17%;
+  min-width: 52px;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.project-carousel-hit span {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--text);
+  border: 1px solid rgba(17, 32, 25, 0.14);
+  box-shadow: 0 8px 18px rgba(17, 32, 25, 0.12);
+}
+
+.project-carousel-hit-prev {
+  left: 0;
+}
+
+.project-carousel-hit-prev span {
+  left: 0.7rem;
+}
+
+.project-carousel-hit-next {
+  right: 0;
+}
+
+.project-carousel-hit-next span {
+  right: 0.7rem;
+}
+
+.project-slide-media:hover .project-carousel-hit,
+.project-slide-media:focus-within .project-carousel-hit,
+.project-carousel-hit:focus-visible {
+  opacity: 1;
+}
+
+.project-carousel-hit:hover,
+.project-carousel-hit:focus-visible {
+  background: linear-gradient(90deg, rgba(17, 32, 25, 0.08), rgba(17, 32, 25, 0));
+  color: inherit;
+}
+
+.project-carousel-hit-next:hover,
+.project-carousel-hit-next:focus-visible {
+  background: linear-gradient(270deg, rgba(17, 32, 25, 0.08), rgba(17, 32, 25, 0));
+}
+
 .project-slide-copy p {
   margin: 0;
 }
@@ -510,6 +591,29 @@ h3 {
   font-family: "Sora", "Avenir Next", sans-serif;
   font-size: 0.95rem;
   color: var(--text);
+}
+
+.project-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.project-carousel-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(17, 32, 25, 0.18);
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+}
+
+.project-carousel-dot.is-active {
+  background: var(--accent);
+  transform: scale(1.1);
 }
 
 .project-carousel-footer {
@@ -529,16 +633,6 @@ h3 {
   gap: 0.65rem;
   flex-wrap: wrap;
   margin-top: 0.75rem;
-}
-
-.research-direction + .research-direction {
-  margin-top: 0.9rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
-}
-
-.research-direction h3 {
-  margin-bottom: 0.35rem;
 }
 
 @keyframes flowForward {
@@ -960,10 +1054,6 @@ h3 {
 
   .about-intro {
     padding: 3.3rem 0 2.4rem;
-  }
-
-  .project-carousel-head {
-    flex-direction: column;
   }
 
   .about-headshot-card {

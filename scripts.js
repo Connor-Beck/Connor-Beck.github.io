@@ -12,12 +12,30 @@
     node.textContent = String(new Date().getFullYear());
   });
 
+  const initResearchProjects = () => {
+    document.querySelectorAll("[data-project]").forEach((project) => {
+      const toggle = project.querySelector("[data-project-toggle]");
+      const body = project.querySelector("[data-project-body]");
+      if (!toggle || !body) {
+        return;
+      }
+
+      toggle.addEventListener("click", () => {
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!isOpen));
+        project.classList.toggle("is-open", !isOpen);
+        body.hidden = isOpen;
+      });
+    });
+  };
+
   const initProjectCarousels = () => {
     document.querySelectorAll("[data-carousel]").forEach((carousel) => {
       const slides = Array.from(carousel.querySelectorAll("[data-slide]"));
-      const prev = carousel.querySelector("[data-carousel-prev]");
-      const next = carousel.querySelector("[data-carousel-next]");
-      if (!slides.length || !prev || !next) {
+      const prevButtons = Array.from(carousel.querySelectorAll("[data-carousel-prev]"));
+      const nextButtons = Array.from(carousel.querySelectorAll("[data-carousel-next]"));
+      const dotsRoot = carousel.querySelector("[data-carousel-dots]");
+      if (!slides.length || !prevButtons.length || !nextButtons.length) {
         return;
       }
 
@@ -39,28 +57,52 @@
         index = 0;
       }
 
+      const dots = slides.map((_, slideIndex) => {
+        if (!dotsRoot) {
+          return null;
+        }
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "project-carousel-dot";
+        dot.setAttribute("aria-label", `Go to slide ${slideIndex + 1}`);
+        dot.addEventListener("click", () => {
+          index = slideIndex;
+          render();
+        });
+        dotsRoot.appendChild(dot);
+        return dot;
+      });
+
       const render = () => {
         slides.forEach((slide, slideIndex) => {
           const isActive = slideIndex === index;
           slide.hidden = !isActive;
           slide.classList.toggle("is-active", isActive);
+          if (dots[slideIndex]) {
+            dots[slideIndex].classList.toggle("is-active", isActive);
+          }
         });
       };
 
-      prev.addEventListener("click", () => {
-        index = (index - 1 + slides.length) % slides.length;
-        render();
+      prevButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          index = (index - 1 + slides.length) % slides.length;
+          render();
+        });
       });
 
-      next.addEventListener("click", () => {
-        index = (index + 1) % slides.length;
-        render();
+      nextButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          index = (index + 1) % slides.length;
+          render();
+        });
       });
 
       render();
     });
   };
 
+  initResearchProjects();
   initProjectCarousels();
 
   const canvas = document.getElementById("brain-canvas");
