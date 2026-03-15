@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -47,9 +47,11 @@
       <div class="container">
         <p class="eyebrow">Framework</p>
         <div class="research-feedback-card">
-          <article class="research-domain research-domain-left">
-            <p class="kicker">Left side</p>
+          <article class="research-domain research-domain-left research-domain-open">
             <h2>Bottom up engineering</h2>
+            <div class="research-framework-visual">
+              <canvas id="framework-bottom-up" class="research-framework-canvas" aria-label="Bottom up engineering circuit animation"></canvas>
+            </div>
             <p>
               Build controlled neural systems in vitro to understand how circuits form, adapt, and reorganize under defined
               perturbations and interfaces.
@@ -66,9 +68,11 @@
             <p>Dynamic feedback</p>
           </div>
 
-          <article class="research-domain research-domain-right">
-            <p class="kicker">Right side</p>
+          <article class="research-domain research-domain-right research-domain-open">
             <h2>Top down neuroscience</h2>
+            <div class="research-framework-visual">
+              <canvas id="framework-top-down" class="research-framework-canvas" aria-label="Top down neuroscience circuit animation"></canvas>
+            </div>
             <p>
               Identify how circuit-level activity patterns drive behavior, then use those insights to target mechanisms
               and measurements in engineered preparations.
@@ -269,6 +273,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=20"></script>
+  <script src="scripts.js?v=21"></script>
 </body>
 </html>

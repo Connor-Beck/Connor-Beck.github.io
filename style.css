@@ -330,12 +330,49 @@ h3 {
   font-size: clamp(1.2rem, 2vw, 1.45rem);
 }
 
+.research-domain-open {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.research-domain-open h2 {
+  margin-bottom: 0.8rem;
+  text-align: center;
+  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+  font-weight: 700;
+}
+
+.research-domain-open p:last-child {
+  margin: 0.9rem 0 0;
+}
+
 .research-domain-left {
   background: linear-gradient(150deg, rgba(29, 91, 73, 0.11), rgba(255, 255, 255, 0.82));
 }
 
 .research-domain-right {
   background: linear-gradient(210deg, rgba(41, 66, 83, 0.11), rgba(255, 255, 255, 0.82));
+}
+
+.research-domain-open.research-domain-left,
+.research-domain-open.research-domain-right {
+  background: transparent;
+}
+
+.research-framework-visual {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.2 / 1;
+}
+
+.research-framework-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
 }
 
 .research-loop {

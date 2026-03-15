@@ -12,6 +12,423 @@
     node.textContent = String(new Date().getFullYear());
   });
 
+  const sharedClamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+  const initResearchFrameworks = () => {
+    const paleNode = "rgba(160, 188, 173, 0.95)";
+    const activeGreen = "rgba(119, 224, 142, 1)";
+    const mutedLine = "rgba(77, 103, 91, 0.18)";
+    const ensembleColors = [
+      "#2f8f83",
+      "#d56f52",
+      "#d3a52f",
+      "#6a8bc6",
+      "#be6178",
+      "#4caa78",
+      "#8c6fd1",
+      "#cc7e3a",
+      "#4c98b9",
+      "#9aa73d"
+    ];
+
+    const rgbaFromHex = (hex, alpha = 1) => {
+      const value = hex.replace("#", "");
+      const int = Number.parseInt(value, 16);
+      const r = (int >> 16) & 255;
+      const g = (int >> 8) & 255;
+      const b = int & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    const resizeCanvas = (canvas, ctx) => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = sharedClamp(window.devicePixelRatio || 1, 1, 2);
+      const width = Math.max(1, Math.floor(rect.width));
+      const height = Math.max(1, Math.floor(rect.height));
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { width, height };
+    };
+
+    const pickNearestNode = (nodes, point) => {
+      let bestIndex = 0;
+      let bestDist = Infinity;
+      nodes.forEach((node, index) => {
+        const dx = node.x - point.x;
+        const dy = node.y - point.y;
+        const dist = dx * dx + dy * dy;
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIndex = index;
+        }
+      });
+      return bestIndex;
+    };
+
+    const setupBottomUp = (canvas) => {
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        return;
+      }
+
+      const state = {
+        width: 0,
+        height: 0,
+        nodes: [],
+        links: [],
+        last: 0,
+        circles: []
+      };
+
+      const activateNode = (index, amount = 1) => {
+        const node = state.nodes[index];
+        if (!node) {
+          return;
+        }
+        node.charge = Math.max(node.charge, amount);
+      };
+
+      const build = () => {
+        const size = resizeCanvas(canvas, ctx);
+        state.width = size.width;
+        state.height = size.height;
+        const radius = Math.min(state.width * 0.19, state.height * 0.26);
+        const cy = state.height * 0.5;
+        const leftCx = state.width * 0.31;
+        const rightCx = state.width * 0.69;
+        state.circles = [
+          { x: leftCx, y: cy, r: radius },
+          { x: rightCx, y: cy, r: radius }
+        ];
+        state.nodes = [];
+        state.links = [];
+
+        state.circles.forEach((circle, cluster) => {
+          const count = 34;
+          for (let i = 0; i < count; i += 1) {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.sqrt(Math.random()) * (circle.r * 0.82);
+            state.nodes.push({
+              x: circle.x + Math.cos(angle) * distance,
+              y: circle.y + Math.sin(angle) * distance,
+              charge: Math.random() * 0.12,
+              cooldown: Math.random() * 20,
+              cluster,
+              neighbors: []
+            });
+          }
+        });
+
+        state.nodes.forEach((node, index) => {
+          const same = [];
+          const cross = [];
+          state.nodes.forEach((candidate, candidateIndex) => {
+            if (candidateIndex === index) {
+              return;
+            }
+            const bucket = candidate.cluster === node.cluster ? same : cross;
+            const dx = node.x - candidate.x;
+            const dy = node.y - candidate.y;
+            bucket.push({ index: candidateIndex, dist: dx * dx + dy * dy });
+          });
+          same.sort((a, b) => a.dist - b.dist);
+          cross.sort((a, b) => a.dist - b.dist);
+          same.slice(0, 4).forEach((entry) => {
+            node.neighbors.push(entry.index);
+            state.links.push([index, entry.index]);
+          });
+          if (cross.length && Math.random() < 0.55) {
+            node.neighbors.push(cross[0].index);
+            state.links.push([index, cross[0].index]);
+          }
+        });
+      };
+
+      const fireNode = (index) => {
+        const node = state.nodes[index];
+        if (!node) {
+          return;
+        }
+        node.neighbors.forEach((neighborIndex) => {
+          if (Math.random() < 0.24) {
+            activateNode(neighborIndex, 0.86);
+          }
+        });
+      };
+
+      const draw = () => {
+        ctx.clearRect(0, 0, state.width, state.height);
+        const [left, right] = state.circles;
+        if (!left || !right) {
+          return;
+        }
+
+        ctx.strokeStyle = "rgba(198, 208, 202, 0.9)";
+        ctx.lineWidth = left.r * 1.08;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(left.x, left.y);
+        ctx.lineTo(right.x, right.y);
+        ctx.stroke();
+
+        ctx.fillStyle = "rgba(198, 208, 202, 0.9)";
+        state.circles.forEach((circle) => {
+          ctx.beginPath();
+          ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        state.links.forEach(([a, b]) => {
+          const nodeA = state.nodes[a];
+          const nodeB = state.nodes[b];
+          if (!nodeA || !nodeB) {
+            return;
+          }
+          const lineAlpha = 0.12 + Math.max(nodeA.charge, nodeB.charge) * 0.38;
+          ctx.strokeStyle = `rgba(63, 89, 78, ${lineAlpha})`;
+          ctx.lineWidth = 1.4 + Math.max(nodeA.charge, nodeB.charge) * 1.5;
+          ctx.beginPath();
+          ctx.moveTo(nodeA.x, nodeA.y);
+          ctx.lineTo(nodeB.x, nodeB.y);
+          ctx.stroke();
+        });
+
+        state.nodes.forEach((node) => {
+          const radius = 2.6 + node.charge * 3.5;
+          ctx.fillStyle = node.charge > 0.04 ? activeGreen : paleNode;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      };
+
+      const step = (now) => {
+        const delta = Math.min(2.2, state.last ? (now - state.last) / 16.666 : 1);
+        state.last = now;
+
+        if (Math.random() < 0.018 * delta) {
+          activateNode(Math.floor(Math.random() * state.nodes.length), 1);
+        }
+
+        state.nodes.forEach((node, index) => {
+          node.charge *= Math.pow(0.943, delta);
+          node.cooldown -= delta;
+          if (node.charge > 0.84 && node.cooldown <= 0) {
+            node.cooldown = 16 + Math.random() * 8;
+            fireNode(index);
+          }
+        });
+
+        draw();
+        window.requestAnimationFrame(step);
+      };
+
+      canvas.addEventListener("click", (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        activateNode(pickNearestNode(state.nodes, point), 1);
+      });
+
+      window.addEventListener("resize", build);
+      build();
+      window.requestAnimationFrame(step);
+    };
+
+    const setupTopDown = (canvas) => {
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        return;
+      }
+
+      const state = {
+        width: 0,
+        height: 0,
+        nodes: [],
+        links: [],
+        last: 0,
+        circle: null
+      };
+
+      const activateNode = (index, amount = 1, color = activeGreen, allowEnsemble = true) => {
+        const node = state.nodes[index];
+        if (!node) {
+          return;
+        }
+        node.charge = Math.max(node.charge, amount);
+        node.flashColor = color;
+        node.allowEnsemble = node.allowEnsemble || allowEnsemble;
+      };
+
+      const triggerEnsemble = (ensembleIndex) => {
+        state.nodes.forEach((node, nodeIndex) => {
+          const weight = node.memberships.get(ensembleIndex) || 0;
+          if (weight > 0 && Math.random() < weight) {
+            activateNode(nodeIndex, 0.92, rgbaFromHex(ensembleColors[ensembleIndex]), false);
+          }
+        });
+      };
+
+      const build = () => {
+        const size = resizeCanvas(canvas, ctx);
+        state.width = size.width;
+        state.height = size.height;
+        const radius = Math.min(state.width * 0.31, state.height * 0.36);
+        state.circle = { x: state.width * 0.5, y: state.height * 0.5, r: radius };
+        state.nodes = [];
+        state.links = [];
+
+        const total = 92;
+        const isolatedCount = Math.floor(total * 0.2);
+        for (let i = 0; i < total; i += 1) {
+          const angle = Math.random() * Math.PI * 2;
+          const distance = Math.sqrt(Math.random()) * (radius * 0.86);
+          const memberships = new Map();
+          const isolated = i < isolatedCount;
+          if (!isolated) {
+            const membershipCount = 1 + Math.floor(Math.random() * 3);
+            for (let j = 0; j < membershipCount; j += 1) {
+              const ensemble = Math.floor(Math.random() * ensembleColors.length);
+              memberships.set(ensemble, Math.max(memberships.get(ensemble) || 0, 0.45 + Math.random() * 0.45));
+            }
+          }
+          state.nodes.push({
+            x: state.circle.x + Math.cos(angle) * distance,
+            y: state.circle.y + Math.sin(angle) * distance,
+            charge: Math.random() * 0.08,
+            cooldown: Math.random() * 18,
+            neighbors: [],
+            isolated,
+            memberships,
+            allowEnsemble: false,
+            flashColor: activeGreen
+          });
+        }
+
+        state.nodes.forEach((node, index) => {
+          if (node.isolated) {
+            return;
+          }
+          const candidates = state.nodes
+            .map((candidate, candidateIndex) => ({ candidate, index: candidateIndex }))
+            .filter((entry) => entry.index !== index && !entry.candidate.isolated);
+          for (let i = candidates.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+          }
+          candidates.slice(0, 4).forEach((entry) => {
+            node.neighbors.push(entry.index);
+            state.links.push([index, entry.index]);
+          });
+        });
+      };
+
+      const fireNode = (index) => {
+        const node = state.nodes[index];
+        if (!node) {
+          return;
+        }
+
+        if (node.allowEnsemble && node.memberships.size) {
+          const memberships = Array.from(node.memberships.entries());
+          const totalWeight = memberships.reduce((sum, entry) => sum + entry[1], 0);
+          let roll = Math.random() * totalWeight;
+          let chosen = memberships[0][0];
+          for (const [ensembleIndex, weight] of memberships) {
+            if (roll <= weight) {
+              chosen = ensembleIndex;
+              break;
+            }
+            roll -= weight;
+          }
+          triggerEnsemble(chosen);
+        }
+
+        node.allowEnsemble = false;
+        node.neighbors.forEach((neighborIndex) => {
+          if (Math.random() < 0.16) {
+            activateNode(neighborIndex, 0.74, activeGreen, false);
+          }
+        });
+      };
+
+      const draw = () => {
+        ctx.clearRect(0, 0, state.width, state.height);
+        ctx.fillStyle = "rgba(205, 214, 209, 0.72)";
+        ctx.beginPath();
+        ctx.arc(state.circle.x, state.circle.y, state.circle.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        state.links.forEach(([a, b]) => {
+          const nodeA = state.nodes[a];
+          const nodeB = state.nodes[b];
+          if (!nodeA || !nodeB) {
+            return;
+          }
+          const lineAlpha = 0.08 + Math.max(nodeA.charge, nodeB.charge) * 0.3;
+          ctx.strokeStyle = `rgba(58, 84, 75, ${lineAlpha})`;
+          ctx.lineWidth = 1.1 + Math.max(nodeA.charge, nodeB.charge) * 1.4;
+          ctx.beginPath();
+          ctx.moveTo(nodeA.x, nodeA.y);
+          ctx.lineTo(nodeB.x, nodeB.y);
+          ctx.stroke();
+        });
+
+        state.nodes.forEach((node) => {
+          const radius = 2.5 + node.charge * 3.8;
+          const color = node.charge > 0.03 ? node.flashColor : paleNode;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      };
+
+      const step = (now) => {
+        const delta = Math.min(2.2, state.last ? (now - state.last) / 16.666 : 1);
+        state.last = now;
+
+        if (Math.random() < 0.016 * delta) {
+          activateNode(Math.floor(Math.random() * state.nodes.length), 1, activeGreen, true);
+        }
+
+        state.nodes.forEach((node, index) => {
+          node.charge *= Math.pow(0.942, delta);
+          node.cooldown -= delta;
+          if (node.charge < 0.05) {
+            node.flashColor = activeGreen;
+          }
+          if (node.charge > 0.84 && node.cooldown <= 0) {
+            node.cooldown = 18 + Math.random() * 10;
+            fireNode(index);
+          }
+        });
+
+        draw();
+        window.requestAnimationFrame(step);
+      };
+
+      canvas.addEventListener("click", (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        activateNode(pickNearestNode(state.nodes, point), 1, activeGreen, true);
+      });
+
+      window.addEventListener("resize", build);
+      build();
+      window.requestAnimationFrame(step);
+    };
+
+    const bottomCanvas = document.getElementById("framework-bottom-up");
+    const topCanvas = document.getElementById("framework-top-down");
+    if (bottomCanvas) {
+      setupBottomUp(bottomCanvas);
+    }
+    if (topCanvas) {
+      setupTopDown(topCanvas);
+    }
+  };
+
   const initResearchProjects = () => {
     document.querySelectorAll("[data-project]").forEach((project) => {
       const toggle = project.querySelector("[data-project-toggle]");
@@ -102,6 +519,7 @@
     });
   };
 
+  initResearchFrameworks();
   initResearchProjects();
   initProjectCarousels();
 
