@@ -398,6 +398,139 @@ h3 {
   font-size: clamp(1.25rem, 2vw, 1.5rem);
 }
 
+.project-carousel {
+  margin: 1.2rem 0 1.05rem;
+  padding: 1rem;
+  border: 1px solid rgba(17, 32, 25, 0.1);
+  border-radius: 20px;
+  background:
+    linear-gradient(160deg, rgba(29, 91, 73, 0.08), rgba(255, 255, 255, 0.88)),
+    var(--surface);
+  box-shadow: 0 14px 30px rgba(17, 32, 25, 0.08);
+}
+
+.project-carousel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.project-carousel-head h3 {
+  font-size: 1.08rem;
+}
+
+.project-carousel-controls {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.project-carousel-arrow {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(17, 32, 25, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.project-carousel-arrow:hover,
+.project-carousel-arrow:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(17, 32, 25, 0.24);
+}
+
+.project-carousel-stage {
+  margin-top: 0.9rem;
+}
+
+.project-slide {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.project-slide[hidden] {
+  display: none;
+}
+
+.project-slide-media {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(29, 91, 73, 0.16), transparent 32%),
+    linear-gradient(145deg, #dfe8e2, #f8faf9);
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  aspect-ratio: 16 / 10;
+}
+
+.project-slide-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: transparent;
+}
+
+.project-slide-media img.is-missing {
+  display: none;
+}
+
+.project-slide-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  color: rgba(17, 32, 25, 0.66);
+}
+
+.project-slide-media img:not(.is-missing) + .project-slide-fallback {
+  display: none;
+}
+
+.project-slide-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.project-slide-copy p {
+  margin: 0;
+}
+
+.project-slide-label {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.project-carousel-footer {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.project-carousel-footer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.project-link-row {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
 .research-direction + .research-direction {
   margin-top: 0.9rem;
   padding-top: 0.9rem;
@@ -827,6 +960,10 @@ h3 {
 
   .about-intro {
     padding: 3.3rem 0 2.4rem;
+  }
+
+  .project-carousel-head {
+    flex-direction: column;
   }
 
   .about-headshot-card {

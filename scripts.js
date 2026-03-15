@@ -12,6 +12,57 @@
     node.textContent = String(new Date().getFullYear());
   });
 
+  const initProjectCarousels = () => {
+    document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+      const slides = Array.from(carousel.querySelectorAll("[data-slide]"));
+      const prev = carousel.querySelector("[data-carousel-prev]");
+      const next = carousel.querySelector("[data-carousel-next]");
+      if (!slides.length || !prev || !next) {
+        return;
+      }
+
+      slides.forEach((slide) => {
+        const img = slide.querySelector("[data-slide-image]");
+        if (!img) {
+          return;
+        }
+        if (img.complete && img.naturalWidth === 0) {
+          img.classList.add("is-missing");
+        }
+        img.addEventListener("error", () => {
+          img.classList.add("is-missing");
+        });
+      });
+
+      let index = slides.findIndex((slide) => slide.classList.contains("is-active"));
+      if (index < 0) {
+        index = 0;
+      }
+
+      const render = () => {
+        slides.forEach((slide, slideIndex) => {
+          const isActive = slideIndex === index;
+          slide.hidden = !isActive;
+          slide.classList.toggle("is-active", isActive);
+        });
+      };
+
+      prev.addEventListener("click", () => {
+        index = (index - 1 + slides.length) % slides.length;
+        render();
+      });
+
+      next.addEventListener("click", () => {
+        index = (index + 1) % slides.length;
+        render();
+      });
+
+      render();
+    });
+  };
+
+  initProjectCarousels();
+
   const canvas = document.getElementById("brain-canvas");
   if (!canvas) {
     return;
