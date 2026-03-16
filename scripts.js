@@ -395,7 +395,7 @@
 
       const draw = () => {
         ctx.clearRect(0, 0, state.width, state.height);
-        ctx.fillStyle = "rgba(205, 214, 209, 0.72)";
+        ctx.fillStyle = "rgb(205, 214, 209)";
         ctx.beginPath();
         ctx.arc(state.circle.x, state.circle.y, state.circle.r, 0, Math.PI * 2);
         ctx.fill();
