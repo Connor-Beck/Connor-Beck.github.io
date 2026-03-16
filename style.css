@@ -411,22 +411,23 @@ h3 {
 
 .research-mea-overlay {
   position: absolute;
-  inset: -42% -110% 0 -110%;
-  width: 320%;
-  height: 142%;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 
 .research-mea-overlay ellipse {
   fill: none;
   stroke: rgba(24, 76, 58, 0.92);
-  stroke-width: 1.05;
+  stroke-width: 0.8;
 }
 
 .research-mea-overlay path {
   fill: none;
   stroke: rgba(24, 76, 58, 0.86);
-  stroke-width: 0.95;
+  stroke-width: 0.72;
   stroke-linecap: round;
   stroke-dasharray: 4 4;
 }

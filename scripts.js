@@ -70,6 +70,10 @@
       const topVisual = document.getElementById("framework-top-down")?.closest(".research-framework-visual");
       const meaBadge = bottomVisual?.querySelector(".research-method-badge-left");
       const mouseBadge = topVisual?.querySelector(".research-method-badge-right");
+      const meaOverlay = meaBadge?.querySelector(".research-mea-overlay");
+      const meaEllipse = meaOverlay?.querySelector("ellipse");
+      const meaPaths = meaOverlay ? Array.from(meaOverlay.querySelectorAll("path")) : [];
+      const meaImage = meaBadge?.querySelector(".research-method-image");
       if (!bottomVisual || !topVisual || !meaBadge || !mouseBadge) {
         return;
       }
@@ -100,6 +104,42 @@
       mouseBadge.style.bottom = "auto";
       mouseBadge.style.right = "auto";
       mouseBadge.style.transform = "none";
+
+      if (meaOverlay && meaEllipse && meaPaths.length === 2 && meaImage) {
+        const imageRect = meaImage.getBoundingClientRect();
+        const badgeRect = meaBadge.getBoundingClientRect();
+        if (imageRect.width && imageRect.height) {
+          const radius = Math.min(bottomRect.width * 0.19, bottomRect.height * 0.26);
+          const leftCx = bottomRect.width * 0.25;
+          const rightCx = bottomRect.width * 0.75;
+          const centerDistance = rightCx - leftCx;
+          const networkOuterWidth = centerDistance + radius * 2;
+          const overlayWidth = networkOuterWidth * 0.9;
+          const imageCenterY = (imageRect.top - badgeRect.top) + imageRect.height * 0.5;
+          const circleBottomY = bottomRect.height * 0.5 + radius;
+          const verticalDistance = Math.max(12, imageCenterY - circleBottomY);
+          const overlayHeight = verticalDistance * 0.9;
+          const overlayLeft = (badgeRect.width - overlayWidth) * 0.5;
+          const overlayTop = imageCenterY - overlayHeight;
+          const ellipseCx = overlayWidth * 0.5;
+          const ellipseCy = overlayHeight;
+          const ellipseRx = Math.max(3, imageRect.width * 0.025);
+          const ellipseRy = Math.max(2, imageRect.width * 0.016);
+
+          meaOverlay.style.left = `${overlayLeft}px`;
+          meaOverlay.style.top = `${overlayTop}px`;
+          meaOverlay.style.width = `${overlayWidth}px`;
+          meaOverlay.style.height = `${overlayHeight}px`;
+          meaOverlay.setAttribute("viewBox", `0 0 ${overlayWidth} ${overlayHeight}`);
+
+          meaEllipse.setAttribute("cx", `${ellipseCx}`);
+          meaEllipse.setAttribute("cy", `${ellipseCy}`);
+          meaEllipse.setAttribute("rx", `${ellipseRx}`);
+          meaEllipse.setAttribute("ry", `${ellipseRy}`);
+          meaPaths[0].setAttribute("d", `M ${ellipseCx - ellipseRx} ${ellipseCy} L 0 0`);
+          meaPaths[1].setAttribute("d", `M ${ellipseCx + ellipseRx} ${ellipseCy} L ${overlayWidth} 0`);
+        }
+      }
     };
 
     const setupBottomUp = (canvas) => {
