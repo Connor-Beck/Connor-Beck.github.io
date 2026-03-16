@@ -391,15 +391,9 @@ h3 {
 }
 
 .research-method-badge-left {
-  left: 50%;
-  bottom: -22%;
-  transform: translateX(-50%);
 }
 
 .research-method-badge-right {
-  left: 80%;
-  bottom: -22%;
-  transform: translateX(-75%);
   display: grid;
   place-items: center;
   z-index: 0;
@@ -1104,16 +1098,6 @@ h3 {
     margin: 0 auto;
   }
 
-  .research-method-badge-left {
-    left: 50%;
-    bottom: -22%;
-  }
-
-  .research-method-badge-right {
-    left: 80%;
-    bottom: -22%;
-  }
-
   .hero-copy {
     padding-right: 0;
   }
@@ -1163,16 +1147,6 @@ h3 {
 
   .research-method-badge {
     width: clamp(140px, 46%, 220px);
-  }
-
-  .research-method-badge-left {
-    left: 50%;
-    bottom: -20%;
-  }
-
-  .research-method-badge-right {
-    left: 80%;
-    bottom: -20%;
   }
 
   .hero-visual {

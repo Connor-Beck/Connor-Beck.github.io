@@ -65,6 +65,45 @@
       return bestIndex;
     };
 
+    const layoutMethodBadges = () => {
+      const bottomVisual = document.getElementById("framework-bottom-up")?.closest(".research-framework-visual");
+      const topVisual = document.getElementById("framework-top-down")?.closest(".research-framework-visual");
+      const meaBadge = bottomVisual?.querySelector(".research-method-badge-left");
+      const mouseBadge = topVisual?.querySelector(".research-method-badge-right");
+      if (!bottomVisual || !topVisual || !meaBadge || !mouseBadge) {
+        return;
+      }
+
+      const bottomRect = bottomVisual.getBoundingClientRect();
+      const topRect = topVisual.getBoundingClientRect();
+      const meaRect = meaBadge.getBoundingClientRect();
+      const mouseRect = mouseBadge.getBoundingClientRect();
+      if (!bottomRect.width || !topRect.width || !meaRect.width || !mouseRect.width) {
+        return;
+      }
+
+      const topCircleRadius = Math.min(topRect.width * 0.31, topRect.height * 0.36);
+      const topCircleRightEdge = topRect.width * 0.5 + topCircleRadius;
+      const mouseLeft = topCircleRightEdge - mouseRect.width * 0.65;
+      const mouseTop = topRect.height * 0.5;
+      const mouseBottomNormalized = (mouseTop + mouseRect.height) / topRect.height;
+
+      const meaLeft = bottomRect.width * 0.5 - meaRect.width * 0.5;
+      const meaTop = bottomRect.height * mouseBottomNormalized - meaRect.height;
+
+      meaBadge.style.left = `${meaLeft}px`;
+      meaBadge.style.top = `${meaTop}px`;
+      meaBadge.style.bottom = "auto";
+      meaBadge.style.right = "auto";
+      meaBadge.style.transform = "none";
+
+      mouseBadge.style.left = `${mouseLeft}px`;
+      mouseBadge.style.top = `${mouseTop}px`;
+      mouseBadge.style.bottom = "auto";
+      mouseBadge.style.right = "auto";
+      mouseBadge.style.transform = "none";
+    };
+
     const setupBottomUp = (canvas) => {
       const ctx = canvas.getContext("2d");
       if (!ctx) {
@@ -273,6 +312,7 @@
 
       window.addEventListener("resize", build);
       build();
+      layoutMethodBadges();
       window.requestAnimationFrame(step);
     };
 
@@ -442,6 +482,7 @@
 
       window.addEventListener("resize", build);
       build();
+      layoutMethodBadges();
       window.requestAnimationFrame(step);
     };
 
@@ -453,6 +494,16 @@
     if (topCanvas) {
       setupTopDown(topCanvas);
     }
+
+    window.addEventListener("resize", layoutMethodBadges);
+    window.requestAnimationFrame(layoutMethodBadges);
+    document.querySelectorAll(".research-method-image").forEach((img) => {
+      if (img.complete) {
+        window.requestAnimationFrame(layoutMethodBadges);
+      } else {
+        img.addEventListener("load", layoutMethodBadges, { once: true });
+      }
+    });
   };
 
   const initResearchProjects = () => {
