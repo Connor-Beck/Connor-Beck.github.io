@@ -367,6 +367,7 @@ h3 {
   width: 100%;
   aspect-ratio: 1.2 / 1;
   overflow: visible;
+  margin-bottom: clamp(2rem, 6vw, 4rem);
 }
 
 .research-framework-canvas {
@@ -379,35 +380,30 @@ h3 {
 .research-method-badge {
   position: absolute;
   width: clamp(110px, 30%, 170px);
-  aspect-ratio: 1.4 / 1;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(17, 32, 25, 0.12);
-  box-shadow: 0 16px 28px rgba(17, 32, 25, 0.12);
-  overflow: hidden;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
   z-index: 2;
+  pointer-events: none;
 }
 
 .research-method-badge-left {
-  left: -8%;
-  bottom: -10%;
-  transform: rotate(-11deg);
+  left: -6%;
+  bottom: -24%;
 }
 
 .research-method-badge-right {
-  right: -10%;
-  bottom: -11%;
-  transform: rotate(10deg);
+  right: -8%;
+  bottom: -24%;
   display: grid;
   place-items: center;
-  padding: 0.4rem;
 }
 
-.research-method-svg,
 .research-method-image {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .research-method-image {
@@ -432,31 +428,6 @@ h3 {
 
 .research-method-image:not(.is-missing) + .research-method-fallback {
   display: none;
-}
-
-.research-method-plate {
-  fill: rgba(229, 234, 231, 1);
-  stroke: rgba(98, 121, 111, 0.45);
-  stroke-width: 2;
-}
-
-.research-method-chip {
-  fill: rgba(247, 249, 248, 1);
-  stroke: rgba(84, 108, 97, 0.36);
-  stroke-width: 1.8;
-}
-
-.research-method-traces path {
-  fill: none;
-  stroke: rgba(92, 115, 104, 0.62);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.research-method-electrodes circle {
-  fill: rgba(87, 155, 118, 0.78);
-  stroke: rgba(45, 78, 62, 0.44);
-  stroke-width: 1.3;
 }
 
 .research-loop {
@@ -1129,13 +1100,13 @@ h3 {
   }
 
   .research-method-badge-left {
-    left: -2%;
-    bottom: -8%;
+    left: 0;
+    bottom: -18%;
   }
 
   .research-method-badge-right {
-    right: -2%;
-    bottom: -8%;
+    right: 0;
+    bottom: -18%;
   }
 
   .hero-copy {
@@ -1182,6 +1153,7 @@ h3 {
 
   .research-framework-visual {
     aspect-ratio: 1.08 / 1;
+    margin-bottom: 2.6rem;
   }
 
   .research-method-badge {
@@ -1189,13 +1161,13 @@ h3 {
   }
 
   .research-method-badge-left {
-    left: 1%;
-    bottom: -6%;
+    left: 2%;
+    bottom: -14%;
   }
 
   .research-method-badge-right {
-    right: 1%;
-    bottom: -6%;
+    right: 2%;
+    bottom: -14%;
   }
 
   .hero-visual {
