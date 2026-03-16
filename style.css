@@ -367,7 +367,7 @@ h3 {
   width: 100%;
   aspect-ratio: 1.2 / 1;
   overflow: visible;
-  margin-bottom: clamp(2rem, 6vw, 4rem);
+  margin-bottom: clamp(4rem, 11vw, 7rem);
 }
 
 .research-framework-canvas {
@@ -379,7 +379,7 @@ h3 {
 
 .research-method-badge {
   position: absolute;
-  width: clamp(110px, 30%, 170px);
+  width: clamp(220px, 60%, 340px);
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -389,13 +389,13 @@ h3 {
 }
 
 .research-method-badge-left {
-  left: -6%;
-  bottom: -24%;
+  left: 6%;
+  bottom: -4%;
 }
 
 .research-method-badge-right {
-  right: -8%;
-  bottom: -24%;
+  right: 6%;
+  bottom: -4%;
   display: grid;
   place-items: center;
 }
@@ -1153,21 +1153,21 @@ h3 {
 
   .research-framework-visual {
     aspect-ratio: 1.08 / 1;
-    margin-bottom: 2.6rem;
+    margin-bottom: 4rem;
   }
 
   .research-method-badge {
-    width: clamp(96px, 34%, 132px);
+    width: clamp(140px, 46%, 220px);
   }
 
   .research-method-badge-left {
-    left: 2%;
-    bottom: -14%;
+    left: 6%;
+    bottom: -6%;
   }
 
   .research-method-badge-right {
-    right: 2%;
-    bottom: -14%;
+    right: 6%;
+    bottom: -6%;
   }
 
   .hero-visual {
