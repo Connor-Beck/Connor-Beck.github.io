@@ -366,6 +366,7 @@ h3 {
   position: relative;
   width: 100%;
   aspect-ratio: 1.2 / 1;
+  overflow: visible;
 }
 
 .research-framework-canvas {
@@ -373,6 +374,89 @@ h3 {
   width: 100%;
   height: 100%;
   background: transparent;
+}
+
+.research-method-badge {
+  position: absolute;
+  width: clamp(110px, 30%, 170px);
+  aspect-ratio: 1.4 / 1;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(17, 32, 25, 0.12);
+  box-shadow: 0 16px 28px rgba(17, 32, 25, 0.12);
+  overflow: hidden;
+  z-index: 2;
+}
+
+.research-method-badge-left {
+  left: -8%;
+  bottom: -10%;
+  transform: rotate(-11deg);
+}
+
+.research-method-badge-right {
+  right: -10%;
+  bottom: -11%;
+  transform: rotate(10deg);
+  display: grid;
+  place-items: center;
+  padding: 0.4rem;
+}
+
+.research-method-svg,
+.research-method-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.research-method-image {
+  object-fit: contain;
+}
+
+.research-method-image.is-missing {
+  display: none;
+}
+
+.research-method-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.6rem;
+  text-align: center;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.research-method-image:not(.is-missing) + .research-method-fallback {
+  display: none;
+}
+
+.research-method-plate {
+  fill: rgba(229, 234, 231, 1);
+  stroke: rgba(98, 121, 111, 0.45);
+  stroke-width: 2;
+}
+
+.research-method-chip {
+  fill: rgba(247, 249, 248, 1);
+  stroke: rgba(84, 108, 97, 0.36);
+  stroke-width: 1.8;
+}
+
+.research-method-traces path {
+  fill: none;
+  stroke: rgba(92, 115, 104, 0.62);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.research-method-electrodes circle {
+  fill: rgba(87, 155, 118, 0.78);
+  stroke: rgba(45, 78, 62, 0.44);
+  stroke-width: 1.3;
 }
 
 .research-loop {
@@ -1044,6 +1128,16 @@ h3 {
     margin: 0 auto;
   }
 
+  .research-method-badge-left {
+    left: -2%;
+    bottom: -8%;
+  }
+
+  .research-method-badge-right {
+    right: -2%;
+    bottom: -8%;
+  }
+
   .hero-copy {
     padding-right: 0;
   }
@@ -1084,6 +1178,24 @@ h3 {
 
   .about-headshot-card {
     width: 100%;
+  }
+
+  .research-framework-visual {
+    aspect-ratio: 1.08 / 1;
+  }
+
+  .research-method-badge {
+    width: clamp(96px, 34%, 132px);
+  }
+
+  .research-method-badge-left {
+    left: 1%;
+    bottom: -6%;
+  }
+
+  .research-method-badge-right {
+    right: 1%;
+    bottom: -6%;
   }
 
   .hero-visual {

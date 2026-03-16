@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=18">
+  <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -50,6 +50,31 @@
             <h2>Bottom up engineering</h2>
             <div class="research-framework-visual">
               <canvas id="framework-bottom-up" class="research-framework-canvas" aria-label="Bottom up engineering circuit animation"></canvas>
+              <div class="research-method-badge research-method-badge-left" aria-hidden="true">
+                <svg viewBox="0 0 180 120" class="research-method-svg">
+                  <rect x="18" y="18" width="144" height="84" rx="20" class="research-method-plate"></rect>
+                  <rect x="34" y="31" width="112" height="58" rx="12" class="research-method-chip"></rect>
+                  <g class="research-method-traces">
+                    <path d="M46 42 H66"></path>
+                    <path d="M46 58 H66"></path>
+                    <path d="M46 74 H66"></path>
+                    <path d="M114 42 H134"></path>
+                    <path d="M114 58 H134"></path>
+                    <path d="M114 74 H134"></path>
+                  </g>
+                  <g class="research-method-electrodes">
+                    <circle cx="78" cy="42" r="4.5"></circle>
+                    <circle cx="90" cy="42" r="4.5"></circle>
+                    <circle cx="102" cy="42" r="4.5"></circle>
+                    <circle cx="78" cy="58" r="4.5"></circle>
+                    <circle cx="90" cy="58" r="4.5"></circle>
+                    <circle cx="102" cy="58" r="4.5"></circle>
+                    <circle cx="78" cy="74" r="4.5"></circle>
+                    <circle cx="90" cy="74" r="4.5"></circle>
+                    <circle cx="102" cy="74" r="4.5"></circle>
+                  </g>
+                </svg>
+              </div>
             </div>
             <p>
               Build controlled neural systems in vitro to understand how circuits form, adapt, and reorganize under defined
@@ -76,6 +101,10 @@
             <h2>Top down neuroscience</h2>
             <div class="research-framework-visual">
               <canvas id="framework-top-down" class="research-framework-canvas" aria-label="Top down neuroscience circuit animation"></canvas>
+              <div class="research-method-badge research-method-badge-right" aria-hidden="true">
+                <img src="mouse.png" alt="" class="research-method-image" onerror="this.classList.add('is-missing')">
+                <div class="research-method-fallback">Mouse + miniscope</div>
+              </div>
             </div>
             <p>
               Identify how circuit-level activity patterns drive behavior, then use those insights to target mechanisms
