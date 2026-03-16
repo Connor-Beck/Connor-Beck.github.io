@@ -116,7 +116,8 @@
           const networkOuterWidth = centerDistance + radius * 2;
           const overlayWidth = networkOuterWidth * 0.9;
           const imageCenterY = (imageRect.top - badgeRect.top) + imageRect.height * 0.5;
-          const circleBottomY = bottomRect.height * 0.5 + radius;
+          const visualOffsetInBadge = bottomRect.top - badgeRect.top;
+          const circleBottomY = visualOffsetInBadge + bottomRect.height * 0.5 + radius;
           const verticalDistance = Math.max(12, imageCenterY - circleBottomY);
           const overlayHeight = verticalDistance * 0.9;
           const overlayLeft = (badgeRect.width - overlayWidth) * 0.5;
