@@ -82,9 +82,7 @@
         return;
       }
 
-      const topCircleRadius = Math.min(topRect.width * 0.31, topRect.height * 0.36);
-      const topCircleRightEdge = topRect.width * 0.5 + topCircleRadius;
-      const mouseLeft = topCircleRightEdge - mouseRect.width * 0.65;
+      const mouseLeft = topRect.width * 0.5 - mouseRect.width * 0.5;
       const mouseTop = topRect.height * 0.5;
       const mouseBottomNormalized = (mouseTop + mouseRect.height) / topRect.height;
 
