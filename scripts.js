@@ -635,9 +635,334 @@
     });
   };
 
+  const initCompressionTutorial = () => {
+    const root = document.querySelector("[data-compression-tutorial]");
+    const dataNode = document.getElementById("compression-results-data");
+    if (!root || !dataNode) {
+      return;
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(dataNode.textContent);
+    } catch (error) {
+      return;
+    }
+
+    const resultMap = payload.results || {};
+    const orderedIds = [
+      "original",
+      "ffv1_lossless",
+      "x265_lossless",
+      "mjpeg_q3",
+      "x265_crf6",
+      "x265_crf10",
+      "x265_crf14",
+      "x265_crf18",
+      "x265_crf22",
+      "x265_crf26",
+      "x265_crf30"
+    ];
+    const labels = {
+      original: "Original raw",
+      ffv1_lossless: "FFV1 lossless",
+      x265_lossless: "x265 lossless",
+      mjpeg_q3: "MJPEG q3",
+      x265_crf6: "x265 CRF 6",
+      x265_crf10: "x265 CRF 10",
+      x265_crf14: "x265 CRF 14",
+      x265_crf18: "x265 CRF 18",
+      x265_crf22: "x265 CRF 22",
+      x265_crf26: "x265 CRF 26",
+      x265_crf30: "x265 CRF 30"
+    };
+    const notes = {
+      original: "Uncompressed reference subset.",
+      ffv1_lossless: "Lossless archival codec.",
+      x265_lossless: "Lossless HEVC encode.",
+      mjpeg_q3: "Intra-frame lossy baseline.",
+      x265_crf6: "Very high fidelity HEVC.",
+      x265_crf10: "High fidelity HEVC.",
+      x265_crf14: "Moderate HEVC compression.",
+      x265_crf18: "Balanced compression point.",
+      x265_crf22: "Aggressive compression.",
+      x265_crf26: "Very aggressive compression.",
+      x265_crf30: "Extreme compression."
+    };
+    const imageMap = {
+      original: { preview: "assets/tutorials/compression/original.png", zoom: "assets/tutorials/compression/z_original.png" },
+      ffv1_lossless: { preview: "assets/tutorials/compression/ffv1.png", zoom: "assets/tutorials/compression/z_ffv1.png" },
+      x265_lossless: { preview: "assets/tutorials/compression/x265_lossless.png", zoom: "assets/tutorials/compression/z_x265_lossless.png" },
+      mjpeg_q3: { preview: "assets/tutorials/compression/mjpeg_q3.png", zoom: "assets/tutorials/compression/z_mjpeg_q3.png" },
+      x265_crf6: { preview: "assets/tutorials/compression/x265_crf6.png", zoom: "assets/tutorials/compression/z_x265_crf6.png" },
+      x265_crf10: { preview: "assets/tutorials/compression/x265_crf10.png", zoom: "assets/tutorials/compression/z_x265_crf10.png" },
+      x265_crf14: { preview: "assets/tutorials/compression/x265_crf14.png", zoom: "assets/tutorials/compression/z_x265_crf14.png" },
+      x265_crf18: { preview: "assets/tutorials/compression/x265_crf18.png", zoom: "assets/tutorials/compression/z_x265_crf18.png" },
+      x265_crf22: { preview: "assets/tutorials/compression/x265_crf22.png", zoom: "assets/tutorials/compression/z_x265_crf22.png" },
+      x265_crf26: { preview: "assets/tutorials/compression/x265_crf26.png", zoom: "assets/tutorials/compression/z_x265_crf26.png" },
+      x265_crf30: { preview: "assets/tutorials/compression/x265_crf30.png", zoom: "assets/tutorials/compression/z_x265_crf30.png" }
+    };
+
+    const methods = orderedIds
+      .map((id) => {
+        if (id === "original") {
+          return {
+            id,
+            label: labels[id],
+            note: notes[id],
+            images: imageMap[id],
+            stats: {
+              compressed_gb: payload.subset_size_gb,
+              percent_of_input: 100,
+              compression_time_sec: 0,
+              psnr_mean: 100,
+              ssim_mean: 1
+            }
+          };
+        }
+
+        const stats = resultMap[id];
+        if (!stats) {
+          return null;
+        }
+
+        return {
+          id,
+          label: labels[id],
+          note: notes[id],
+          images: imageMap[id],
+          stats
+        };
+      })
+      .filter(Boolean);
+
+    const metricDefs = {
+      size: {
+        label: "Compressed size",
+        key: "compressed_gb",
+        note: "Values shown relative to the same 30.9 second subset.",
+        format: (value) => `${value >= 1 ? value.toFixed(2) : value.toFixed(3)} GB`
+      },
+      percent: {
+        label: "% of original",
+        key: "percent_of_input",
+        note: "Smaller bars indicate stronger compression.",
+        format: (value) => `${value >= 10 ? value.toFixed(1) : value.toFixed(2)}%`
+      },
+      time: {
+        label: "Compression time",
+        key: "compression_time_sec",
+        note: "Measured encode time on the same input subset.",
+        format: (value, method) => (method.id === "original" ? "Reference" : `${value.toFixed(value >= 10 ? 1 : 2)} s`)
+      },
+      psnr: {
+        label: "PSNR",
+        key: "psnr_mean",
+        note: "Higher PSNR indicates closer reconstruction to the raw reference.",
+        format: (value) => `${value.toFixed(2)} dB`
+      },
+      ssim: {
+        label: "SSIM",
+        key: "ssim_mean",
+        note: "Higher SSIM indicates greater structural similarity to the raw reference.",
+        format: (value) => value.toFixed(4)
+      }
+    };
+
+    const chartBody = root.querySelector("[data-compression-chart-body]");
+    const metricNote = root.querySelector("[data-compression-metric-note]");
+    const metricButtons = Array.from(root.querySelectorAll("[data-compression-metric]"));
+    const leftGrid = root.querySelector("[data-compression-blocks-left]");
+    const rightGrid = root.querySelector("[data-compression-blocks-right]");
+    const storageLabel = root.querySelector("[data-compression-storage-label]");
+    const storageValue = root.querySelector("[data-compression-storage-value]");
+    const storageNote = root.querySelector("[data-compression-storage-note]");
+    const storageRatio = root.querySelector("[data-compression-storage-ratio]");
+    if (!chartBody || !leftGrid || !rightGrid || !storageLabel || !storageValue || !storageNote || !storageRatio) {
+      return;
+    }
+
+    const createBlocks = (container, total, ghost = false) => {
+      container.innerHTML = "";
+      const blocks = [];
+      for (let i = 0; i < total; i += 1) {
+        const block = document.createElement("span");
+        block.className = `compression-block${ghost ? " is-ghost" : ""}`;
+        block.style.transitionDelay = `${i * 18}ms`;
+        container.appendChild(block);
+        blocks.push(block);
+      }
+      return blocks;
+    };
+
+    const leftBlocks = createBlocks(leftGrid, 48, true);
+    const rightBlocks = createBlocks(rightGrid, 48);
+    leftBlocks.forEach((block) => {
+      block.classList.add("is-active");
+    });
+
+    const createVisual = (src, alt, caption) => {
+      const figure = document.createElement("figure");
+      figure.className = "compression-row-visual";
+
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = alt;
+
+      const fallback = document.createElement("div");
+      fallback.className = "compression-row-visual-fallback";
+      fallback.textContent = `${caption} unavailable`;
+
+      const figcaption = document.createElement("figcaption");
+      figcaption.textContent = caption;
+
+      img.addEventListener("error", () => {
+        figure.classList.add("is-missing");
+      });
+
+      if (img.complete && img.naturalWidth === 0) {
+        figure.classList.add("is-missing");
+      }
+
+      figure.append(img, fallback, figcaption);
+      return figure;
+    };
+
+    const rows = methods.map((method) => {
+      const row = document.createElement("article");
+      row.className = "compression-chart-row";
+
+      const label = document.createElement("div");
+      label.className = "compression-row-label";
+      label.innerHTML = `<strong>${method.label}</strong><span>${method.note}</span>`;
+
+      const preview = createVisual(method.images.preview, `${method.label} preview`, "Overview");
+      const zoom = createVisual(method.images.zoom, `${method.label} zoomed preview`, "Zoom");
+
+      const bar = document.createElement("div");
+      bar.className = "compression-row-bar";
+
+      const barLabel = document.createElement("div");
+      barLabel.className = "compression-row-bar-label";
+      const metricName = document.createElement("span");
+      metricName.textContent = metricDefs.size.label;
+      const metricValue = document.createElement("span");
+      metricValue.className = "compression-row-bar-value";
+      barLabel.append(metricName, metricValue);
+
+      const track = document.createElement("div");
+      track.className = "compression-row-bar-track";
+      const fill = document.createElement("div");
+      fill.className = "compression-row-bar-fill";
+      track.appendChild(fill);
+
+      const note = document.createElement("div");
+      note.className = "compression-row-bar-note";
+      note.textContent = method.id === "original" ? "Reference subset" : "Measured from the same source interval";
+
+      bar.append(barLabel, track, note);
+      row.append(label, preview, bar, zoom);
+      chartBody.appendChild(row);
+
+      return { method, metricName, metricValue, fill };
+    });
+
+    let activeMetric = "size";
+    let chartVisible = false;
+    let hasAnimatedIn = false;
+    let activeStorageIndex = 0;
+
+    const getMetricValue = (method, metricKey) => {
+      const value = method.stats[metricDefs[metricKey].key];
+      return Number.isFinite(value) ? value : 0;
+    };
+
+    const updateStorage = () => {
+      const candidates = methods.slice(1);
+      const method = candidates[activeStorageIndex % candidates.length];
+      const ratio = sharedClamp(method.stats.percent_of_input / 100, 0.01, 1);
+      const activeCount = Math.max(1, Math.round(rightBlocks.length * ratio));
+
+      rightBlocks.forEach((block, index) => {
+        const isActive = index < activeCount;
+        block.classList.toggle("is-active", isActive);
+        block.style.transitionDelay = `${index * 18}ms`;
+      });
+
+      storageLabel.textContent = method.label;
+      storageValue.textContent = `${Math.round(ratio * 100)}% of the raw subset`;
+      storageRatio.textContent = `${method.stats.compressed_gb.toFixed(method.stats.compressed_gb >= 1 ? 2 : 3)} GB vs ${payload.subset_size_gb.toFixed(2)} GB`;
+      storageNote.textContent = method.note;
+    };
+
+    const renderMetric = (animateFromZero = false) => {
+      const def = metricDefs[activeMetric];
+      const maxValue = Math.max(...methods.map((method) => getMetricValue(method, activeMetric)), 1);
+      if (metricNote) {
+        metricNote.textContent = `${def.label}. ${def.note}`;
+      }
+
+      rows.forEach((row, index) => {
+        const value = getMetricValue(row.method, activeMetric);
+        const width = `${sharedClamp((value / maxValue) * 100, 0, 100)}%`;
+        row.metricName.textContent = def.label;
+        row.metricValue.textContent = def.format(value, row.method);
+        row.fill.style.transition = `width ${animateFromZero ? 920 : 720}ms cubic-bezier(0.22, 1, 0.36, 1) ${index * 45}ms`;
+        if (animateFromZero) {
+          row.fill.style.width = "0%";
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              row.fill.style.width = width;
+            });
+          });
+        } else {
+          row.fill.style.width = width;
+        }
+      });
+    };
+
+    metricButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextMetric = button.getAttribute("data-compression-metric");
+        if (!nextMetric || !metricDefs[nextMetric] || nextMetric === activeMetric) {
+          return;
+        }
+        activeMetric = nextMetric;
+        metricButtons.forEach((node) => {
+          node.classList.toggle("is-active", node === button);
+        });
+        renderMetric(false);
+      });
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || hasAnimatedIn) {
+            return;
+          }
+          chartVisible = true;
+          hasAnimatedIn = true;
+          renderMetric(true);
+          observer.disconnect();
+        });
+      },
+      { threshold: 0.28 }
+    );
+    observer.observe(chartBody);
+
+    renderMetric(false);
+    updateStorage();
+    window.setInterval(() => {
+      activeStorageIndex = (activeStorageIndex + 1) % Math.max(1, methods.length - 1);
+      updateStorage();
+    }, 3200);
+  };
+
   initResearchFrameworks();
   initResearchProjects();
   initProjectCarousels();
+  initCompressionTutorial();
 
   const canvas = document.getElementById("brain-canvas");
   if (!canvas) {
