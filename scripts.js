@@ -782,6 +782,13 @@
     const detailSelectedPreview = root.querySelector("[data-detail-selected-preview]");
     const detailOriginalZoom = root.querySelector("[data-detail-original-zoom]");
     const detailSelectedZoom = root.querySelector("[data-detail-selected-zoom]");
+    const modal = root.querySelector("[data-compression-modal]");
+    const modalCard = root.querySelector("[data-compression-modal-card]");
+    const modalGrid = root.querySelector("[data-compression-modal-grid]");
+    const modalTitle = root.querySelector("[data-compression-modal-title]");
+    const modalOriginal = root.querySelector("[data-modal-original]");
+    const modalSelected = root.querySelector("[data-modal-selected]");
+    const modalCloseButtons = Array.from(root.querySelectorAll("[data-compression-modal-close]"));
     const leftGrid = root.querySelector("[data-compression-blocks-left]");
     const rightGrid = root.querySelector("[data-compression-blocks-right]");
     const storageLabel = root.querySelector("[data-compression-storage-label]");
@@ -805,7 +812,14 @@
       !detailOriginalPreview ||
       !detailSelectedPreview ||
       !detailOriginalZoom ||
-      !detailSelectedZoom
+      !detailSelectedZoom ||
+      !modal ||
+      !modalCard ||
+      !modalGrid ||
+      !modalTitle ||
+      !modalOriginal ||
+      !modalSelected ||
+      !modalCloseButtons.length
     ) {
       return;
     }
@@ -896,6 +910,9 @@
     let activeMethodId = null;
     const cycleMethods = methods.slice(1);
     let activeCycleIndex = 0;
+    let comparisonIntervalId = null;
+    let storageIntervalId = null;
+    let autoplayStopped = false;
 
     const getMetricValue = (method, metricKey) => {
       const value = method.stats[metricDefs[metricKey].key];
@@ -961,6 +978,55 @@
       );
     };
 
+    const syncModalLayout = () => {
+      if (modal.hidden) {
+        return;
+      }
+      const rect = modalGrid.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        return;
+      }
+      const sourceImg =
+        modalSelected.querySelector("img")?.naturalWidth && modalSelected.querySelector("img")?.naturalHeight
+          ? modalSelected.querySelector("img")
+          : modalOriginal.querySelector("img");
+      const aspect =
+        sourceImg && sourceImg.naturalWidth && sourceImg.naturalHeight
+          ? sourceImg.naturalWidth / sourceImg.naturalHeight
+          : 1.85;
+      const horizontalWidth = rect.width / 2;
+      const horizontalHeight = rect.height;
+      const verticalWidth = rect.width;
+      const verticalHeight = rect.height / 2;
+      const horizontalArea =
+        2 *
+        Math.min(horizontalWidth, horizontalHeight * aspect) *
+        Math.min(horizontalHeight, horizontalWidth / aspect);
+      const verticalArea =
+        2 *
+        Math.min(verticalWidth, verticalHeight * aspect) *
+        Math.min(verticalHeight, verticalWidth / aspect);
+      modalGrid.classList.toggle("is-vertical", verticalArea > horizontalArea);
+    };
+
+    const openModal = (view) => {
+      const selected = methods.find((method) => method.id === activeMethodId) || cycleMethods[0] || methods[0];
+      const original = methods[0];
+      const caption = view === "zoom" ? "Zoom" : "Full frame";
+      const originalSrc = view === "zoom" ? original.images.zoom : original.images.preview;
+      const selectedSrc = view === "zoom" ? selected.images.zoom : selected.images.preview;
+
+      modalTitle.textContent = `${selected.label} vs original · ${caption}`;
+      setDetailFigure(modalOriginal, originalSrc, `Original raw ${caption.toLowerCase()} comparison`, "Original raw");
+      setDetailFigure(modalSelected, selectedSrc, `${selected.label} ${caption.toLowerCase()} comparison`, selected.label);
+      modal.hidden = false;
+      window.requestAnimationFrame(syncModalLayout);
+    };
+
+    const closeModal = () => {
+      modal.hidden = true;
+    };
+
     const renderMetric = (animateFromZero = false) => {
       const def = metricDefs[activeMetric];
       const maxValue = Math.max(...methods.map((method) => getMetricValue(method, activeMetric)), 1);
@@ -1005,6 +1071,11 @@
 
     rows.forEach((row) => {
       row.bar.addEventListener("click", () => {
+        autoplayStopped = true;
+        if (comparisonIntervalId) {
+          window.clearInterval(comparisonIntervalId);
+          comparisonIntervalId = null;
+        }
         if (row.method.id !== "original") {
           const nextIndex = cycleMethods.findIndex((method) => method.id === row.method.id);
           if (nextIndex >= 0) {
@@ -1013,6 +1084,23 @@
         }
         updateDetail(row.method);
       });
+    });
+
+    [detailOriginalPreview, detailSelectedPreview, detailOriginalZoom, detailSelectedZoom].forEach((figure) => {
+      figure.addEventListener("click", () => {
+        const view = figure.getAttribute("data-comparison-view") || "preview";
+        openModal(view);
+      });
+    });
+
+    modalCloseButtons.forEach((button) => {
+      button.addEventListener("click", closeModal);
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
     });
 
     metricButtons.forEach((button) => {
@@ -1049,15 +1137,20 @@
     updateStorage();
     updateDetail(cycleMethods[0] || methods[0]);
     window.requestAnimationFrame(syncComparisonHeight);
-    window.addEventListener("resize", syncComparisonHeight);
-    window.setInterval(() => {
+    window.addEventListener("resize", () => {
+      syncComparisonHeight();
+      syncModalLayout();
+    });
+    storageIntervalId = window.setInterval(() => {
       activeStorageIndex = (activeStorageIndex + 1) % Math.max(1, methods.length - 1);
       updateStorage();
-      if (cycleMethods.length) {
+    }, 3200);
+    comparisonIntervalId = window.setInterval(() => {
+      if (!autoplayStopped && cycleMethods.length) {
         activeCycleIndex = (activeCycleIndex + 1) % cycleMethods.length;
         updateDetail(cycleMethods[activeCycleIndex]);
+        syncComparisonHeight();
       }
-      syncComparisonHeight();
     }, 5000);
   };
 

@@ -1248,6 +1248,7 @@ h3 {
   gap: 1rem;
   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
   align-items: stretch;
+  position: relative;
 }
 
 .compression-chart {
@@ -1419,6 +1420,7 @@ h3 {
   display: grid;
   gap: 0.35rem;
   margin: 0;
+  cursor: zoom-in;
 }
 
 .compression-detail-figure img,
@@ -1456,6 +1458,98 @@ h3 {
   color: var(--muted);
 }
 
+.compression-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.compression-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: rgba(244, 246, 245, 0.94);
+  backdrop-filter: blur(4px);
+}
+
+.compression-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1040px);
+  max-height: 100%;
+  display: grid;
+  gap: 0.8rem;
+  padding: 0.9rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(17, 32, 25, 0.1);
+  box-shadow: 0 20px 60px rgba(17, 32, 25, 0.16);
+}
+
+.compression-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.compression-modal-header h3 {
+  font-size: 1rem;
+}
+
+.compression-modal-close {
+  min-width: 42px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 32, 25, 0.08);
+  color: var(--accent-strong);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.compression-modal-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.compression-modal-grid.is-vertical {
+  grid-template-columns: 1fr;
+}
+
+.compression-modal-figure {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.compression-modal-figure img,
+.compression-modal-figure .compression-detail-fallback {
+  width: 100%;
+  max-height: min(58vh, 560px);
+  border-radius: 16px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background: #fff;
+}
+
+.compression-modal-figure img {
+  object-fit: contain;
+  padding: 0.45rem;
+}
+
+.compression-modal-figure.is-missing img {
+  display: none;
+}
+
+.compression-modal-figure.is-missing .compression-detail-fallback {
+  display: grid;
+}
+
 @media (max-width: 960px) {
   .grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1476,6 +1570,12 @@ h3 {
   .compression-detail {
     position: static;
     height: auto !important;
+  }
+
+  .compression-modal {
+    position: fixed;
+    inset: 92px 0 0 0;
+    padding: 1rem;
   }
 
   .hero-layout {
@@ -1588,6 +1688,10 @@ h3 {
   }
 
   .compression-detail-row-figures {
+    grid-template-columns: 1fr;
+  }
+
+  .compression-modal-grid {
     grid-template-columns: 1fr;
   }
 

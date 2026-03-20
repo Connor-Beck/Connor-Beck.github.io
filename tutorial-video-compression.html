@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=32">
+  <link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -167,12 +167,12 @@
                 <section class="compression-detail-row">
                   <div class="compression-detail-row-label">Original raw</div>
                   <div class="compression-detail-row-figures">
-                    <figure class="compression-detail-figure" data-detail-original-preview>
+                    <figure class="compression-detail-figure" data-detail-original-preview data-comparison-view="preview">
                       <img alt="">
                       <div class="compression-detail-fallback">Preview unavailable</div>
                       <figcaption>Full frame</figcaption>
                     </figure>
-                    <figure class="compression-detail-figure" data-detail-original-zoom>
+                    <figure class="compression-detail-figure" data-detail-original-zoom data-comparison-view="zoom">
                       <img alt="">
                       <div class="compression-detail-fallback">Zoom unavailable</div>
                       <figcaption>Zoom</figcaption>
@@ -183,12 +183,12 @@
                 <section class="compression-detail-row">
                   <div class="compression-detail-row-label" data-compression-detail-selected-label>Selected method</div>
                   <div class="compression-detail-row-figures">
-                    <figure class="compression-detail-figure" data-detail-selected-preview>
+                    <figure class="compression-detail-figure" data-detail-selected-preview data-comparison-view="preview">
                       <img alt="">
                       <div class="compression-detail-fallback">Preview unavailable</div>
                       <figcaption>Full frame</figcaption>
                     </figure>
-                    <figure class="compression-detail-figure" data-detail-selected-zoom>
+                    <figure class="compression-detail-figure" data-detail-selected-zoom data-comparison-view="zoom">
                       <img alt="">
                       <div class="compression-detail-fallback">Zoom unavailable</div>
                       <figcaption>Zoom</figcaption>
@@ -197,6 +197,31 @@
                 </section>
               </div>
             </section>
+
+            <div class="compression-modal" data-compression-modal hidden>
+              <div class="compression-modal-backdrop" data-compression-modal-close></div>
+              <div class="compression-modal-card" data-compression-modal-card>
+                <div class="compression-modal-header">
+                  <div>
+                    <p class="kicker">Expanded Comparison</p>
+                    <h3 data-compression-modal-title></h3>
+                  </div>
+                  <button class="compression-modal-close" type="button" data-compression-modal-close aria-label="Close comparison overlay">&times;</button>
+                </div>
+                <div class="compression-modal-grid" data-compression-modal-grid>
+                  <figure class="compression-modal-figure" data-modal-original>
+                    <img alt="">
+                    <div class="compression-detail-fallback">Original image unavailable</div>
+                    <figcaption>Original raw</figcaption>
+                  </figure>
+                  <figure class="compression-modal-figure" data-modal-selected>
+                    <img alt="">
+                    <div class="compression-detail-fallback">Compressed image unavailable</div>
+                    <figcaption>Selected method</figcaption>
+                  </figure>
+                </div>
+              </div>
+            </div>
           </div>
         </article>
       </div>
@@ -473,6 +498,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=32"></script>
+  <script src="scripts.js?v=33"></script>
 </body>
 </html>
