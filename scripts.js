@@ -770,6 +770,7 @@
     };
 
     const chartBody = root.querySelector("[data-compression-chart-body]");
+    const chartSection = root.querySelector(".compression-chart");
     const metricNote = root.querySelector("[data-compression-metric-note]");
     const metricButtons = Array.from(root.querySelectorAll("[data-compression-metric]"));
     const detailPanel = root.querySelector("[data-compression-detail]");
@@ -789,6 +790,7 @@
     const storageRatio = root.querySelector("[data-compression-storage-ratio]");
     if (
       !chartBody ||
+      !chartSection ||
       !leftGrid ||
       !rightGrid ||
       !storageLabel ||
@@ -993,6 +995,14 @@
       }
     };
 
+    const syncComparisonHeight = () => {
+      if (window.innerWidth <= 960) {
+        detailPanel.style.height = "";
+        return;
+      }
+      detailPanel.style.height = `${chartSection.offsetHeight}px`;
+    };
+
     rows.forEach((row) => {
       row.bar.addEventListener("click", () => {
         if (row.method.id !== "original") {
@@ -1038,6 +1048,8 @@
     renderMetric(false);
     updateStorage();
     updateDetail(cycleMethods[0] || methods[0]);
+    window.requestAnimationFrame(syncComparisonHeight);
+    window.addEventListener("resize", syncComparisonHeight);
     window.setInterval(() => {
       activeStorageIndex = (activeStorageIndex + 1) % Math.max(1, methods.length - 1);
       updateStorage();
@@ -1045,6 +1057,7 @@
         activeCycleIndex = (activeCycleIndex + 1) % cycleMethods.length;
         updateDetail(cycleMethods[activeCycleIndex]);
       }
+      syncComparisonHeight();
     }, 5000);
   };
 
