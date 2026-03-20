@@ -1243,21 +1243,28 @@ h3 {
   border-color: rgba(29, 91, 73, 0.18);
 }
 
+.compression-comparison-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  align-items: start;
+}
+
 .compression-chart {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.4rem;
 }
 
 .compression-chart-head,
 .compression-chart-row {
   display: grid;
-  grid-template-columns: minmax(138px, 0.76fr) minmax(0, 1fr) auto;
-  gap: 0.75rem;
+  grid-template-columns: minmax(140px, 0.78fr) minmax(0, 1fr) auto;
+  gap: 0.6rem;
   align-items: center;
 }
 
 .compression-chart-head {
-  padding: 0 0.2rem;
+  padding: 0 0.1rem 0.2rem;
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1267,21 +1274,17 @@ h3 {
 
 .compression-chart-body {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.08rem;
 }
 
 .compression-chart-row {
-  padding: 0.7rem 0.8rem;
-  border: 1px solid rgba(17, 32, 25, 0.08);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.84);
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0.22rem 0.28rem;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
 }
 
 .compression-chart-row.is-active {
-  border-color: rgba(29, 91, 73, 0.22);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 10px 24px rgba(17, 32, 25, 0.08);
+  background: rgba(29, 91, 73, 0.1);
 }
 
 .compression-row-label strong,
@@ -1291,63 +1294,17 @@ h3 {
 
 .compression-row-label strong {
   font-family: "Sora", "Avenir Next", sans-serif;
-  font-size: 0.96rem;
+  font-size: 0.82rem;
+  line-height: 1.2;
 }
 
 .compression-row-label span {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.compression-row-visuals {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.compression-row-visual img,
-.compression-row-visual-fallback {
-  width: 58px;
-  aspect-ratio: 1;
-  border-radius: 12px;
-  border: 1px solid rgba(17, 32, 25, 0.08);
-  background: #fff;
-}
-
-.compression-row-visual {
-  display: grid;
-  gap: 0.2rem;
-  justify-items: center;
-}
-
-.compression-row-visual img {
-  object-fit: cover;
-}
-
-.compression-row-visual-fallback {
-  display: none;
-  place-items: center;
-  padding: 0.75rem;
-  color: var(--muted);
-  text-align: center;
-  font-size: 0.78rem;
-}
-
-.compression-row-visual.is-missing img {
-  display: none;
-}
-
-.compression-row-visual.is-missing .compression-row-visual-fallback {
-  display: grid;
-}
-
-.compression-row-visual figcaption {
   display: none;
 }
 
 .compression-row-bar-button {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.14rem;
   width: 100%;
   border: 0;
   background: transparent;
@@ -1364,23 +1321,16 @@ h3 {
 }
 
 .compression-row-bar-label {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: baseline;
-  font-size: 0.86rem;
-  color: var(--muted);
+  display: none;
 }
 
 .compression-row-bar-value {
-  color: var(--accent-strong);
-  font-weight: 700;
-  white-space: nowrap;
+  display: none;
 }
 
 .compression-row-bar-track {
   position: relative;
-  height: 16px;
+  height: 14px;
   border-radius: 999px;
   background: rgba(17, 32, 25, 0.07);
   overflow: hidden;
@@ -1396,8 +1346,14 @@ h3 {
 }
 
 .compression-row-bar-note {
+  display: none;
+}
+
+.compression-row-value {
   font-size: 0.78rem;
-  color: var(--muted);
+  font-weight: 700;
+  color: var(--accent-strong);
+  white-space: nowrap;
 }
 
 .compression-scale-note {
@@ -1406,21 +1362,15 @@ h3 {
   color: var(--muted);
 }
 
-.compression-detail-empty {
-  padding: 0.95rem 1rem;
-  border: 1px dashed rgba(17, 32, 25, 0.16);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.65);
-  color: var(--muted);
-}
-
 .compression-detail {
   display: grid;
-  gap: 1rem;
+  gap: 0.9rem;
   padding: 1rem;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(17, 32, 25, 0.08);
+  position: sticky;
+  top: 98px;
 }
 
 .compression-detail-header {
@@ -1432,17 +1382,24 @@ h3 {
 
 .compression-detail-grid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  grid-template-columns: 1fr;
 }
 
-.compression-detail-column {
+.compression-detail-row {
   display: grid;
   gap: 0.8rem;
 }
 
-.compression-detail-column h4 {
-  font-size: 0.95rem;
+.compression-detail-row-label {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.9rem;
+}
+
+.compression-detail-row-figures {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .compression-detail-figure {
@@ -1493,22 +1450,18 @@ h3 {
 
   .compression-overview,
   .compression-storage-panels,
-  .compression-method-grid {
+  .compression-method-grid,
+  .compression-comparison-layout {
     grid-template-columns: 1fr;
   }
 
   .compression-chart-head,
   .compression-chart-row {
-    grid-template-columns: minmax(120px, 0.82fr) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(124px, 0.82fr) minmax(0, 1fr) auto;
   }
 
-  .compression-row-visual img,
-  .compression-row-visual-fallback {
-    width: 50px;
-  }
-
-  .compression-detail-grid {
-    grid-template-columns: 1fr;
+  .compression-detail {
+    position: static;
   }
 
   .hero-layout {
@@ -1605,24 +1558,23 @@ h3 {
   }
 
   .compression-chart-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1fr) auto;
   }
 
-  .compression-row-visuals {
-    justify-content: flex-start;
+  .compression-row-label strong {
+    font-size: 0.76rem;
   }
 
   .compression-detail-header {
     flex-direction: column;
   }
 
-  .compression-row-visual img,
-  .compression-row-visual-fallback {
-    width: 52px;
-  }
-
   .compression-detail {
     padding: 0.9rem;
+  }
+
+  .compression-detail-row-figures {
+    grid-template-columns: 1fr;
   }
 
   .table-like,

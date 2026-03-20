@@ -772,11 +772,11 @@
     const chartBody = root.querySelector("[data-compression-chart-body]");
     const metricNote = root.querySelector("[data-compression-metric-note]");
     const metricButtons = Array.from(root.querySelectorAll("[data-compression-metric]"));
-    const detailEmpty = root.querySelector("[data-compression-detail-empty]");
     const detailPanel = root.querySelector("[data-compression-detail]");
     const detailTitle = root.querySelector("[data-compression-detail-title]");
     const detailCopy = root.querySelector("[data-compression-detail-copy]");
     const detailMetric = root.querySelector("[data-compression-detail-metric]");
+    const detailSelectedLabel = root.querySelector("[data-compression-detail-selected-label]");
     const detailOriginalPreview = root.querySelector("[data-detail-original-preview]");
     const detailSelectedPreview = root.querySelector("[data-detail-selected-preview]");
     const detailOriginalZoom = root.querySelector("[data-detail-original-zoom]");
@@ -799,6 +799,7 @@
       !detailTitle ||
       !detailCopy ||
       !detailMetric ||
+      !detailSelectedLabel ||
       !detailOriginalPreview ||
       !detailSelectedPreview ||
       !detailOriginalZoom ||
@@ -825,33 +826,6 @@
     leftBlocks.forEach((block) => {
       block.classList.add("is-active");
     });
-
-    const createVisual = (src, alt, caption) => {
-      const figure = document.createElement("figure");
-      figure.className = "compression-row-visual";
-
-      const img = document.createElement("img");
-      img.src = src;
-      img.alt = alt;
-
-      const fallback = document.createElement("div");
-      fallback.className = "compression-row-visual-fallback";
-      fallback.textContent = `${caption} unavailable`;
-
-      const figcaption = document.createElement("figcaption");
-      figcaption.textContent = caption;
-
-      img.addEventListener("error", () => {
-        figure.classList.add("is-missing");
-      });
-
-      if (img.complete && img.naturalWidth === 0) {
-        figure.classList.add("is-missing");
-      }
-
-      figure.append(img, fallback, figcaption);
-      return figure;
-    };
 
     const setDetailFigure = (figure, src, alt, caption) => {
       const img = figure.querySelector("img");
@@ -880,13 +854,6 @@
       label.className = "compression-row-label";
       label.innerHTML = `<strong>${method.label}</strong><span>${method.note}</span>`;
 
-      const visuals = document.createElement("div");
-      visuals.className = "compression-row-visuals";
-      visuals.append(
-        createVisual(method.images.preview, `${method.label} preview`, "Full"),
-        createVisual(method.images.zoom, `${method.label} zoomed preview`, "Zoom")
-      );
-
       const bar = document.createElement("button");
       bar.type = "button";
       bar.className = "compression-row-bar-button";
@@ -910,11 +877,14 @@
       note.className = "compression-row-bar-note";
       note.textContent = method.id === "original" ? "Reference subset" : "Measured from the same source interval";
 
+      const value = document.createElement("div");
+      value.className = "compression-row-value";
+
       bar.append(barLabel, track, note);
-      row.append(label, bar, visuals);
+      row.append(label, bar, value);
       chartBody.appendChild(row);
 
-      return { method, row, bar, metricName, metricValue, fill };
+      return { method, row, bar, metricName, metricValue, fill, value };
     });
 
     let activeMetric = "size";
@@ -922,6 +892,8 @@
     let hasAnimatedIn = false;
     let activeStorageIndex = 0;
     let activeMethodId = null;
+    const cycleMethods = methods.slice(1);
+    let activeCycleIndex = 0;
 
     const getMetricValue = (method, metricKey) => {
       const value = method.stats[metricDefs[metricKey].key];
@@ -953,12 +925,9 @@
         row.row.classList.toggle("is-active", row.method.id === method.id);
       });
 
-      if (detailEmpty) {
-        detailEmpty.hidden = true;
-      }
-      detailPanel.hidden = false;
       detailTitle.textContent = method.label;
       detailCopy.textContent = method.note;
+      detailSelectedLabel.textContent = method.label;
       detailMetric.textContent = `${metricDefs[activeMetric].label}: ${metricDefs[activeMetric].format(
         getMetricValue(method, activeMetric),
         method
@@ -1002,6 +971,7 @@
         const width = `${sharedClamp((value / maxValue) * 100, 0, 100)}%`;
         row.metricName.textContent = def.label;
         row.metricValue.textContent = def.format(value, row.method);
+        row.value.textContent = def.format(value, row.method);
         row.fill.style.transition = `width ${animateFromZero ? 920 : 720}ms cubic-bezier(0.22, 1, 0.36, 1) ${index * 45}ms`;
         if (animateFromZero) {
           row.fill.style.width = "0%";
@@ -1025,6 +995,12 @@
 
     rows.forEach((row) => {
       row.bar.addEventListener("click", () => {
+        if (row.method.id !== "original") {
+          const nextIndex = cycleMethods.findIndex((method) => method.id === row.method.id);
+          if (nextIndex >= 0) {
+            activeCycleIndex = nextIndex;
+          }
+        }
         updateDetail(row.method);
       });
     });
@@ -1061,10 +1037,15 @@
 
     renderMetric(false);
     updateStorage();
+    updateDetail(cycleMethods[0] || methods[0]);
     window.setInterval(() => {
       activeStorageIndex = (activeStorageIndex + 1) % Math.max(1, methods.length - 1);
       updateStorage();
-    }, 3200);
+      if (cycleMethods.length) {
+        activeCycleIndex = (activeCycleIndex + 1) % cycleMethods.length;
+        updateDetail(cycleMethods[activeCycleIndex]);
+      }
+    }, 5000);
   };
 
   initResearchFrameworks();
