@@ -788,7 +788,6 @@
     const modalTitle = root.querySelector("[data-compression-modal-title]");
     const modalOriginal = root.querySelector("[data-modal-original]");
     const modalSelected = root.querySelector("[data-modal-selected]");
-    const modalCloseButtons = Array.from(root.querySelectorAll("[data-compression-modal-close]"));
     const leftGrid = root.querySelector("[data-compression-blocks-left]");
     const rightGrid = root.querySelector("[data-compression-blocks-right]");
     const storageLabel = root.querySelector("[data-compression-storage-label]");
@@ -818,8 +817,7 @@
       !modalGrid ||
       !modalTitle ||
       !modalOriginal ||
-      !modalSelected ||
-      !modalCloseButtons.length
+      !modalSelected
     ) {
       return;
     }
@@ -1087,15 +1085,18 @@
     });
 
     [detailOriginalPreview, detailSelectedPreview, detailOriginalZoom, detailSelectedZoom].forEach((figure) => {
+      figure.addEventListener("mouseenter", () => {
+        const view = figure.getAttribute("data-comparison-view") || "preview";
+        openModal(view);
+      });
       figure.addEventListener("click", () => {
         const view = figure.getAttribute("data-comparison-view") || "preview";
         openModal(view);
       });
     });
 
-    modalCloseButtons.forEach((button) => {
-      button.addEventListener("click", closeModal);
-    });
+    modal.addEventListener("click", closeModal);
+    modal.addEventListener("mouseleave", closeModal);
 
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {

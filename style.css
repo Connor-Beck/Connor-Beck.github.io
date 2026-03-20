@@ -1506,18 +1506,6 @@ h3 {
   font-size: 1rem;
 }
 
-.compression-modal-close {
-  min-width: 42px;
-  min-height: 42px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(17, 32, 25, 0.08);
-  color: var(--accent-strong);
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
 .compression-modal-grid {
   display: grid;
   gap: 0.8rem;
