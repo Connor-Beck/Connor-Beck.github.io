@@ -1378,19 +1378,13 @@ h3 {
 }
 
 .compression-detail-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.2rem 0.75rem;
-  align-items: start;
-}
-
-.compression-detail-header .kicker,
-[data-compression-detail-copy] {
   display: none;
 }
 
-.compression-detail-header h3 {
-  font-size: 1rem;
+.compression-detail-meta .kicker,
+[data-compression-detail-copy],
+.compression-detail-meta h3 {
+  display: none;
 }
 
 .compression-detail-grid {
@@ -1408,6 +1402,8 @@ h3 {
   font-family: "Sora", "Avenir Next", sans-serif;
   font-size: 0.78rem;
   line-height: 1.2;
+  text-align: center;
+  justify-self: center;
 }
 
 .compression-detail-row-figures {
@@ -1454,8 +1450,14 @@ h3 {
 }
 
 .compression-detail-figure figcaption {
-  font-size: 0.68rem;
-  color: var(--muted);
+  display: none;
+}
+
+.compression-detail-metric-readout {
+  justify-self: end;
+  align-self: end;
+  text-align: right;
+  margin-top: 0.1rem;
 }
 
 .compression-modal {
@@ -1681,10 +1683,6 @@ h3 {
 
   .compression-row-label strong {
     font-size: 0.76rem;
-  }
-
-  .compression-detail-header {
-    grid-template-columns: 1fr;
   }
 
   .compression-detail {

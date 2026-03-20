@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=34">
+  <link rel="stylesheet" href="style.css?v=35">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -155,12 +155,11 @@
 
             <section class="compression-detail" data-compression-detail>
               <div class="compression-detail-header">
-                <div>
+                <div class="compression-detail-meta" aria-hidden="true">
                   <p class="kicker">Visual Comparison</p>
                   <h3 data-compression-detail-title></h3>
                   <p class="compression-scale-note" data-compression-detail-copy></p>
                 </div>
-                <p class="compression-scale-note" data-compression-detail-metric></p>
               </div>
 
               <div class="compression-detail-grid">
@@ -196,6 +195,8 @@
                   </div>
                 </section>
               </div>
+
+              <p class="compression-scale-note compression-detail-metric-readout" data-compression-detail-metric></p>
             </section>
 
             <div class="compression-modal" data-compression-modal hidden>
@@ -498,6 +499,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=34"></script>
+  <script src="scripts.js?v=35"></script>
 </body>
 </html>
