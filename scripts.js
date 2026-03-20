@@ -772,13 +772,38 @@
     const chartBody = root.querySelector("[data-compression-chart-body]");
     const metricNote = root.querySelector("[data-compression-metric-note]");
     const metricButtons = Array.from(root.querySelectorAll("[data-compression-metric]"));
+    const detailEmpty = root.querySelector("[data-compression-detail-empty]");
+    const detailPanel = root.querySelector("[data-compression-detail]");
+    const detailTitle = root.querySelector("[data-compression-detail-title]");
+    const detailCopy = root.querySelector("[data-compression-detail-copy]");
+    const detailMetric = root.querySelector("[data-compression-detail-metric]");
+    const detailOriginalPreview = root.querySelector("[data-detail-original-preview]");
+    const detailSelectedPreview = root.querySelector("[data-detail-selected-preview]");
+    const detailOriginalZoom = root.querySelector("[data-detail-original-zoom]");
+    const detailSelectedZoom = root.querySelector("[data-detail-selected-zoom]");
     const leftGrid = root.querySelector("[data-compression-blocks-left]");
     const rightGrid = root.querySelector("[data-compression-blocks-right]");
     const storageLabel = root.querySelector("[data-compression-storage-label]");
     const storageValue = root.querySelector("[data-compression-storage-value]");
     const storageNote = root.querySelector("[data-compression-storage-note]");
     const storageRatio = root.querySelector("[data-compression-storage-ratio]");
-    if (!chartBody || !leftGrid || !rightGrid || !storageLabel || !storageValue || !storageNote || !storageRatio) {
+    if (
+      !chartBody ||
+      !leftGrid ||
+      !rightGrid ||
+      !storageLabel ||
+      !storageValue ||
+      !storageNote ||
+      !storageRatio ||
+      !detailPanel ||
+      !detailTitle ||
+      !detailCopy ||
+      !detailMetric ||
+      !detailOriginalPreview ||
+      !detailSelectedPreview ||
+      !detailOriginalZoom ||
+      !detailSelectedZoom
+    ) {
       return;
     }
 
@@ -828,6 +853,25 @@
       return figure;
     };
 
+    const setDetailFigure = (figure, src, alt, caption) => {
+      const img = figure.querySelector("img");
+      const figcaption = figure.querySelector("figcaption");
+      if (!img || !figcaption) {
+        return;
+      }
+
+      figure.classList.remove("is-missing");
+      img.src = src;
+      img.alt = alt;
+      figcaption.textContent = caption;
+      img.onerror = () => {
+        figure.classList.add("is-missing");
+      };
+      if (img.complete && img.naturalWidth === 0) {
+        figure.classList.add("is-missing");
+      }
+    };
+
     const rows = methods.map((method) => {
       const row = document.createElement("article");
       row.className = "compression-chart-row";
@@ -836,11 +880,17 @@
       label.className = "compression-row-label";
       label.innerHTML = `<strong>${method.label}</strong><span>${method.note}</span>`;
 
-      const preview = createVisual(method.images.preview, `${method.label} preview`, "Overview");
-      const zoom = createVisual(method.images.zoom, `${method.label} zoomed preview`, "Zoom");
+      const visuals = document.createElement("div");
+      visuals.className = "compression-row-visuals";
+      visuals.append(
+        createVisual(method.images.preview, `${method.label} preview`, "Full"),
+        createVisual(method.images.zoom, `${method.label} zoomed preview`, "Zoom")
+      );
 
-      const bar = document.createElement("div");
-      bar.className = "compression-row-bar";
+      const bar = document.createElement("button");
+      bar.type = "button";
+      bar.className = "compression-row-bar-button";
+      bar.setAttribute("aria-label", `Inspect ${method.label} against the original reference`);
 
       const barLabel = document.createElement("div");
       barLabel.className = "compression-row-bar-label";
@@ -861,16 +911,17 @@
       note.textContent = method.id === "original" ? "Reference subset" : "Measured from the same source interval";
 
       bar.append(barLabel, track, note);
-      row.append(label, preview, bar, zoom);
+      row.append(label, bar, visuals);
       chartBody.appendChild(row);
 
-      return { method, metricName, metricValue, fill };
+      return { method, row, bar, metricName, metricValue, fill };
     });
 
     let activeMetric = "size";
     let chartVisible = false;
     let hasAnimatedIn = false;
     let activeStorageIndex = 0;
+    let activeMethodId = null;
 
     const getMetricValue = (method, metricKey) => {
       const value = method.stats[metricDefs[metricKey].key];
@@ -893,6 +944,50 @@
       storageValue.textContent = `${Math.round(ratio * 100)}% of the raw subset`;
       storageRatio.textContent = `${method.stats.compressed_gb.toFixed(method.stats.compressed_gb >= 1 ? 2 : 3)} GB vs ${payload.subset_size_gb.toFixed(2)} GB`;
       storageNote.textContent = method.note;
+    };
+
+    const updateDetail = (method) => {
+      const originalMethod = methods[0];
+      activeMethodId = method.id;
+      rows.forEach((row) => {
+        row.row.classList.toggle("is-active", row.method.id === method.id);
+      });
+
+      if (detailEmpty) {
+        detailEmpty.hidden = true;
+      }
+      detailPanel.hidden = false;
+      detailTitle.textContent = method.label;
+      detailCopy.textContent = method.note;
+      detailMetric.textContent = `${metricDefs[activeMetric].label}: ${metricDefs[activeMetric].format(
+        getMetricValue(method, activeMetric),
+        method
+      )}`;
+
+      setDetailFigure(
+        detailOriginalPreview,
+        originalMethod.images.preview,
+        "Original raw full frame preview",
+        "Original raw"
+      );
+      setDetailFigure(
+        detailSelectedPreview,
+        method.images.preview,
+        `${method.label} full frame preview`,
+        method.label
+      );
+      setDetailFigure(
+        detailOriginalZoom,
+        originalMethod.images.zoom,
+        "Original raw zoomed preview",
+        "Original raw"
+      );
+      setDetailFigure(
+        detailSelectedZoom,
+        method.images.zoom,
+        `${method.label} zoomed preview`,
+        method.label
+      );
     };
 
     const renderMetric = (animateFromZero = false) => {
@@ -919,7 +1014,20 @@
           row.fill.style.width = width;
         }
       });
+
+      if (activeMethodId) {
+        const selected = methods.find((method) => method.id === activeMethodId);
+        if (selected) {
+          detailMetric.textContent = `${def.label}: ${def.format(getMetricValue(selected, activeMetric), selected)}`;
+        }
+      }
     };
+
+    rows.forEach((row) => {
+      row.bar.addEventListener("click", () => {
+        updateDetail(row.method);
+      });
+    });
 
     metricButtons.forEach((button) => {
       button.addEventListener("click", () => {

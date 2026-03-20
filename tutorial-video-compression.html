@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="stylesheet" href="style.css?v=30">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -146,12 +146,56 @@
           <div class="compression-chart" aria-label="Compression comparison chart">
             <div class="compression-chart-head" aria-hidden="true">
               <span>Method</span>
-              <span>Overview</span>
               <span>Metric</span>
-              <span>Zoom</span>
+              <span>Full / Zoom</span>
             </div>
             <div class="compression-chart-body" data-compression-chart-body></div>
           </div>
+
+          <div class="compression-detail-empty" data-compression-detail-empty>
+            Tap or click a bar to inspect the selected compression against the uncompressed reference.
+          </div>
+
+          <section class="compression-detail" data-compression-detail hidden>
+            <div class="compression-detail-header">
+              <div>
+                <p class="kicker">Selected Comparison</p>
+                <h3 data-compression-detail-title></h3>
+                <p class="compression-scale-note" data-compression-detail-copy></p>
+              </div>
+              <p class="compression-scale-note" data-compression-detail-metric></p>
+            </div>
+
+            <div class="compression-detail-grid">
+              <section class="compression-detail-column">
+                <h4>Full frame</h4>
+                <figure class="compression-detail-figure" data-detail-original-preview>
+                  <img alt="">
+                  <div class="compression-detail-fallback">Preview unavailable</div>
+                  <figcaption>Original raw</figcaption>
+                </figure>
+                <figure class="compression-detail-figure" data-detail-selected-preview>
+                  <img alt="">
+                  <div class="compression-detail-fallback">Preview unavailable</div>
+                  <figcaption>Selected method</figcaption>
+                </figure>
+              </section>
+
+              <section class="compression-detail-column">
+                <h4>Zoomed region</h4>
+                <figure class="compression-detail-figure" data-detail-original-zoom>
+                  <img alt="">
+                  <div class="compression-detail-fallback">Zoom unavailable</div>
+                  <figcaption>Original raw</figcaption>
+                </figure>
+                <figure class="compression-detail-figure" data-detail-selected-zoom>
+                  <img alt="">
+                  <div class="compression-detail-fallback">Zoom unavailable</div>
+                  <figcaption>Selected method</figcaption>
+                </figure>
+              </section>
+            </div>
+          </section>
         </article>
       </div>
     </section>
@@ -427,6 +471,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=29"></script>
+  <script src="scripts.js?v=30"></script>
 </body>
 </html>

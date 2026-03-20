@@ -1251,8 +1251,8 @@ h3 {
 .compression-chart-head,
 .compression-chart-row {
   display: grid;
-  grid-template-columns: minmax(150px, 0.78fr) 120px minmax(280px, 1.36fr) 120px;
-  gap: 0.85rem;
+  grid-template-columns: minmax(138px, 0.76fr) minmax(0, 1fr) auto;
+  gap: 0.75rem;
   align-items: center;
 }
 
@@ -1267,14 +1267,21 @@ h3 {
 
 .compression-chart-body {
   display: grid;
-  gap: 0.72rem;
+  gap: 0.55rem;
 }
 
 .compression-chart-row {
-  padding: 0.8rem;
+  padding: 0.7rem 0.8rem;
   border: 1px solid rgba(17, 32, 25, 0.08);
-  border-radius: 18px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.84);
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.compression-chart-row.is-active {
+  border-color: rgba(29, 91, 73, 0.22);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 24px rgba(17, 32, 25, 0.08);
 }
 
 .compression-row-label strong,
@@ -1289,22 +1296,28 @@ h3 {
 
 .compression-row-label span {
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
 }
 
-.compression-row-visual {
-  display: grid;
-  gap: 0.3rem;
-  justify-items: center;
+.compression-row-visuals {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .compression-row-visual img,
 .compression-row-visual-fallback {
-  width: 120px;
+  width: 58px;
   aspect-ratio: 1;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid rgba(17, 32, 25, 0.08);
   background: #fff;
+}
+
+.compression-row-visual {
+  display: grid;
+  gap: 0.2rem;
+  justify-items: center;
 }
 
 .compression-row-visual img {
@@ -1329,13 +1342,25 @@ h3 {
 }
 
 .compression-row-visual figcaption {
-  font-size: 0.74rem;
-  color: var(--muted);
+  display: none;
 }
 
-.compression-row-bar {
+.compression-row-bar-button {
   display: grid;
   gap: 0.35rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.compression-row-bar-button:focus-visible .compression-row-bar-track {
+  outline: 2px solid rgba(29, 91, 73, 0.35);
+  outline-offset: 2px;
 }
 
 .compression-row-bar-label {
@@ -1355,7 +1380,7 @@ h3 {
 
 .compression-row-bar-track {
   position: relative;
-  height: 20px;
+  height: 16px;
   border-radius: 999px;
   background: rgba(17, 32, 25, 0.07);
   overflow: hidden;
@@ -1381,6 +1406,86 @@ h3 {
   color: var(--muted);
 }
 
+.compression-detail-empty {
+  padding: 0.95rem 1rem;
+  border: 1px dashed rgba(17, 32, 25, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--muted);
+}
+
+.compression-detail {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(17, 32, 25, 0.08);
+}
+
+.compression-detail-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.compression-detail-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.compression-detail-column {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.compression-detail-column h4 {
+  font-size: 0.95rem;
+}
+
+.compression-detail-figure {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.compression-detail-figure img,
+.compression-detail-fallback {
+  width: 100%;
+  aspect-ratio: 1.22;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background: #fff;
+}
+
+.compression-detail-figure img {
+  object-fit: contain;
+  padding: 0.45rem;
+}
+
+.compression-detail-fallback {
+  display: none;
+  place-items: center;
+  padding: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.compression-detail-figure.is-missing img {
+  display: none;
+}
+
+.compression-detail-figure.is-missing .compression-detail-fallback {
+  display: grid;
+}
+
+.compression-detail-figure figcaption {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 @media (max-width: 960px) {
   .grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1394,7 +1499,16 @@ h3 {
 
   .compression-chart-head,
   .compression-chart-row {
-    grid-template-columns: minmax(140px, 0.9fr) 104px minmax(0, 1fr) 104px;
+    grid-template-columns: minmax(120px, 0.82fr) minmax(0, 1fr) auto;
+  }
+
+  .compression-row-visual img,
+  .compression-row-visual-fallback {
+    width: 50px;
+  }
+
+  .compression-detail-grid {
+    grid-template-columns: 1fr;
   }
 
   .hero-layout {
@@ -1494,15 +1608,21 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .compression-row-visual,
-  .compression-row-bar {
-    justify-items: stretch;
+  .compression-row-visuals {
+    justify-content: flex-start;
+  }
+
+  .compression-detail-header {
+    flex-direction: column;
   }
 
   .compression-row-visual img,
   .compression-row-visual-fallback {
-    width: 100%;
-    max-width: 220px;
+    width: 52px;
+  }
+
+  .compression-detail {
+    padding: 0.9rem;
   }
 
   .table-like,
