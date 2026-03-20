@@ -1467,6 +1467,10 @@ h3 {
   padding: 1rem;
 }
 
+.compression-modal[hidden] {
+  display: none !important;
+}
+
 .compression-modal-backdrop {
   position: absolute;
   inset: 0;

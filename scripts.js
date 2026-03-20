@@ -979,7 +979,7 @@
     };
 
     const syncModalLayout = () => {
-      if (modal.hidden) {
+      if (modal.hasAttribute("hidden")) {
         return;
       }
       const rect = modalGrid.getBoundingClientRect();
@@ -1019,12 +1019,12 @@
       modalTitle.textContent = `${selected.label} vs original · ${caption}`;
       setDetailFigure(modalOriginal, originalSrc, `Original raw ${caption.toLowerCase()} comparison`, "Original raw");
       setDetailFigure(modalSelected, selectedSrc, `${selected.label} ${caption.toLowerCase()} comparison`, selected.label);
-      modal.hidden = false;
+      modal.removeAttribute("hidden");
       window.requestAnimationFrame(syncModalLayout);
     };
 
     const closeModal = () => {
-      modal.hidden = true;
+      modal.setAttribute("hidden", "");
     };
 
     const renderMetric = (animateFromZero = false) => {
