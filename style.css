@@ -1194,12 +1194,19 @@ h3 {
 .dynamics-stack {
   display: grid;
   gap: 0;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(360px, 1.08fr);
+  align-items: start;
+  overflow-x: auto;
 }
 
 .dynamics-card {
   padding: 1.1rem;
   min-width: 0;
   background: transparent;
+}
+
+.dynamics-card-figure {
+  min-width: 0;
 }
 
 .dynamics-card h4 {
@@ -1209,7 +1216,8 @@ h3 {
 }
 
 .dynamics-card-figure + .dynamics-card-figure {
-  border-top: 1px solid rgba(17, 32, 25, 0.08);
+  border-top: 0;
+  border-left: 1px solid rgba(17, 32, 25, 0.08);
 }
 
 .dynamics-pane-top {
@@ -1809,6 +1817,10 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .dynamics-stack {
+    min-width: 740px;
+  }
+
   .compression-overview,
   .compression-storage-panels,
   .compression-method-grid,
@@ -1935,6 +1947,10 @@ h3 {
 
   .dynamics-figure-controls {
     grid-template-columns: 1fr;
+  }
+
+  .dynamics-stack {
+    min-width: 680px;
   }
 
   .dynamics-canvas-frame,
