@@ -80,26 +80,40 @@
                 <p class="kicker">Interactive intuition</p>
                 <h3>Pendulum state, trajectories, and a learned flow field</h3>
                 <p class="lead" style="margin:0.5rem 0 0; font-size:1rem;">
-                  Each 3 second sample starts from a new position with zero initial velocity. The phase portrait on the
-                  right keeps old trajectories, highlights the current one, and updates the flow field from the
-                  observations collected so far.
+                  Random samples start from new positions with zero initial velocity. You can also click in the pendulum
+                  pane to launch a longer custom trial from your chosen initial condition and watch the phase portrait
+                  build locally over time.
                 </p>
               </div>
               <div class="dynamics-metrics">
                 <span class="dynamics-chip"><strong data-dynamics-sample>1</strong>/10 samples</span>
                 <span class="dynamics-chip"><strong data-dynamics-observations>0</strong> observed states</span>
+                <span class="dynamics-chip"><strong data-dynamics-status>Random</strong> active trial</span>
               </div>
             </div>
 
             <div class="dynamics-sim-grid">
               <section class="dynamics-card">
-                <h4>Pendulum in physical space</h4>
-                <p>The motion here is governed only by gravity, with no damping or forcing term added.</p>
+                <div class="dynamics-pane-top">
+                  <div>
+                    <h4>Pendulum in physical space</h4>
+                    <p class="dynamics-pane-copy">
+                      Click anywhere in this pane to place the bob at a new initial angle and run a 5 second custom trial.
+                      Otherwise the guide keeps sampling 3 second random trials automatically.
+                    </p>
+                  </div>
+                  <button class="button secondary dynamics-toggle" type="button" data-dynamics-friction>
+                    Add friction
+                  </button>
+                </div>
+                <div class="dynamics-equation" data-dynamics-equation></div>
+                <p class="dynamics-inline-note" data-dynamics-equation-copy></p>
                 <div class="dynamics-canvas-frame">
                   <canvas class="dynamics-canvas" data-dynamics-pendulum aria-label="Pendulum animation"></canvas>
                 </div>
                 <p class="dynamics-caption">
-                  A new trial begins every 3 seconds, and the full batch clears after 10 sampled trajectories.
+                  Without friction the trajectories form nearly closed loops. Adding friction drains energy so the
+                  state spirals inward toward rest.
                 </p>
               </section>
 
@@ -113,8 +127,8 @@
                   <canvas class="dynamics-canvas" data-dynamics-phase aria-label="Phase portrait with flow field"></canvas>
                 </div>
                 <p class="dynamics-caption">
-                  Background arrows are estimated from the observed derivatives rather than drawn from a fixed analytic
-                  solution, so the field changes as new data arrive.
+                  Arrows only emerge where nearby trajectories have actually sampled the state space, and they keep
+                  rotating as repeated visits refine the locally estimated dynamics.
                 </p>
               </section>
             </div>
@@ -323,6 +337,6 @@ def rk4_step(x, dt):
   </footer>
 
   <script src="scripts.js?v=36"></script>
-  <script src="guide-dynamical-systems.js"></script>
+  <script src="guide-dynamical-systems.js?v=2"></script>
 </body>
 </html>

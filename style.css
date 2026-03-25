@@ -1137,16 +1137,19 @@ h3 {
 
 .dynamics-sim-grid {
   display: grid;
-  gap: 1rem;
+  gap: 0;
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
   align-items: start;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.74);
 }
 
 .dynamics-card {
-  padding: 1rem;
-  border-radius: 18px;
-  border: 1px solid rgba(17, 32, 25, 0.08);
-  background: rgba(255, 255, 255, 0.78);
+  padding: 1.1rem;
+  min-width: 0;
+  background: transparent;
 }
 
 .dynamics-card h4 {
@@ -1155,8 +1158,48 @@ h3 {
   font-size: 1rem;
 }
 
-.dynamics-card > p:first-of-type {
-  margin-top: 0;
+.dynamics-card.is-phase {
+  border-left: 1px solid rgba(17, 32, 25, 0.08);
+}
+
+.dynamics-pane-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dynamics-pane-copy {
+  margin: 0;
+  color: var(--muted);
+}
+
+.dynamics-toggle {
+  flex: 0 0 auto;
+}
+
+.dynamics-toggle.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.dynamics-equation {
+  margin: 0.9rem 0 0.45rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  background: rgba(17, 32, 25, 0.06);
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.dynamics-inline-note {
+  margin: 0 0 0.85rem;
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 .dynamics-canvas-frame {
@@ -1178,6 +1221,10 @@ h3 {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+[data-dynamics-pendulum] {
+  cursor: pointer;
 }
 
 .dynamics-caption {
@@ -1690,6 +1737,11 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .dynamics-card.is-phase {
+    border-left: 0;
+    border-top: 1px solid rgba(17, 32, 25, 0.08);
+  }
+
   .compression-overview,
   .compression-storage-panels,
   .compression-method-grid,
@@ -1816,6 +1868,11 @@ h3 {
   .dynamics-canvas-frame,
   .dynamics-card.is-phase .dynamics-canvas-frame {
     min-height: 280px;
+  }
+
+  .dynamics-pane-top {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .compression-chart-head {

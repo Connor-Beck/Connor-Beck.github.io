@@ -8,8 +8,21 @@
   const phaseCanvas = root.querySelector("[data-dynamics-phase]");
   const sampleEl = root.querySelector("[data-dynamics-sample]");
   const observationsEl = root.querySelector("[data-dynamics-observations]");
+  const statusEl = root.querySelector("[data-dynamics-status]");
+  const frictionButton = root.querySelector("[data-dynamics-friction]");
+  const equationEl = root.querySelector("[data-dynamics-equation]");
+  const equationCopyEl = root.querySelector("[data-dynamics-equation-copy]");
 
-  if (!pendulumCanvas || !phaseCanvas || !sampleEl || !observationsEl) {
+  if (
+    !pendulumCanvas ||
+    !phaseCanvas ||
+    !sampleEl ||
+    !observationsEl ||
+    !statusEl ||
+    !frictionButton ||
+    !equationEl ||
+    !equationCopyEl
+  ) {
     return;
   }
 
@@ -23,12 +36,16 @@
     dt: 1 / 60,
     gravity: 9.81,
     length: 1,
-    trialMs: 3000,
+    randomTrialMs: 3000,
+    manualTrialMs: 5000,
     maxTrials: 10,
     thetaLimit: Math.PI,
-    omegaLimit: 4.4,
-    bandwidthTheta: 0.55,
-    bandwidthOmega: 0.7
+    omegaLimit: 5,
+    estimateBandwidthTheta: 0.62,
+    estimateBandwidthOmega: 0.82,
+    revealBandwidthTheta: 0.32,
+    revealBandwidthOmega: 0.42,
+    friction: 0.72
   };
 
   const state = {
@@ -36,6 +53,9 @@
     omega: 0,
     elapsedMs: 0,
     trialIndex: 0,
+    trialDurationMs: config.randomTrialMs,
+    trialSource: "random",
+    frictionEnabled: false,
     observations: [],
     history: [],
     currentTrace: [],
@@ -43,8 +63,15 @@
     lastTime: 0
   };
 
+  const currentBlue = { r: 20, g: 61, b: 118, a: 1 };
+  const historicalGray = { r: 122, g: 136, b: 148, a: 0.34 };
+  const axisGray = "rgba(66, 80, 74, 0.76)";
+  const gridGray = "rgba(17, 32, 25, 0.08)";
+
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (a, b, t) => a + (b - a) * t;
+  const colorToString = (color) => `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
+  const dpr = () => Math.min(window.devicePixelRatio || 1, 2);
 
   const mixColor = (from, to, t) => ({
     r: Math.round(lerp(from.r, to.r, t)),
@@ -52,15 +79,6 @@
     b: Math.round(lerp(from.b, to.b, t)),
     a: lerp(from.a, to.a, t)
   });
-
-  const colorToString = (color) => `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
-
-  const currentBlue = { r: 20, g: 61, b: 118, a: 1 };
-  const historicalGray = { r: 122, g: 136, b: 148, a: 0.34 };
-  const axisGray = "rgba(66, 80, 74, 0.76)";
-  const gridGray = "rgba(17, 32, 25, 0.08)";
-
-  const dpr = () => Math.min(window.devicePixelRatio || 1, 2);
 
   const resizeCanvas = (canvas, ctx) => {
     const ratio = dpr();
@@ -76,17 +94,30 @@
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   };
 
+  const getPendulumLayout = () => {
+    const width = pendulumCanvas.clientWidth;
+    const height = pendulumCanvas.clientHeight;
+    return {
+      width,
+      height,
+      pivotX: width * 0.5,
+      pivotY: height * 0.16,
+      rodLength: Math.min(width, height) * 0.34,
+      bobRadius: Math.max(14, Math.min(width, height) * 0.05)
+    };
+  };
+
   const randomAngle = () => {
     let angle = 0;
-    while (Math.abs(angle) < 0.3) {
-      angle = (Math.random() * 2 - 1) * 1.15;
+    while (Math.abs(angle) < 0.28) {
+      angle = (Math.random() * 2 - 1) * 1.18;
     }
     return angle;
   };
 
   const dynamics = (theta, omega) => ({
     dTheta: omega,
-    dOmega: -(config.gravity / config.length) * Math.sin(theta)
+    dOmega: -(config.gravity / config.length) * Math.sin(theta) - (state.frictionEnabled ? config.friction * omega : 0)
   });
 
   const rk4Step = (theta, omega, dt) => {
@@ -101,7 +132,31 @@
     };
   };
 
-  const startTrial = (resetBatch = false) => {
+  const updateEquationCopy = () => {
+    if (state.frictionEnabled) {
+      frictionButton.textContent = "Remove friction";
+      frictionButton.classList.add("is-active");
+      equationEl.innerHTML = "&theta;&#776; = -(g / L) sin(&theta;) - c&theta;&#775;";
+      equationCopyEl.textContent =
+        "Friction adds a damping term proportional to velocity, so repeated passes lose energy and the phase portrait contracts into an inward spiral toward the stable fixed point.";
+      return;
+    }
+
+    frictionButton.textContent = "Add friction";
+    frictionButton.classList.remove("is-active");
+    equationEl.innerHTML = "&theta;&#776; = -(g / L) sin(&theta;)";
+    equationCopyEl.textContent =
+      "With gravity alone, the system approximately preserves energy, so repeated trajectories stay on ring-like loops instead of collapsing inward.";
+  };
+
+  const updateStatus = () => {
+    sampleEl.textContent = String(state.trialIndex);
+    observationsEl.textContent = String(state.observations.length);
+    statusEl.textContent = state.trialSource === "manual" ? "Clicked (5s)" : "Random (3s)";
+    updateEquationCopy();
+  };
+
+  const startTrial = ({ resetBatch = false, theta = randomAngle(), source = "random" } = {}) => {
     if (resetBatch) {
       state.trialIndex = 0;
       state.history = [];
@@ -109,10 +164,12 @@
     }
 
     state.trialIndex += 1;
-    state.theta = randomAngle();
+    state.theta = clamp(theta, -config.thetaLimit + 0.02, config.thetaLimit - 0.02);
     state.omega = 0;
     state.elapsedMs = 0;
     state.accumulator = 0;
+    state.trialSource = source;
+    state.trialDurationMs = source === "manual" ? config.manualTrialMs : config.randomTrialMs;
     state.currentTrace = [
       {
         theta: state.theta,
@@ -121,19 +178,22 @@
       }
     ];
 
-    sampleEl.textContent = String(state.trialIndex);
-    observationsEl.textContent = String(state.observations.length);
+    updateStatus();
   };
 
   const finishTrial = () => {
     state.history.push(state.currentTrace.map((point) => ({ ...point })));
 
     if (state.trialIndex >= config.maxTrials) {
-      startTrial(true);
+      startTrial({ resetBatch: true, source: "random" });
       return;
     }
 
-    startTrial(false);
+    startTrial({ source: "random" });
+  };
+
+  const launchManualTrial = (theta) => {
+    startTrial({ theta, source: "manual" });
   };
 
   const stepSimulation = () => {
@@ -158,7 +218,7 @@
 
     observationsEl.textContent = String(state.observations.length);
 
-    if (state.elapsedMs >= config.trialMs) {
+    if (state.elapsedMs >= state.trialDurationMs) {
       finishTrial();
     }
   };
@@ -182,12 +242,7 @@
   const drawPendulum = () => {
     resizeCanvas(pendulumCanvas, pendulumCtx);
 
-    const width = pendulumCanvas.clientWidth;
-    const height = pendulumCanvas.clientHeight;
-    const pivotX = width * 0.5;
-    const pivotY = height * 0.16;
-    const rodLength = Math.min(width, height) * 0.34;
-    const bobRadius = Math.max(14, Math.min(width, height) * 0.05);
+    const { width, height, pivotX, pivotY, rodLength, bobRadius } = getPendulumLayout();
     const bobX = pivotX + rodLength * Math.sin(state.theta);
     const bobY = pivotY + rodLength * Math.cos(state.theta);
 
@@ -201,9 +256,6 @@
     pendulumCtx.lineTo(pivotX, pivotY + rodLength + 22);
     pendulumCtx.stroke();
     pendulumCtx.setLineDash([]);
-
-    pendulumCtx.fillStyle = "rgba(17, 32, 25, 0.1)";
-    pendulumCtx.fillRect(width * 0.26, pivotY - 18, width * 0.48, 8);
 
     pendulumCtx.strokeStyle = "rgba(15, 61, 49, 0.92)";
     pendulumCtx.lineWidth = 4;
@@ -228,9 +280,8 @@
     pendulumCtx.fill();
 
     pendulumCtx.fillStyle = axisGray;
-    pendulumCtx.font = '600 13px "Source Sans 3", sans-serif';
-    pendulumCtx.fillText(`theta = ${state.theta.toFixed(2)} rad`, 20, height - 38);
-    pendulumCtx.fillText(`d theta / dt = ${state.omega.toFixed(2)} rad/s`, 20, height - 18);
+    pendulumCtx.font = '600 12px "Source Sans 3", sans-serif';
+    pendulumCtx.fillText("Click in the pane to choose a new initial angle", 18, height - 18);
   };
 
   const drawArrow = (ctx, x, y, dx, dy, color, lineWidth) => {
@@ -265,12 +316,12 @@
     const yToPx = (theta) => padding.top + ((config.thetaLimit - theta) / (2 * config.thetaLimit)) * plotHeight;
 
     phaseCtx.clearRect(0, 0, width, height);
-
     phaseCtx.fillStyle = "rgba(255, 255, 255, 0.65)";
     phaseCtx.fillRect(padding.left, padding.top, plotWidth, plotHeight);
 
     phaseCtx.strokeStyle = gridGray;
     phaseCtx.lineWidth = 1;
+
     const xTicks = [-4, -2, 0, 2, 4];
     const yTicks = [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI];
 
@@ -290,41 +341,46 @@
       phaseCtx.stroke();
     });
 
-    const cols = 13;
-    const rows = 11;
+    const cols = 15;
+    const rows = 13;
     for (let row = 0; row < rows; row += 1) {
       for (let col = 0; col < cols; col += 1) {
         const omega = -config.omegaLimit + (col / (cols - 1)) * config.omegaLimit * 2;
         const theta = config.thetaLimit - (row / (rows - 1)) * config.thetaLimit * 2;
 
-        let sumWeights = 0;
+        let estimateWeight = 0;
         let sumOmega = 0;
         let sumTheta = 0;
+        let revealStrength = 0;
 
         state.observations.forEach((observation) => {
-          const dx = (observation.omega - omega) / config.bandwidthOmega;
-          const dy = (observation.theta - theta) / config.bandwidthTheta;
-          const distanceSq = dx * dx + dy * dy;
-          if (distanceSq > 9) {
-            return;
-          }
-          const weight = Math.exp(-0.5 * distanceSq);
-          sumWeights += weight;
-          sumOmega += observation.dOmega * weight;
-          sumTheta += observation.dTheta * weight;
+          const estimateDx = (observation.omega - omega) / config.estimateBandwidthOmega;
+          const estimateDy = (observation.theta - theta) / config.estimateBandwidthTheta;
+          const estimateDistSq = estimateDx * estimateDx + estimateDy * estimateDy;
+          const estimateKernel = Math.exp(-0.5 * estimateDistSq);
+
+          estimateWeight += estimateKernel;
+          sumOmega += observation.dOmega * estimateKernel;
+          sumTheta += observation.dTheta * estimateKernel;
+
+          const revealDx = (observation.omega - omega) / config.revealBandwidthOmega;
+          const revealDy = (observation.theta - theta) / config.revealBandwidthTheta;
+          const revealDistSq = revealDx * revealDx + revealDy * revealDy;
+          revealStrength = Math.max(revealStrength, Math.exp(-0.5 * revealDistSq));
         });
 
-        if (sumWeights < 0.08) {
+        if (estimateWeight < 0.015 || revealStrength < 0.08) {
           continue;
         }
 
-        const fieldOmega = sumOmega / sumWeights;
-        const fieldTheta = sumTheta / sumWeights;
-        const rawDx = fieldOmega * (plotWidth / (2 * config.omegaLimit)) * 0.16;
-        const rawDy = -fieldTheta * (plotHeight / (2 * config.thetaLimit)) * 0.16;
+        const fieldOmega = sumOmega / estimateWeight;
+        const fieldTheta = sumTheta / estimateWeight;
+        const rawDx = fieldOmega * (plotWidth / (2 * config.omegaLimit)) * 0.15;
+        const rawDy = -fieldTheta * (plotHeight / (2 * config.thetaLimit)) * 0.15;
         const magnitude = Math.hypot(rawDx, rawDy) || 1;
         const scale = Math.min(1, 16 / magnitude);
-        const confidence = clamp(sumWeights / 2.8, 0.15, 1);
+        const confidence = clamp(estimateWeight / 2.6, 0.18, 1);
+        const visibility = clamp(revealStrength * 1.1, 0, 1);
 
         drawArrow(
           phaseCtx,
@@ -332,7 +388,7 @@
           yToPx(theta),
           rawDx * scale,
           rawDy * scale,
-          `rgba(76, 109, 124, ${0.12 + confidence * 0.32})`,
+          `rgba(76, 109, 124, ${visibility * (0.08 + confidence * 0.34)})`,
           1.1
         );
       }
@@ -362,7 +418,7 @@
         const previous = state.currentTrace[i - 1];
         const point = state.currentTrace[i];
         const age = state.elapsedMs - point.elapsedMs;
-        const t = clamp(age / config.trialMs, 0, 1);
+        const t = clamp(age / state.trialDurationMs, 0, 1);
         const segmentColor = mixColor(currentBlue, historicalGray, t);
 
         phaseCtx.strokeStyle = colorToString(segmentColor);
@@ -413,6 +469,33 @@
     drawPhasePlot();
   };
 
+  const startFreshBatch = () => {
+    startTrial({ resetBatch: true, source: "random" });
+    draw();
+  };
+
+  pendulumCanvas.addEventListener("click", (event) => {
+    const rect = pendulumCanvas.getBoundingClientRect();
+    const { pivotX, pivotY } = getPendulumLayout();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const dx = x - pivotX;
+    const dy = y - pivotY;
+
+    if (Math.hypot(dx, dy) < 24) {
+      return;
+    }
+
+    const angle = Math.atan2(dx, dy);
+    launchManualTrial(angle);
+    draw();
+  });
+
+  frictionButton.addEventListener("click", () => {
+    state.frictionEnabled = !state.frictionEnabled;
+    startFreshBatch();
+  });
+
   const tick = (now) => {
     update(now);
     draw();
@@ -425,7 +508,6 @@
     resizeTimer = window.setTimeout(draw, 120);
   });
 
-  startTrial(true);
-  draw();
+  startFreshBatch();
   window.requestAnimationFrame(tick);
 })();
