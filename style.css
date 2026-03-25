@@ -1091,6 +1091,141 @@ h3 {
   white-space: pre-wrap;
 }
 
+.dynamics-sim-shell {
+  margin-top: 1.4rem;
+  padding: 1.15rem;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgba(29, 91, 73, 0.08), rgba(255, 255, 255, 0.94)),
+    var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.dynamics-sim-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.dynamics-sim-head h3 {
+  margin-bottom: 0.35rem;
+}
+
+.dynamics-metrics {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.dynamics-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 34px;
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.dynamics-sim-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: start;
+}
+
+.dynamics-card {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.dynamics-card h4 {
+  margin: 0 0 0.35rem;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 1rem;
+}
+
+.dynamics-card > p:first-of-type {
+  margin-top: 0;
+}
+
+.dynamics-canvas-frame {
+  position: relative;
+  min-height: 320px;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background:
+    radial-gradient(circle at 20% 18%, rgba(29, 91, 73, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(233, 238, 235, 0.88));
+  overflow: hidden;
+}
+
+.dynamics-card.is-phase .dynamics-canvas-frame {
+  min-height: 360px;
+}
+
+.dynamics-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dynamics-caption {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.dynamics-note-grid,
+.guide-project-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.25rem;
+}
+
+.dynamics-note,
+.guide-project-card {
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.dynamics-note h4,
+.guide-project-card h3 {
+  margin: 0 0 0.4rem;
+}
+
+.guide-code-block {
+  margin: 0.9rem 0 0;
+  padding: 0.95rem;
+  border-radius: 12px;
+  background: #0f1720;
+  color: #e8f0ec;
+  overflow: auto;
+  font: 500 0.84rem/1.5 "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.guide-code-block code {
+  font: inherit;
+}
+
+.guide-project-meta {
+  margin-top: 0.75rem;
+  color: var(--muted);
+}
+
 .compression-overview {
   display: grid;
   gap: 1.25rem;
@@ -1549,6 +1684,12 @@ h3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .dynamics-sim-grid,
+  .dynamics-note-grid,
+  .guide-project-grid {
+    grid-template-columns: 1fr;
+  }
+
   .compression-overview,
   .compression-storage-panels,
   .compression-method-grid,
@@ -1657,8 +1798,24 @@ h3 {
   .grid-3,
   .research-columns,
   .quick-links,
-  .tutorial-lab-grid {
+  .tutorial-lab-grid,
+  .dynamics-sim-grid,
+  .dynamics-note-grid,
+  .guide-project-grid {
     grid-template-columns: 1fr;
+  }
+
+  .dynamics-sim-shell {
+    padding: 0.9rem;
+  }
+
+  .dynamics-card {
+    padding: 0.9rem;
+  }
+
+  .dynamics-canvas-frame,
+  .dynamics-card.is-phase .dynamics-canvas-frame {
+    min-height: 280px;
   }
 
   .compression-chart-head {

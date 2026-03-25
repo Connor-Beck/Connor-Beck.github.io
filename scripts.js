@@ -1200,7 +1200,7 @@
     { label: "About", href: "about.html" },
     { label: "Publications", href: "publications.html" },
     { label: "Research", href: "research.html" },
-    { label: "Tutorials", href: "tutorials.html" },
+    { label: "Guides", href: "tutorials.html" },
     { label: "Software", href: "software.html" },
     { label: "3D printing tools", href: "tools.html#three-d-printing-tools" },
     { label: "Behavioral Platforms", href: "tools.html#behavioral-platforms" }

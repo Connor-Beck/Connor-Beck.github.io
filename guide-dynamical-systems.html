@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connor Beck | Guide: Dynamical Systems in Neural Data</title>
+  <meta name="description" content="Introduction to dynamical systems in neural data with a pendulum animation, phase portrait, and coding projects.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=37">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="site-logo" href="./" aria-label="Connor Beck home"><img src="assets/site/websiteLogo.png" alt="Connor Beck"></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="./">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="publications.html">Publications</a></li>
+          <li><a href="research.html">Research</a></li>
+          <li><a href="tutorials.html" aria-current="page">Guides</a></li>
+          <li><a href="software.html">Software</a></li>
+          <li><a href="tools.html">Lab Tools</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="container">
+        <p class="eyebrow">Guide</p>
+        <h1>Introduction to dynamical systems in neural data</h1>
+        <p class="lead">Developed by Connor L. Beck. Updated March 2026.</p>
+        <p class="lead">
+          This guide introduces state, trajectories, phase portraits, and learned flow fields with a simple pendulum
+          before connecting those ideas to neural population activity.
+        </p>
+        <div class="hero-actions">
+          <a class="button secondary" href="tutorials.html">Back To Guides</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <article class="text-panel">
+          <p class="kicker">Contents</p>
+          <h2>Guide modules currently available</h2>
+          <ul class="list">
+            <li><a class="text-link" href="#module-0">Module 0 - What is a dynamical system?</a></li>
+            <li><a class="text-link" href="#module-1">Module 1 - Why dynamics matter for neural data</a></li>
+            <li><a class="text-link" href="#module-2">Module 2 - Small coding projects</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section alt" id="module-0">
+      <div class="container">
+        <article class="text-panel">
+          <h2>Module 0 - What is a dynamical system?</h2>
+          <p>
+            A dynamical system is a rule for how a state changes over time. The state collects the variables needed to
+            describe where the system is right now, and the dynamics tell us how that point moves next.
+          </p>
+          <p>
+            For a pendulum, a useful state is the pair <code>[position, velocity]</code>, or more specifically
+            <code>[theta, d theta / dt]</code>. If we know those values, then a gravitational rule specifies how the
+            pendulum should evolve at the next moment.
+          </p>
+
+          <div class="dynamics-sim-shell" data-dynamics-demo>
+            <div class="dynamics-sim-head">
+              <div>
+                <p class="kicker">Interactive intuition</p>
+                <h3>Pendulum state, trajectories, and a learned flow field</h3>
+                <p class="lead" style="margin:0.5rem 0 0; font-size:1rem;">
+                  Each 3 second sample starts from a new position with zero initial velocity. The phase portrait on the
+                  right keeps old trajectories, highlights the current one, and updates the flow field from the
+                  observations collected so far.
+                </p>
+              </div>
+              <div class="dynamics-metrics">
+                <span class="dynamics-chip"><strong data-dynamics-sample>1</strong>/10 samples</span>
+                <span class="dynamics-chip"><strong data-dynamics-observations>0</strong> observed states</span>
+              </div>
+            </div>
+
+            <div class="dynamics-sim-grid">
+              <section class="dynamics-card">
+                <h4>Pendulum in physical space</h4>
+                <p>The motion here is governed only by gravity, with no damping or forcing term added.</p>
+                <div class="dynamics-canvas-frame">
+                  <canvas class="dynamics-canvas" data-dynamics-pendulum aria-label="Pendulum animation"></canvas>
+                </div>
+                <p class="dynamics-caption">
+                  A new trial begins every 3 seconds, and the full batch clears after 10 sampled trajectories.
+                </p>
+              </section>
+
+              <section class="dynamics-card is-phase">
+                <h4>Phase portrait learned from observed trajectories</h4>
+                <p>
+                  The vertical axis is position, the horizontal axis is velocity. Gray traces are previous trials. The
+                  current blue trajectory fades toward gray from oldest to newest points as time passes.
+                </p>
+                <div class="dynamics-canvas-frame">
+                  <canvas class="dynamics-canvas" data-dynamics-phase aria-label="Phase portrait with flow field"></canvas>
+                </div>
+                <p class="dynamics-caption">
+                  Background arrows are estimated from the observed derivatives rather than drawn from a fixed analytic
+                  solution, so the field changes as new data arrive.
+                </p>
+              </section>
+            </div>
+
+            <div class="dynamics-note-grid">
+              <article class="dynamics-note">
+                <h4>State</h4>
+                <p>
+                  The state is the point in phase space. For this pendulum, that point is its position and velocity at a
+                  given instant.
+                </p>
+              </article>
+              <article class="dynamics-note">
+                <h4>Trajectory</h4>
+                <p>
+                  A trajectory is the path traced out through state space as the system evolves from one initial
+                  condition.
+                </p>
+              </article>
+              <article class="dynamics-note">
+                <h4>Flow field</h4>
+                <p>
+                  A flow field summarizes the local update rule by showing which direction the state tends to move from
+                  nearby points.
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <h3>0.1 What is the state?</h3>
+          <p>
+            In a dynamical system, the state should be compact but sufficient. For a pendulum, position alone is not
+            enough, because the future depends on whether the pendulum is currently moving upward or downward. Adding
+            velocity resolves that ambiguity.
+          </p>
+
+          <h3>0.2 Why use a phase portrait?</h3>
+          <p>
+            Plotting trajectories in state space makes the rule easier to see. Different initial conditions generate
+            different paths, but they all follow the same underlying geometry. That geometry is often more informative
+            than looking at position alone as a function of time.
+          </p>
+
+          <h3>0.3 Why estimate the flow field from observations?</h3>
+          <p>
+            In neural recordings we usually do not know the true governing equations directly. Instead, we observe state
+            trajectories and try to infer the local rule that would produce them. The adaptive arrow field in the demo is
+            a simple version of that idea: each new trajectory contributes evidence about how nearby states evolve.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="module-1">
+      <div class="container">
+        <article class="text-panel">
+          <h2>Module 1 - Why dynamics matter for neural data</h2>
+          <p>
+            Neural data are high-dimensional, but many analyses ask whether the activity evolves along lower-dimensional
+            structure. In that framing, each point can represent the population activity at one moment, while the
+            trajectory shows how that population moves through a latent state space during a behavior, stimulus, or trial.
+          </p>
+          <p>Dynamical systems language becomes useful because it separates three questions:</p>
+          <ol class="list">
+            <li>What variables define the neural state?</li>
+            <li>How does that state evolve over time?</li>
+            <li>How do perturbations or behavioral contexts change the geometry of that evolution?</li>
+          </ol>
+          <p>
+            For real neural datasets, the state might be formed from firing rates, principal components, latent factors,
+            or model-derived embeddings. The inferred flow field can then highlight stable states, rotational structure,
+            divergent regimes, or task-dependent trajectories.
+          </p>
+          <p>
+            The pendulum is useful because the variables are interpretable and the geometry is clean. Once the idea is
+            clear in two dimensions, it becomes easier to think about neural manifolds, recurrent dynamics, and latent
+            state models built from measurements rather than hand-written equations.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section alt" id="module-2">
+      <div class="container">
+        <article class="text-panel">
+          <h2>Module 2 - Small coding projects</h2>
+          <p>
+            The projects below are meant to mirror the structure of the calcium imaging guide: each one isolates a core
+            idea and gives you enough starter code to build the analysis yourself.
+          </p>
+
+          <div class="guide-project-grid">
+            <article class="guide-project-card">
+              <p class="kicker">Coding Project 2.1</p>
+              <h3>Integrate a pendulum from its state equation</h3>
+              <p>
+                Write the right-hand side of the pendulum system, then simulate trajectories from several initial angles.
+                Start with zero initial velocity to match the demo.
+              </p>
+              <pre class="guide-code-block"><code>import numpy as np
+
+g = 9.81
+L = 1.0
+
+def pendulum_rhs(theta, omega):
+    dtheta = omega
+    domega = -(g / L) * np.sin(theta)
+    return dtheta, domega
+
+def euler_step(theta, omega, dt):
+    dtheta, domega = pendulum_rhs(theta, omega)
+    return theta + dt * dtheta, omega + dt * domega
+
+# TODO:
+# 1. Simulate 3 seconds of motion.
+# 2. Store theta and omega at each time point.
+# 3. Plot theta(t) and the phase portrait.</code></pre>
+              <p class="guide-project-meta">
+                Deliverable: compare trajectories for at least five starting angles and describe what changes versus what stays consistent.
+              </p>
+            </article>
+
+            <article class="guide-project-card">
+              <p class="kicker">Coding Project 2.2</p>
+              <h3>Estimate a flow field from sampled trajectories</h3>
+              <p>
+                Pretend the equations are unknown. Use the observed points and local finite differences to estimate the
+                vector field over a grid in phase space.
+              </p>
+              <pre class="guide-code-block"><code>import numpy as np
+
+def estimate_local_flow(points, derivatives, query, sigma=(0.7, 0.5)):
+    dx = (points[:, 0] - query[0]) / sigma[0]
+    dy = (points[:, 1] - query[1]) / sigma[1]
+    weights = np.exp(-0.5 * (dx**2 + dy**2))
+
+    if weights.sum() &lt; 1e-6:
+        return np.array([np.nan, np.nan])
+
+    weighted = derivatives * weights[:, None]
+    return weighted.sum(axis=0) / weights.sum()
+
+# TODO:
+# 1. Build points = [omega, theta].
+# 2. Approximate derivatives with finite differences.
+# 3. Evaluate the field on a grid and draw arrows.</code></pre>
+              <p class="guide-project-meta">
+                Deliverable: show how the estimated field improves as you add more trajectories.
+              </p>
+            </article>
+
+            <article class="guide-project-card">
+              <p class="kicker">Coding Project 2.3</p>
+              <h3>Replace the pendulum with a simple neural latent system</h3>
+              <p>
+                Swap in a two-dimensional linear recurrent model and inspect how its trajectories differ from the pendulum.
+                Then ask how a latent neural state might be interpreted in the same framework.
+              </p>
+              <pre class="guide-code-block"><code>import numpy as np
+
+A = np.array([
+    [0.0,  1.0],
+    [-0.35, -0.18],
+])
+
+def latent_rhs(x):
+    return A @ x
+
+def rk4_step(x, dt):
+    k1 = latent_rhs(x)
+    k2 = latent_rhs(x + 0.5 * dt * k1)
+    k3 = latent_rhs(x + 0.5 * dt * k2)
+    k4 = latent_rhs(x + dt * k3)
+    return x + (dt / 6.0) * (k1 + 2*k2 + 2*k3 + k4)
+
+# TODO:
+# 1. Simulate several initial conditions.
+# 2. Plot trajectories in state space.
+# 3. Identify whether the origin behaves like an attractor, saddle, or oscillator.</code></pre>
+              <p class="guide-project-meta">
+                Deliverable: compare the geometry of this latent system with the pendulum phase portrait and explain which features would matter in neural data.
+              </p>
+            </article>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-wrap">
+      <div>
+        <p class="footer-title">Connor Beck</p>
+        <p class="footer-copy">Neuroscience, neural dynamics, behavior, and open experimental systems.</p>
+      </div>
+      <div class="footer-links">
+        <a href="cv.html">CV</a>
+        <a href="contact.html">Contact</a>
+        <a href="https://scholar.google.com/citations?user=sr5Bp4kAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Scholar</a>
+        <a href="https://github.com/Connor-Beck" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://linkedin.com/in/connor-b-a59908a8" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="mailto:BeckCL@purdue.edu">Email</a>
+      </div>
+      <p class="footer-copy">&copy; <span data-year></span> Connor Beck</p>
+    </div>
+  </footer>
+
+  <script src="scripts.js?v=36"></script>
+  <script src="guide-dynamical-systems.js"></script>
+</body>
+</html>
