@@ -116,29 +116,25 @@
                 </article>
               </div>
 
-              <div class="dynamics-figure-controls">
-                <div>
-                  <div class="dynamics-equation" data-dynamics-equation></div>
-                  <p class="dynamics-inline-note" data-dynamics-equation-copy></p>
-                </div>
-                <button class="button secondary dynamics-toggle" type="button" data-dynamics-friction>
-                  Add friction
-                </button>
-              </div>
-
               <div class="dynamics-stack">
                 <section class="dynamics-card dynamics-card-figure">
                   <div class="dynamics-pane-top">
                     <div>
                       <h4>Pendulum in physical space</h4>
                       <p class="dynamics-pane-copy">
-                        Random trials sample initial angles across the full range from <code>-pi</code> to <code>pi</code>.
-                        Manual clicks are also wrapped into that same range.
+                        Random trials are drawn across <code>-pi/2</code> to <code>pi/2</code> with coverage biased so
+                        the full interval gets sampled over each batch. Manual clicks are restricted to that same range.
                       </p>
                     </div>
                   </div>
                   <div class="dynamics-canvas-frame">
                     <canvas class="dynamics-canvas" data-dynamics-pendulum aria-label="Pendulum animation"></canvas>
+                    <div class="dynamics-canvas-overlay">
+                      <button class="button secondary dynamics-toggle" type="button" data-dynamics-friction>
+                        Add friction
+                      </button>
+                      <div class="dynamics-equation" data-dynamics-equation></div>
+                    </div>
                   </div>
                 </section>
 

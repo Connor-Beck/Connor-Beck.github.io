@@ -12,7 +12,6 @@
   const observationsEl = root.querySelector("[data-dynamics-observations]");
   const frictionButton = root.querySelector("[data-dynamics-friction]");
   const equationEl = root.querySelector("[data-dynamics-equation]");
-  const equationCopyEl = root.querySelector("[data-dynamics-equation-copy]");
 
   if (
     !pendulumCanvas ||
@@ -22,8 +21,7 @@
     !batchSizeInput ||
     !observationsEl ||
     !frictionButton ||
-    !equationEl ||
-    !equationCopyEl
+    !equationEl
   ) {
     return;
   }
@@ -40,8 +38,8 @@
     length: 1,
     randomTrialMs: 3000,
     manualTrialMs: 5000,
-    thetaLimit: Math.PI,
-    omegaLimit: 5,
+    thetaLimit: Math.PI / 2,
+    omegaLimitFloor: 3.6,
     estimateBandwidthTheta: 0.62,
     estimateBandwidthOmega: 0.82,
     revealBandwidthTheta: 0.32,
@@ -76,7 +74,7 @@
   const dpr = () => Math.min(window.devicePixelRatio || 1, 2);
   const wrapAngle = (angle) => {
     const wrapped = ((angle + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
-    return clamp(wrapped, -Math.PI, Math.PI);
+    return clamp(wrapped, -config.thetaLimit, config.thetaLimit);
   };
 
   const mixColor = (from, to, t) => ({
@@ -114,7 +112,11 @@
   };
 
   const randomAngle = () => {
-    return wrapAngle(Math.random() * Math.PI * 2 - Math.PI);
+    const slot = (((state.trialIndex - 1) % state.batchSize) + state.batchSize) % state.batchSize;
+    const binWidth = (config.thetaLimit * 2) / state.batchSize;
+    const center = -config.thetaLimit + (slot + 0.5) * binWidth;
+    const jitter = (Math.random() - 0.5) * binWidth * 0.72;
+    return wrapAngle(center + jitter);
   };
 
   const dynamics = (theta, omega) => ({
@@ -139,16 +141,12 @@
       frictionButton.textContent = "Remove friction";
       frictionButton.classList.add("is-active");
       equationEl.innerHTML = "&theta;&#776; = -(g / L) sin(&theta;) - c&theta;&#775;";
-      equationCopyEl.textContent =
-        "Friction adds a damping term proportional to velocity, so repeated passes lose energy and the phase portrait contracts into an inward spiral toward the stable fixed point.";
       return;
     }
 
     frictionButton.textContent = "Add friction";
     frictionButton.classList.remove("is-active");
     equationEl.innerHTML = "&theta;&#776; = -(g / L) sin(&theta;)";
-    equationCopyEl.textContent =
-      "With gravity alone, the system approximately preserves energy, so repeated trajectories stay on ring-like loops instead of collapsing inward.";
   };
 
   const updateStatus = () => {
@@ -159,7 +157,7 @@
     updateEquationCopy();
   };
 
-  const startTrial = ({ resetBatch = false, theta = randomAngle(), source = "random" } = {}) => {
+  const startTrial = ({ resetBatch = false, theta = null, source = "random" } = {}) => {
     if (resetBatch) {
       state.trialIndex = 0;
       state.history = [];
@@ -167,7 +165,7 @@
     }
 
     state.trialIndex += 1;
-    state.theta = wrapAngle(theta);
+    state.theta = wrapAngle(theta === null ? randomAngle() : theta);
     state.omega = 0;
     state.elapsedMs = 0;
     state.accumulator = 0;
@@ -314,9 +312,13 @@
     const padding = { top: 22, right: 20, bottom: 42, left: 54 };
     const plotWidth = width - padding.left - padding.right;
     const plotHeight = height - padding.top - padding.bottom;
+    const observedPoints = [...state.history.flat(), ...state.currentTrace];
+    const maxAbsOmega = observedPoints.reduce((maxValue, point) => Math.max(maxValue, Math.abs(point.omega || 0)), 0);
+    const omegaLimit = Math.max(config.omegaLimitFloor, maxAbsOmega * 1.12, 0.5);
+    const thetaLimit = config.thetaLimit * 1.04;
 
-    const xToPx = (omega) => padding.left + ((omega + config.omegaLimit) / (2 * config.omegaLimit)) * plotWidth;
-    const yToPx = (theta) => padding.top + ((config.thetaLimit - theta) / (2 * config.thetaLimit)) * plotHeight;
+    const xToPx = (omega) => padding.left + ((omega + omegaLimit) / (2 * omegaLimit)) * plotWidth;
+    const yToPx = (theta) => padding.top + ((thetaLimit - theta) / (2 * thetaLimit)) * plotHeight;
 
     phaseCtx.clearRect(0, 0, width, height);
     phaseCtx.fillStyle = "rgba(255, 255, 255, 0.65)";
@@ -325,8 +327,8 @@
     phaseCtx.strokeStyle = gridGray;
     phaseCtx.lineWidth = 1;
 
-    const xTicks = [-4, -2, 0, 2, 4];
-    const yTicks = [-Math.PI, -Math.PI / 2, 0, Math.PI / 2, Math.PI];
+    const xTicks = [-omegaLimit, -omegaLimit / 2, 0, omegaLimit / 2, omegaLimit];
+    const yTicks = [-config.thetaLimit, 0, config.thetaLimit];
 
     xTicks.forEach((tick) => {
       const x = xToPx(tick);
@@ -348,8 +350,8 @@
     const rows = 13;
     for (let row = 0; row < rows; row += 1) {
       for (let col = 0; col < cols; col += 1) {
-        const omega = -config.omegaLimit + (col / (cols - 1)) * config.omegaLimit * 2;
-        const theta = config.thetaLimit - (row / (rows - 1)) * config.thetaLimit * 2;
+        const theta = thetaLimit - (row / (rows - 1)) * thetaLimit * 2;
+        const fieldOmegaCenter = -omegaLimit + (col / (cols - 1)) * omegaLimit * 2;
 
         let estimateWeight = 0;
         let sumOmega = 0;
@@ -357,7 +359,7 @@
         let revealStrength = 0;
 
         state.observations.forEach((observation) => {
-          const estimateDx = (observation.omega - omega) / config.estimateBandwidthOmega;
+          const estimateDx = (observation.omega - fieldOmegaCenter) / config.estimateBandwidthOmega;
           const estimateDy = (observation.theta - theta) / config.estimateBandwidthTheta;
           const estimateDistSq = estimateDx * estimateDx + estimateDy * estimateDy;
           const estimateKernel = Math.exp(-0.5 * estimateDistSq);
@@ -366,7 +368,7 @@
           sumOmega += observation.dOmega * estimateKernel;
           sumTheta += observation.dTheta * estimateKernel;
 
-          const revealDx = (observation.omega - omega) / config.revealBandwidthOmega;
+          const revealDx = (observation.omega - fieldOmegaCenter) / config.revealBandwidthOmega;
           const revealDy = (observation.theta - theta) / config.revealBandwidthTheta;
           const revealDistSq = revealDx * revealDx + revealDy * revealDy;
           revealStrength = Math.max(revealStrength, Math.exp(-0.5 * revealDistSq));
@@ -378,8 +380,8 @@
 
         const fieldOmega = sumOmega / estimateWeight;
         const fieldTheta = sumTheta / estimateWeight;
-        const rawDx = fieldOmega * (plotWidth / (2 * config.omegaLimit)) * 0.15;
-        const rawDy = -fieldTheta * (plotHeight / (2 * config.thetaLimit)) * 0.15;
+        const rawDx = fieldOmega * (plotWidth / (2 * omegaLimit)) * 0.15;
+        const rawDy = -fieldTheta * (plotHeight / (2 * thetaLimit)) * 0.15;
         const magnitude = Math.hypot(rawDx, rawDy) || 1;
         const scale = Math.min(1, 16 / magnitude);
         const confidence = clamp(estimateWeight / 2.6, 0.18, 1);
@@ -387,7 +389,7 @@
 
         drawArrow(
           phaseCtx,
-          xToPx(omega),
+          xToPx(fieldOmegaCenter),
           yToPx(theta),
           rawDx * scale,
           rawDy * scale,
@@ -447,15 +449,13 @@
     phaseCtx.font = '600 12px "Source Sans 3", sans-serif';
     phaseCtx.textAlign = "center";
     xTicks.forEach((tick) => {
-      phaseCtx.fillText(String(tick), xToPx(tick), height - 16);
+      phaseCtx.fillText(tick.toFixed(1), xToPx(tick), height - 16);
     });
 
     phaseCtx.textAlign = "right";
-    phaseCtx.fillText("-pi", padding.left - 8, yToPx(-Math.PI) + 4);
-    phaseCtx.fillText("-pi/2", padding.left - 8, yToPx(-Math.PI / 2) + 4);
+    phaseCtx.fillText("-pi/2", padding.left - 8, yToPx(-config.thetaLimit) + 4);
     phaseCtx.fillText("0", padding.left - 8, yToPx(0) + 4);
-    phaseCtx.fillText("pi/2", padding.left - 8, yToPx(Math.PI / 2) + 4);
-    phaseCtx.fillText("pi", padding.left - 8, yToPx(Math.PI) + 4);
+    phaseCtx.fillText("pi/2", padding.left - 8, yToPx(config.thetaLimit) + 4);
 
     phaseCtx.textAlign = "center";
     phaseCtx.fillText("Angular velocity", padding.left + plotWidth / 2, height - 4);

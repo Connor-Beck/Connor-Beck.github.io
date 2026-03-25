@@ -1182,19 +1182,10 @@ h3 {
   color: var(--muted);
 }
 
-.dynamics-figure-controls {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  padding: 1rem 1.1rem;
-  border-bottom: 1px solid rgba(17, 32, 25, 0.08);
-}
-
 .dynamics-stack {
   display: grid;
   gap: 0;
-  grid-template-columns: minmax(320px, 0.92fr) minmax(360px, 1.08fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
   overflow-x: auto;
 }
@@ -1244,14 +1235,12 @@ h3 {
 }
 
 .dynamics-equation {
-  margin: 0.9rem 0 0.45rem;
-  padding: 0.75rem 0.9rem;
-  border-radius: 14px;
-  background: rgba(17, 32, 25, 0.06);
-  border: 1px solid rgba(17, 32, 25, 0.08);
+  margin: 0;
   font-family: "Sora", "Avenir Next", sans-serif;
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   line-height: 1.45;
+  color: #112019;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .dynamics-inline-note {
@@ -1262,7 +1251,8 @@ h3 {
 
 .dynamics-canvas-frame {
   position: relative;
-  min-height: 320px;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
   border-radius: 16px;
   border: 1px solid rgba(17, 32, 25, 0.08);
   background:
@@ -1271,14 +1261,27 @@ h3 {
   overflow: hidden;
 }
 
-.dynamics-card.is-phase .dynamics-canvas-frame {
-  min-height: 360px;
-}
-
 .dynamics-canvas {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.dynamics-canvas-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.8rem;
+  padding: 0.9rem 1rem;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.72));
+}
+
+.dynamics-canvas-overlay .dynamics-toggle,
+.dynamics-canvas-overlay .dynamics-equation {
+  pointer-events: auto;
 }
 
 [data-dynamics-pendulum] {
@@ -1945,22 +1948,21 @@ h3 {
     padding: 0.9rem;
   }
 
-  .dynamics-figure-controls {
-    grid-template-columns: 1fr;
-  }
-
   .dynamics-stack {
-    min-width: 680px;
+    min-width: 0;
   }
 
-  .dynamics-canvas-frame,
-  .dynamics-card.is-phase .dynamics-canvas-frame {
-    min-height: 280px;
+  .dynamics-canvas-frame {
+    aspect-ratio: 1 / 1;
   }
 
   .dynamics-pane-top {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .dynamics-canvas-overlay {
+    padding: 0.75rem 0.8rem;
   }
 
   .dynamics-figure-note + .dynamics-figure-note {
