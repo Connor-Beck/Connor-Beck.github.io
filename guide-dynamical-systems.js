@@ -7,8 +7,9 @@
   const pendulumCanvas = root.querySelector("[data-dynamics-pendulum]");
   const phaseCanvas = root.querySelector("[data-dynamics-phase]");
   const sampleEl = root.querySelector("[data-dynamics-sample]");
+  const batchReadoutEl = root.querySelector("[data-dynamics-batch-readout]");
+  const batchSizeInput = root.querySelector("[data-dynamics-batch-size]");
   const observationsEl = root.querySelector("[data-dynamics-observations]");
-  const statusEl = root.querySelector("[data-dynamics-status]");
   const frictionButton = root.querySelector("[data-dynamics-friction]");
   const equationEl = root.querySelector("[data-dynamics-equation]");
   const equationCopyEl = root.querySelector("[data-dynamics-equation-copy]");
@@ -17,8 +18,9 @@
     !pendulumCanvas ||
     !phaseCanvas ||
     !sampleEl ||
+    !batchReadoutEl ||
+    !batchSizeInput ||
     !observationsEl ||
-    !statusEl ||
     !frictionButton ||
     !equationEl ||
     !equationCopyEl
@@ -38,7 +40,6 @@
     length: 1,
     randomTrialMs: 3000,
     manualTrialMs: 5000,
-    maxTrials: 10,
     thetaLimit: Math.PI,
     omegaLimit: 5,
     estimateBandwidthTheta: 0.62,
@@ -53,6 +54,7 @@
     omega: 0,
     elapsedMs: 0,
     trialIndex: 0,
+    batchSize: 20,
     trialDurationMs: config.randomTrialMs,
     trialSource: "random",
     frictionEnabled: false,
@@ -72,6 +74,10 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const colorToString = (color) => `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
   const dpr = () => Math.min(window.devicePixelRatio || 1, 2);
+  const wrapAngle = (angle) => {
+    const wrapped = ((angle + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
+    return clamp(wrapped, -Math.PI, Math.PI);
+  };
 
   const mixColor = (from, to, t) => ({
     r: Math.round(lerp(from.r, to.r, t)),
@@ -108,11 +114,7 @@
   };
 
   const randomAngle = () => {
-    let angle = 0;
-    while (Math.abs(angle) < 0.28) {
-      angle = (Math.random() * 2 - 1) * 1.18;
-    }
-    return angle;
+    return wrapAngle(Math.random() * Math.PI * 2 - Math.PI);
   };
 
   const dynamics = (theta, omega) => ({
@@ -151,8 +153,9 @@
 
   const updateStatus = () => {
     sampleEl.textContent = String(state.trialIndex);
+    batchReadoutEl.textContent = String(state.batchSize);
+    batchSizeInput.value = String(state.batchSize);
     observationsEl.textContent = String(state.observations.length);
-    statusEl.textContent = state.trialSource === "manual" ? "Clicked (5s)" : "Random (3s)";
     updateEquationCopy();
   };
 
@@ -164,7 +167,7 @@
     }
 
     state.trialIndex += 1;
-    state.theta = clamp(theta, -config.thetaLimit + 0.02, config.thetaLimit - 0.02);
+    state.theta = wrapAngle(theta);
     state.omega = 0;
     state.elapsedMs = 0;
     state.accumulator = 0;
@@ -184,7 +187,7 @@
   const finishTrial = () => {
     state.history.push(state.currentTrace.map((point) => ({ ...point })));
 
-    if (state.trialIndex >= config.maxTrials) {
+    if (state.trialIndex >= state.batchSize) {
       startTrial({ resetBatch: true, source: "random" });
       return;
     }
@@ -206,7 +209,7 @@
     });
 
     const next = rk4Step(state.theta, state.omega, config.dt);
-    state.theta = next.theta;
+    state.theta = wrapAngle(next.theta);
     state.omega = next.omega;
     state.elapsedMs += config.dt * 1000;
 
@@ -486,9 +489,15 @@
       return;
     }
 
-    const angle = Math.atan2(dx, dy);
+    const angle = wrapAngle(Math.atan2(dx, dy));
     launchManualTrial(angle);
     draw();
+  });
+
+  batchSizeInput.addEventListener("change", () => {
+    const parsed = Number.parseInt(batchSizeInput.value, 10);
+    state.batchSize = clamp(Number.isFinite(parsed) ? parsed : 20, 1, 100);
+    startFreshBatch();
   });
 
   frictionButton.addEventListener("click", () => {

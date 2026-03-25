@@ -1135,15 +1135,65 @@ h3 {
   font-weight: 600;
 }
 
-.dynamics-sim-grid {
+.dynamics-chip-input {
+  gap: 0.5rem;
+}
+
+.dynamics-chip-input span {
+  white-space: nowrap;
+}
+
+.dynamics-chip-input .tutorial-lab-input {
+  width: 80px;
+  min-height: 30px;
+  padding: 0.2rem 0.45rem;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.dynamics-figure {
+  margin-top: 1rem;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  border-radius: 22px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.dynamics-figure-intro {
   display: grid;
   gap: 0;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-bottom: 1px solid rgba(17, 32, 25, 0.08);
+}
+
+.dynamics-figure-note {
+  padding: 1rem 1.1rem;
+}
+
+.dynamics-figure-note + .dynamics-figure-note {
+  border-left: 1px solid rgba(17, 32, 25, 0.08);
+}
+
+.dynamics-figure-note h4 {
+  margin: 0 0 0.35rem;
+}
+
+.dynamics-figure-note p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.dynamics-figure-controls {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
-  border: 1px solid rgba(17, 32, 25, 0.08);
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.74);
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid rgba(17, 32, 25, 0.08);
+}
+
+.dynamics-stack {
+  display: grid;
+  gap: 0;
 }
 
 .dynamics-card {
@@ -1158,8 +1208,8 @@ h3 {
   font-size: 1rem;
 }
 
-.dynamics-card.is-phase {
-  border-left: 1px solid rgba(17, 32, 25, 0.08);
+.dynamics-card-figure + .dynamics-card-figure {
+  border-top: 1px solid rgba(17, 32, 25, 0.08);
 }
 
 .dynamics-pane-top {
@@ -1241,7 +1291,15 @@ h3 {
   margin-top: 1.25rem;
 }
 
+.dynamics-attractor-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.25rem;
+}
+
 .dynamics-note,
+.dynamics-attractor-card,
 .guide-project-card {
   padding: 1rem;
   border-radius: 16px;
@@ -1250,8 +1308,21 @@ h3 {
 }
 
 .dynamics-note h4,
+.dynamics-attractor-card h4,
 .guide-project-card h3 {
   margin: 0 0 0.4rem;
+}
+
+.dynamics-attractor-card svg {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 0.6rem auto 0.9rem;
+}
+
+.dynamics-attractor-card p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .guide-code-block {
@@ -1731,15 +1802,11 @@ h3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .dynamics-sim-grid,
+  .dynamics-figure-intro,
   .dynamics-note-grid,
+  .dynamics-attractor-grid,
   .guide-project-grid {
     grid-template-columns: 1fr;
-  }
-
-  .dynamics-card.is-phase {
-    border-left: 0;
-    border-top: 1px solid rgba(17, 32, 25, 0.08);
   }
 
   .compression-overview,
@@ -1851,8 +1918,9 @@ h3 {
   .research-columns,
   .quick-links,
   .tutorial-lab-grid,
-  .dynamics-sim-grid,
+  .dynamics-figure-intro,
   .dynamics-note-grid,
+  .dynamics-attractor-grid,
   .guide-project-grid {
     grid-template-columns: 1fr;
   }
@@ -1865,6 +1933,10 @@ h3 {
     padding: 0.9rem;
   }
 
+  .dynamics-figure-controls {
+    grid-template-columns: 1fr;
+  }
+
   .dynamics-canvas-frame,
   .dynamics-card.is-phase .dynamics-canvas-frame {
     min-height: 280px;
@@ -1873,6 +1945,11 @@ h3 {
   .dynamics-pane-top {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .dynamics-figure-note + .dynamics-figure-note {
+    border-left: 0;
+    border-top: 1px solid rgba(17, 32, 25, 0.08);
   }
 
   .compression-chart-head {

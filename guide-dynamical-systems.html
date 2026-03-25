@@ -80,57 +80,87 @@
                 <p class="kicker">Interactive intuition</p>
                 <h3>Pendulum state, trajectories, and a learned flow field</h3>
                 <p class="lead" style="margin:0.5rem 0 0; font-size:1rem;">
-                  Random samples start from new positions with zero initial velocity. You can also click in the pendulum
-                  pane to launch a longer custom trial from your chosen initial condition and watch the phase portrait
-                  build locally over time.
+                  The same system can be described in physical space by where the bob moves, or in latent space by how
+                  the state <code>[theta, d theta / dt]</code> evolves. The two views below are vertically stacked so
+                  they read like one figure.
                 </p>
               </div>
               <div class="dynamics-metrics">
-                <span class="dynamics-chip"><strong data-dynamics-sample>1</strong>/10 samples</span>
+                <span class="dynamics-chip"><strong data-dynamics-sample>1</strong>/<strong data-dynamics-batch-readout>20</strong> samples</span>
+                <label class="dynamics-chip dynamics-chip-input">
+                  <span>Batch size</span>
+                  <input class="tutorial-lab-input" type="number" min="1" max="100" step="1" value="20" data-dynamics-batch-size>
+                </label>
                 <span class="dynamics-chip"><strong data-dynamics-observations>0</strong> observed states</span>
-                <span class="dynamics-chip"><strong data-dynamics-status>Random</strong> active trial</span>
               </div>
             </div>
 
-            <div class="dynamics-sim-grid">
-              <section class="dynamics-card">
-                <div class="dynamics-pane-top">
-                  <div>
-                    <h4>Pendulum in physical space</h4>
-                    <p class="dynamics-pane-copy">
-                      Click anywhere in this pane to place the bob at a new initial angle and run a 5 second custom trial.
-                      Otherwise the guide keeps sampling 3 second random trials automatically.
-                    </p>
-                  </div>
-                  <button class="button secondary dynamics-toggle" type="button" data-dynamics-friction>
-                    Add friction
-                  </button>
-                </div>
-                <div class="dynamics-equation" data-dynamics-equation></div>
-                <p class="dynamics-inline-note" data-dynamics-equation-copy></p>
-                <div class="dynamics-canvas-frame">
-                  <canvas class="dynamics-canvas" data-dynamics-pendulum aria-label="Pendulum animation"></canvas>
-                </div>
-                <p class="dynamics-caption">
-                  Without friction the trajectories form nearly closed loops. Adding friction drains energy so the
-                  state spirals inward toward rest.
-                </p>
-              </section>
+            <div class="dynamics-figure">
+              <div class="dynamics-figure-intro">
+                <article class="dynamics-figure-note">
+                  <h4>Physical space</h4>
+                  <p>
+                    Here you see the actual bob moving in Cartesian space:
+                    <code>x = L sin(theta)</code>,
+                    <code>y = L cos(theta)</code>.
+                    Click in this pane to choose a new initial angle and run a 5 second custom trial.
+                  </p>
+                </article>
+                <article class="dynamics-figure-note">
+                  <h4>Latent or state-space description</h4>
+                  <p>
+                    The lower panel re-expresses the same motion as a state vector
+                    <code>z(t) = [theta(t), d theta / dt]</code>. The governing rule is the vector field
+                    <code>dz/dt = [d theta / dt, d2 theta / dt2]</code>, which we estimate from the observed trajectories.
+                  </p>
+                </article>
+              </div>
 
-              <section class="dynamics-card is-phase">
-                <h4>Phase portrait learned from observed trajectories</h4>
-                <p>
-                  The vertical axis is position, the horizontal axis is velocity. Gray traces are previous trials. The
-                  current blue trajectory fades toward gray from oldest to newest points as time passes.
-                </p>
-                <div class="dynamics-canvas-frame">
-                  <canvas class="dynamics-canvas" data-dynamics-phase aria-label="Phase portrait with flow field"></canvas>
+              <div class="dynamics-figure-controls">
+                <div>
+                  <div class="dynamics-equation" data-dynamics-equation></div>
+                  <p class="dynamics-inline-note" data-dynamics-equation-copy></p>
                 </div>
-                <p class="dynamics-caption">
-                  Arrows only emerge where nearby trajectories have actually sampled the state space, and they keep
-                  rotating as repeated visits refine the locally estimated dynamics.
-                </p>
-              </section>
+                <button class="button secondary dynamics-toggle" type="button" data-dynamics-friction>
+                  Add friction
+                </button>
+              </div>
+
+              <div class="dynamics-stack">
+                <section class="dynamics-card dynamics-card-figure">
+                  <div class="dynamics-pane-top">
+                    <div>
+                      <h4>Pendulum in physical space</h4>
+                      <p class="dynamics-pane-copy">
+                        Random trials sample initial angles across the full range from <code>-pi</code> to <code>pi</code>.
+                        Manual clicks are also wrapped into that same range.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="dynamics-canvas-frame">
+                    <canvas class="dynamics-canvas" data-dynamics-pendulum aria-label="Pendulum animation"></canvas>
+                  </div>
+                </section>
+
+                <section class="dynamics-card dynamics-card-figure is-phase">
+                  <div class="dynamics-pane-top">
+                    <div>
+                      <h4>Phase portrait in latent space</h4>
+                      <p class="dynamics-pane-copy">
+                        The vertical axis is position and the horizontal axis is velocity. Gray traces are previous trials,
+                        while the current blue trajectory fades toward gray from oldest to newest segments.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="dynamics-canvas-frame">
+                    <canvas class="dynamics-canvas" data-dynamics-phase aria-label="Phase portrait with flow field"></canvas>
+                  </div>
+                  <p class="dynamics-caption">
+                    Arrows emerge only where trajectories have locally sampled the state space, then rotate as nearby
+                    observations accumulate and refine the estimated flow field.
+                  </p>
+                </section>
+              </div>
             </div>
 
             <div class="dynamics-note-grid">
@@ -156,6 +186,51 @@
                 </p>
               </article>
             </div>
+
+            <div class="dynamics-attractor-grid">
+              <article class="dynamics-attractor-card">
+                <h4>Ring attractor intuition</h4>
+                <svg viewBox="0 0 220 170" role="img" aria-label="Ring attractor schematic">
+                  <defs>
+                    <marker id="ring-arrow" markerWidth="8" markerHeight="8" refX="5.5" refY="4" orient="auto">
+                      <path d="M0,0 L8,4 L0,8 z" fill="#184b8a"></path>
+                    </marker>
+                  </defs>
+                  <ellipse cx="110" cy="85" rx="68" ry="52" fill="none" stroke="rgba(24,75,138,0.22)" stroke-width="20"></ellipse>
+                  <ellipse cx="110" cy="85" rx="68" ry="52" fill="none" stroke="#184b8a" stroke-width="2"></ellipse>
+                  <path d="M62 121 C52 88, 58 57, 90 39" fill="none" stroke="#184b8a" stroke-width="3" marker-end="url(#ring-arrow)"></path>
+                  <path d="M158 49 C171 81, 165 112, 132 131" fill="none" stroke="#184b8a" stroke-width="3" marker-end="url(#ring-arrow)"></path>
+                </svg>
+                <p>
+                  When energy is approximately conserved, trajectories keep circling around a closed orbit instead of
+                  collapsing to a point.
+                </p>
+              </article>
+
+              <article class="dynamics-attractor-card">
+                <h4>Spiral attractor intuition</h4>
+                <svg viewBox="0 0 220 170" role="img" aria-label="Spiral attractor schematic">
+                  <defs>
+                    <marker id="spiral-arrow" markerWidth="8" markerHeight="8" refX="5.5" refY="4" orient="auto">
+                      <path d="M0,0 L8,4 L0,8 z" fill="#0f3d31"></path>
+                    </marker>
+                  </defs>
+                  <path d="M173 86
+                           C170 47, 126 27, 93 43
+                           C58 60, 57 107, 91 123
+                           C119 137, 151 121, 152 92
+                           C153 70, 132 56, 112 60
+                           C94 64, 87 83, 97 97
+                           C105 108, 120 109, 128 101"
+                        fill="none" stroke="#0f3d31" stroke-width="4" marker-end="url(#spiral-arrow)"></path>
+                  <circle cx="110" cy="85" r="5" fill="#0f3d31"></circle>
+                </svg>
+                <p>
+                  With damping, nearby states lose energy and spiral into a stable fixed point rather than remaining on a
+                  closed loop.
+                </p>
+              </article>
+            </div>
           </div>
 
           <h3>0.1 What is the state?</h3>
@@ -177,6 +252,15 @@
             In neural recordings we usually do not know the true governing equations directly. Instead, we observe state
             trajectories and try to infer the local rule that would produce them. The adaptive arrow field in the demo is
             a simple version of that idea: each new trajectory contributes evidence about how nearby states evolve.
+          </p>
+          <p>
+            A flow field is the underlying representation that tells each state which direction it should move next. If a
+            system is unknown, we can still recover that structure by collecting trajectories in latent space, estimating
+            the local vectors, and then asking what governing equations would be consistent with the recovered field.
+          </p>
+          <p>
+            In practice, that is the bridge from observation to mechanism: first measure trajectories, then infer the
+            flow field, and finally propose or fit equations whose vector field reproduces the observed geometry.
           </p>
         </article>
       </div>
@@ -337,6 +421,6 @@ def rk4_step(x, dt):
   </footer>
 
   <script src="scripts.js?v=36"></script>
-  <script src="guide-dynamical-systems.js?v=2"></script>
+  <script src="guide-dynamical-systems.js?v=3"></script>
 </body>
 </html>
