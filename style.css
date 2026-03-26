@@ -1271,6 +1271,8 @@ h3 {
 }
 
 .dynamics-figure {
+  display: flex;
+  flex-direction: column;
   margin-top: 1rem;
   border: 1px solid rgba(17, 32, 25, 0.08);
   border-radius: 22px;
@@ -1279,10 +1281,11 @@ h3 {
 }
 
 .dynamics-figure-intro {
+  order: 2;
   display: grid;
   gap: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-bottom: 1px solid rgba(17, 32, 25, 0.08);
+  border-top: 1px solid rgba(17, 32, 25, 0.08);
 }
 
 .dynamics-figure-note {
@@ -1303,6 +1306,7 @@ h3 {
 }
 
 .dynamics-stack {
+  order: 1;
   display: grid;
   gap: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));

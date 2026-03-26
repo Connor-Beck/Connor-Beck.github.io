@@ -53,6 +53,7 @@
     elapsedMs: 0,
     trialIndex: 0,
     batchSize: 20,
+    batchSlots: [],
     trialDurationMs: config.randomTrialMs,
     trialSource: "random",
     frictionEnabled: false,
@@ -111,8 +112,23 @@
     };
   };
 
+  const shuffle = (values) => {
+    for (let index = values.length - 1; index > 0; index -= 1) {
+      const nextIndex = Math.floor(Math.random() * (index + 1));
+      const temp = values[index];
+      values[index] = values[nextIndex];
+      values[nextIndex] = temp;
+    }
+    return values;
+  };
+
+  const resetBatchSlots = () => {
+    state.batchSlots = shuffle(Array.from({ length: state.batchSize }, (_, index) => index));
+  };
+
   const randomAngle = () => {
-    const slot = (((state.trialIndex - 1) % state.batchSize) + state.batchSize) % state.batchSize;
+    const defaultSlot = (((state.trialIndex - 1) % state.batchSize) + state.batchSize) % state.batchSize;
+    const slot = state.batchSlots[defaultSlot] ?? defaultSlot;
     const binWidth = (config.thetaLimit * 2) / state.batchSize;
     const center = -config.thetaLimit + (slot + 0.5) * binWidth;
     const jitter = (Math.random() - 0.5) * binWidth * 0.72;
@@ -162,6 +178,7 @@
       state.trialIndex = 0;
       state.history = [];
       state.observations = [];
+      resetBatchSlots();
     }
 
     state.trialIndex += 1;
@@ -282,7 +299,9 @@
 
     pendulumCtx.fillStyle = axisGray;
     pendulumCtx.font = '600 12px "Source Sans 3", sans-serif';
-    pendulumCtx.fillText("Click in the pane to choose a new initial angle", 18, height - 18);
+    pendulumCtx.textAlign = "left";
+    pendulumCtx.textBaseline = "top";
+    pendulumCtx.fillText("Click in the pane to choose a new initial angle", 18, 18);
   };
 
   const drawArrow = (ctx, x, y, dx, dy, color, lineWidth) => {
