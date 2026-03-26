@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=37">
+  <link rel="stylesheet" href="style.css?v=38">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -31,36 +31,51 @@
   </header>
 
   <main id="main-content">
-    <section class="page-hero">
-      <div class="container">
-        <p class="eyebrow">Guide</p>
-        <h1>Introduction to dynamical systems in neural data</h1>
-        <p class="lead">Developed by Connor L. Beck. Updated March 2026.</p>
-        <p class="lead">
-          This guide introduces state, trajectories, phase portraits, and learned flow fields with a simple pendulum
-          before connecting those ideas to neural population activity.
-        </p>
-        <div class="hero-actions">
+    <div class="container guide-layout">
+      <aside class="guide-sidebar" aria-label="Guide navigation">
+        <div class="guide-sidebar-card">
           <a class="button secondary" href="tutorials.html">Back To Guides</a>
+          <p class="guide-sidebar-title">Dynamical Systems</p>
+          <p class="guide-sidebar-copy">Start with why population dynamics matter, then move into the pendulum demo and the coding projects.</p>
+          <nav class="guide-sidebar-nav">
+            <a href="#population-dynamics">Why populations</a>
+            <a href="#module-0">Pendulum intuition</a>
+            <a href="#module-1">Neural data framing</a>
+            <a href="#module-2">Coding projects</a>
+          </nav>
         </div>
-      </div>
-    </section>
+      </aside>
 
-    <section class="section">
-      <div class="container">
-        <article class="text-panel">
-          <p class="kicker">Contents</p>
-          <h2>Guide modules currently available</h2>
-          <ul class="list">
-            <li><a class="text-link" href="#module-0">Module 0 - What is a dynamical system?</a></li>
-            <li><a class="text-link" href="#module-1">Module 1 - Why dynamics matter for neural data</a></li>
-            <li><a class="text-link" href="#module-2">Module 2 - Small coding projects</a></li>
-          </ul>
-        </article>
-      </div>
-    </section>
+      <div class="guide-main">
+        <section class="section" id="population-dynamics">
+          <div class="container">
+            <article class="text-panel">
+              <p class="kicker">Why this guide starts with populations</p>
+              <h1>Single neurons rarely tell the whole dynamical story</h1>
+              <p>
+                Single neurons can be highly informative, but they are often noisy, mixed, and context dependent. In the
+                classic work of <a class="text-link" href="https://pubmed.ncbi.nlm.nih.gov/9570796/" target="_blank" rel="noopener noreferrer">Shadlen and Newsome</a>,
+                trial-to-trial variability helped make clear that the mechanism behind a computation is often easier to see
+                at the population level than in one spike train at a time.
+              </p>
+              <p>
+                A dynamical-systems view shifts the question from "what does this one neuron encode?" to "how does the
+                full neural state evolve?" That perspective aligns with later population-level work showing that decision
+                and motor computations often appear as structured trajectories through a lower-dimensional state space rather
+                than as static tuning in isolated cells, as emphasized by
+                <a class="text-link" href="https://www.nature.com/articles/nature11129" target="_blank" rel="noopener noreferrer">Churchland et al.</a>.
+              </p>
+              <p>
+                The pendulum below is a clean toy system for this shift in perspective. On the left you see motion in
+                physical space. On the right you see the same process rewritten as a state evolving through a latent space.
+                That left-right translation is the same conceptual move used in neural data when we infer dynamics from
+                population trajectories rather than from one neuron alone.
+              </p>
+            </article>
+          </div>
+        </section>
 
-    <section class="section alt" id="module-0">
+        <section class="section alt" id="module-0">
       <div class="container">
         <article class="text-panel">
           <h2>Module 0 - What is a dynamical system?</h2>
@@ -81,8 +96,8 @@
                 <h3>Pendulum state, trajectories, and a learned flow field</h3>
                 <p class="lead" style="margin:0.5rem 0 0; font-size:1rem;">
                   The same system can be described in physical space by where the bob moves, or in latent space by how
-                  the state <code>[theta, d theta / dt]</code> evolves. The two views below are vertically stacked so
-                  they read like one figure.
+                  the state <code>[theta, d theta / dt]</code> evolves. The two views below are kept side by side so
+                  you can compare the physical and latent descriptions directly.
                 </p>
               </div>
               <div class="dynamics-metrics">
@@ -262,7 +277,7 @@
       </div>
     </section>
 
-    <section class="section" id="module-1">
+        <section class="section" id="module-1">
       <div class="container">
         <article class="text-panel">
           <h2>Module 1 - Why dynamics matter for neural data</h2>
@@ -291,7 +306,7 @@
       </div>
     </section>
 
-    <section class="section alt" id="module-2">
+        <section class="section alt" id="module-2">
       <div class="container">
         <article class="text-panel">
           <h2>Module 2 - Small coding projects</h2>
@@ -395,7 +410,9 @@ def rk4_step(x, dt):
           </div>
         </article>
       </div>
-    </section>
+        </section>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -416,7 +433,7 @@ def rk4_step(x, dt):
     </div>
   </footer>
 
-  <script src="scripts.js?v=36"></script>
+  <script src="scripts.js?v=37"></script>
   <script src="guide-dynamical-systems.js?v=3"></script>
 </body>
 </html>

@@ -637,8 +637,56 @@
 
   const initCompressionTutorial = () => {
     const root = document.querySelector("[data-compression-tutorial]");
+    if (!root) {
+      return;
+    }
+
+    const liveStorageNodes = {
+      ephys: root.querySelector('[data-compression-live-value="ephys"]'),
+      calcium: root.querySelector('[data-compression-live-value="calcium"]'),
+      behavior: root.querySelector('[data-compression-live-value="behavior"]')
+    };
+    const hasLiveStorage = Object.values(liveStorageNodes).every(Boolean);
+
+    if (hasLiveStorage) {
+      const experimentStart = performance.now();
+      const bytesPerSecond = {
+        ephys: 64 * 20000 * 2,
+        calcium: 512 * 512 * 20 * 2,
+        behavior: 1200 * 1200 * 100
+      };
+
+      const formatLiveStorage = (bytes) => {
+        const gigabytes = bytes / 1e9;
+        if (gigabytes < 0.01) {
+          return `${gigabytes.toFixed(3)} GB`;
+        }
+        if (gigabytes < 1) {
+          return `${gigabytes.toFixed(2)} GB`;
+        }
+        if (gigabytes < 10) {
+          return `${gigabytes.toFixed(2)} GB`;
+        }
+        return `${gigabytes.toFixed(1)} GB`;
+      };
+
+      const renderLiveStorage = () => {
+        const elapsedSeconds = (performance.now() - experimentStart) / 1000;
+        Object.entries(bytesPerSecond).forEach(([key, rate]) => {
+          const node = liveStorageNodes[key];
+          if (!node) {
+            return;
+          }
+          node.textContent = formatLiveStorage(elapsedSeconds * rate);
+        });
+      };
+
+      renderLiveStorage();
+      window.setInterval(renderLiveStorage, 120);
+    }
+
     const dataNode = document.getElementById("compression-results-data");
-    if (!root || !dataNode) {
+    if (!dataNode) {
       return;
     }
 

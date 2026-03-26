@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="style.css?v=38">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -31,35 +31,50 @@
   </header>
 
   <main id="main-content">
-    <section class="page-hero">
-      <div class="container">
-        <p class="eyebrow">Guide</p>
-        <h1>Calcium imaging and image processing introduction</h1>
-        <p class="lead">
-          Developed by Connor L. Beck. Updated July 2025.
-        </p>
-        <p class="lead">This guide supports introductions to calcium imaging.</p>
-        <p class="lead"><em>Only modules 0 and 1 are currently available - more will be incorporated over time.</em></p>
-        <div class="hero-actions">
+    <div class="container guide-layout">
+      <aside class="guide-sidebar" aria-label="Guide navigation">
+        <div class="guide-sidebar-card">
           <a class="button secondary" href="tutorials.html">Back To Guides</a>
+          <p class="guide-sidebar-title">Calcium Imaging</p>
+          <p class="guide-sidebar-copy">Start with why calcium imaging is useful for circuit dynamics, then move through the practical modules and references.</p>
+          <nav class="guide-sidebar-nav">
+            <a href="#why-calcium">Why calcium imaging</a>
+            <a href="#module-0">Introduction</a>
+            <a href="#module-1">Somatic dynamics</a>
+            <a href="#references">References</a>
+          </nav>
         </div>
-      </div>
-    </section>
+      </aside>
 
-    <section class="section">
-      <div class="container">
-        <article class="text-panel">
-          <p class="kicker">Contents</p>
-          <h2>Guide modules currently available</h2>
-          <ul class="list">
-            <li><a class="text-link" href="#module-0">Module 0 - Introduction to calcium imaging</a></li>
-            <li><a class="text-link" href="#module-1">Module 1 - Exploring somatic calcium dynamics</a></li>
-          </ul>
-        </article>
-      </div>
-    </section>
+      <div class="guide-main">
+        <section class="section" id="why-calcium">
+          <div class="container">
+            <article class="text-panel">
+              <p class="kicker">Why this guide matters</p>
+              <h1>Calcium imaging links neural dynamics to spatially organized circuits</h1>
+              <p>
+                Many neuroscience questions are not just about whether neurons fire, but which cells participate together,
+                where they sit in tissue, and how those relationships evolve across behavior, learning, and repeated
+                recordings. Calcium imaging is powerful because it keeps that spatial context while measuring activity
+                across many cells at once.
+              </p>
+              <p>
+                Reviews such as <a class="text-link" href="https://www.sciencedirect.com/science/article/pii/S0896627312001729?via%3Dihub" target="_blank" rel="noopener noreferrer">Grienberger and Konnerth</a>
+                helped establish this framing: calcium methods are valuable not only because they provide an activity proxy,
+                but because they let us study populations, maps, and circuit organization over time. That is especially
+                useful when the goal is to follow neural dynamics over long recordings while preserving the spatial layout
+                of the recorded population.
+              </p>
+              <p>
+                This guide starts from that broader systems view. The early sections introduce the biological and optical
+                basics, and the coding projects then move toward the practical problem of turning fluorescence movies into
+                interpretable neural dynamics.
+              </p>
+            </article>
+          </div>
+        </section>
 
-    <section class="section alt" id="module-0">
+        <section class="section alt" id="module-0">
       <div class="container">
         <article class="text-panel">
           <h2>Module 0 - Introduction to Calcium imaging</h2>
@@ -144,7 +159,7 @@
       </div>
     </section>
 
-    <section class="section" id="module-1">
+        <section class="section" id="module-1">
       <div class="container">
         <article class="text-panel">
           <h2>Module 1 - Exploring somatic calcium dynamics</h2>
@@ -338,8 +353,8 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="container text-panel">
+        <section class="section" id="references">
+          <div class="container text-panel">
         <p class="kicker">References</p>
         <h2>Primary reading links</h2>
         <ul class="list">
@@ -351,8 +366,10 @@
           <li><a class="text-link" href="https://www.sciencedirect.com/science/article/abs/pii/S0165027020304696?via%3Dihub" target="_blank" rel="noopener noreferrer">Wenzel and Hamm - Ensemble quantification</a></li>
           <li><a class="text-link" href="https://www.nature.com/articles/nrn3962" target="_blank" rel="noopener noreferrer">Yuste - From neuron doctrine to networks</a></li>
         </ul>
+          </div>
+        </section>
       </div>
-    </section>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -373,7 +390,7 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=36"></script>
+  <script src="scripts.js?v=37"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
   <script src="tutorial-lab.js?v=5"></script>

@@ -1091,6 +1091,126 @@ h3 {
   white-space: pre-wrap;
 }
 
+.guide-layout {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: start;
+  padding: 1.2rem 0 2rem;
+}
+
+.guide-sidebar {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+}
+
+.guide-sidebar-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow);
+}
+
+.guide-sidebar-title {
+  margin: 0;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 1.05rem;
+}
+
+.guide-sidebar-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.guide-sidebar-card .button {
+  width: 100%;
+  justify-content: center;
+}
+
+.guide-sidebar-nav {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.guide-sidebar-nav a {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background: rgba(17, 32, 25, 0.04);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.guide-sidebar-nav a:hover,
+.guide-sidebar-nav a:focus-visible {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
+.guide-main {
+  min-width: 0;
+}
+
+.guide-main .container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.guide-main .section:first-child {
+  padding-top: 0;
+}
+
+.guide-main .section {
+  scroll-margin-top: 108px;
+}
+
+.compression-load-panel {
+  background:
+    linear-gradient(145deg, rgba(29, 91, 73, 0.08), rgba(255, 255, 255, 0.94)),
+    var(--surface);
+}
+
+.compression-live-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.15rem;
+}
+
+.compression-live-card {
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.compression-live-number {
+  margin: 0;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: clamp(1.65rem, 3.5vw, 2.5rem);
+  letter-spacing: -0.03em;
+}
+
+.compression-live-label {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.compression-live-note {
+  margin: 1rem 0 0;
+  color: var(--muted);
+}
+
 .dynamics-sim-shell {
   margin-top: 1.4rem;
   padding: 1.15rem;
@@ -1811,6 +1931,19 @@ h3 {
 @media (max-width: 960px) {
   .grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .guide-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-sidebar {
+    position: static;
+    top: auto;
+  }
+
+  .compression-live-grid {
+    grid-template-columns: 1fr;
   }
 
   .dynamics-figure-intro,

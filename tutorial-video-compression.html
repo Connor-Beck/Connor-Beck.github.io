@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="style.css?v=38">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -31,99 +31,130 @@
   </header>
 
   <main id="main-content" data-compression-tutorial>
-    <section class="page-hero">
-      <div class="container">
-        <p class="eyebrow">Guide</p>
-        <h1>Video compression basics and practical tradeoffs</h1>
-        <p class="lead">
-          A practical walkthrough of what compression does, how major codec families differ, and how
-          storage savings change when fidelity targets become more aggressive.
-        </p>
-        <div class="hero-actions">
+    <div class="container guide-layout">
+      <aside class="guide-sidebar" aria-label="Guide navigation">
+        <div class="guide-sidebar-card">
           <a class="button secondary" href="tutorials.html">Back To Guides</a>
+          <p class="guide-sidebar-title">Video Compression</p>
+          <p class="guide-sidebar-copy">Jump to the sections that explain the storage problem, core ideas, and codec tradeoffs.</p>
+          <nav class="guide-sidebar-nav">
+            <a href="#data-heavy">Data scale</a>
+            <a href="#compression-basics">What compression does</a>
+            <a href="#compression-families">Codec families</a>
+            <a href="#compression-comparison">Measured comparison</a>
+          </nav>
         </div>
-      </div>
-    </section>
+      </aside>
 
-    <section class="section">
-      <div class="container compression-overview">
-        <article class="text-panel">
-          <p class="kicker">Compression</p>
-          <h2>What compression actually does</h2>
-          <p>
-            Compression reduces the number of bits needed to store or transmit video. The key idea is to remove redundancy:
-            repeated values, predictable structure, or detail that can be approximated without changing the interpretation of the video.
-          </p>
-          <p>
-            At a high level, uncompressed video stores every frame directly. Lossless methods reorganize the data so it can be reconstructed
-            exactly. Lossy methods allow controlled error so the file becomes much smaller, trading size for fidelity.
-          </p>
-          <p>
-            In practice, most workflows mix several ideas: entropy coding, spatial transforms, temporal prediction, and quantization.
-            The correct choice depends on the use case. Archival storage and quantitative analysis usually prioritize fidelity,
-            while sharing, review, and long-term storage often require stronger compression.
-          </p>
-        </article>
+      <div class="guide-main">
+        <section class="section" id="data-heavy">
+          <div class="container">
+            <article class="text-panel compression-load-panel">
+              <p class="kicker">Why compression matters</p>
+              <h1>Neuroscience experiments are data heavy</h1>
+              <p>
+                If these experiments started recording when you opened this page, this is roughly how much raw data would
+                already be on disk. Compression matters because storage costs start accumulating immediately, long before
+                downstream analysis begins.
+              </p>
+              <div class="compression-live-grid" aria-label="Live approximate storage growth">
+                <article class="compression-live-card">
+                  <p class="compression-live-number" data-compression-live-value="ephys">0.000 GB</p>
+                  <p class="compression-live-label">Electrophysiology</p>
+                </article>
+                <article class="compression-live-card">
+                  <p class="compression-live-number" data-compression-live-value="calcium">0.000 GB</p>
+                  <p class="compression-live-label">Calcium imaging</p>
+                </article>
+                <article class="compression-live-card">
+                  <p class="compression-live-number" data-compression-live-value="behavior">0.000 GB</p>
+                  <p class="compression-live-label">Behavior video</p>
+                </article>
+              </div>
+              <p class="compression-live-note">Approximate raw storage accumulated since page load, before any compression is applied.</p>
+            </article>
+          </div>
+        </section>
 
-        <article class="text-panel compression-storage-card">
-          <p class="kicker">Storage intuition</p>
-          <h2>Raw blocks vs compressed blocks</h2>
-          <p>
-            The raw subset below is shown as a full block grid. The right panel cycles through example codecs and shows how much
-            of that storage footprint remains after compression.
-          </p>
-          <div class="compression-storage-layout">
-            <div class="compression-storage-arrow">Data removed or reorganized</div>
-            <div class="compression-storage-panels">
-              <section class="compression-block-panel">
-                <h3>Raw subset</h3>
-                <div class="compression-block-grid" data-compression-blocks-left aria-label="Blocks representing raw storage"></div>
-              </section>
-              <section class="compression-block-panel">
-                <h3 data-compression-storage-label>Compression result</h3>
-                <div class="compression-block-grid" data-compression-blocks-right aria-label="Blocks representing compressed storage"></div>
-                <div>
-                  <strong data-compression-storage-value>Loading...</strong>
-                  <p class="compression-scale-note" data-compression-storage-ratio></p>
-                  <p class="compression-scale-note" data-compression-storage-note></p>
+        <section class="section" id="compression-basics">
+          <div class="container compression-overview">
+            <article class="text-panel">
+              <p class="kicker">Compression</p>
+              <h2>What compression actually does</h2>
+              <p>
+                Compression reduces the number of bits needed to store or transmit video. The key idea is to remove redundancy:
+                repeated values, predictable structure, or detail that can be approximated without changing the interpretation of the video.
+              </p>
+              <p>
+                At a high level, uncompressed video stores every frame directly. Lossless methods reorganize the data so it can be reconstructed
+                exactly. Lossy methods allow controlled error so the file becomes much smaller, trading size for fidelity.
+              </p>
+              <p>
+                In practice, most workflows mix several ideas: entropy coding, spatial transforms, temporal prediction, and quantization.
+                The correct choice depends on the use case. Archival storage and quantitative analysis usually prioritize fidelity,
+                while sharing, review, and long-term storage often require stronger compression.
+              </p>
+            </article>
+
+            <article class="text-panel compression-storage-card">
+              <p class="kicker">Storage intuition</p>
+              <h2>Raw blocks vs compressed blocks</h2>
+              <p>
+                The raw subset below is shown as a full block grid. The right panel cycles through example codecs and shows how much
+                of that storage footprint remains after compression.
+              </p>
+              <div class="compression-storage-layout">
+                <div class="compression-storage-arrow">Data removed or reorganized</div>
+                <div class="compression-storage-panels">
+                  <section class="compression-block-panel">
+                    <h3>Raw subset</h3>
+                    <div class="compression-block-grid" data-compression-blocks-left aria-label="Blocks representing raw storage"></div>
+                  </section>
+                  <section class="compression-block-panel">
+                    <h3 data-compression-storage-label>Compression result</h3>
+                    <div class="compression-block-grid" data-compression-blocks-right aria-label="Blocks representing compressed storage"></div>
+                    <div>
+                      <strong data-compression-storage-value>Loading...</strong>
+                      <p class="compression-scale-note" data-compression-storage-ratio></p>
+                      <p class="compression-scale-note" data-compression-storage-note></p>
+                    </div>
+                  </section>
                 </div>
-              </section>
-            </div>
+              </div>
+            </article>
           </div>
-        </article>
-      </div>
-    </section>
+        </section>
 
-    <section class="section alt">
-      <div class="container compression-metric-stack">
-        <article class="text-panel">
-          <p class="kicker">Major approaches</p>
-          <h2>Compression families used in this comparison</h2>
-          <div class="compression-method-grid">
-            <section class="compression-method-card">
-              <h3>Raw / uncompressed</h3>
-              <p>Every frame is stored directly. This preserves everything, but storage costs scale immediately with frame count and bit depth.</p>
-            </section>
-            <section class="compression-method-card">
-              <h3>Lossless codecs</h3>
-              <p>FFV1 and x265 lossless reconstruct the exact original frames. They reduce redundancy without changing pixel values.</p>
-            </section>
-            <section class="compression-method-card">
-              <h3>Intra-frame lossy</h3>
-              <p>MJPEG compresses each frame independently. It is simple and fast, but usually less storage-efficient than predictive codecs.</p>
-            </section>
-            <section class="compression-method-card">
-              <h3>Predictive lossy</h3>
-              <p>x265 uses spatial and temporal prediction. CRF settings increase compression by allowing progressively larger approximation error.</p>
-            </section>
+        <section class="section alt" id="compression-families">
+          <div class="container compression-metric-stack">
+            <article class="text-panel">
+              <p class="kicker">Major approaches</p>
+              <h2>Compression families used in this comparison</h2>
+              <div class="compression-method-grid">
+                <section class="compression-method-card">
+                  <h3>Raw / uncompressed</h3>
+                  <p>Every frame is stored directly. This preserves everything, but storage costs scale immediately with frame count and bit depth.</p>
+                </section>
+                <section class="compression-method-card">
+                  <h3>Lossless codecs</h3>
+                  <p>FFV1 and x265 lossless reconstruct the exact original frames. They reduce redundancy without changing pixel values.</p>
+                </section>
+                <section class="compression-method-card">
+                  <h3>Intra-frame lossy</h3>
+                  <p>MJPEG compresses each frame independently. It is simple and fast, but usually less storage-efficient than predictive codecs.</p>
+                </section>
+                <section class="compression-method-card">
+                  <h3>Predictive lossy</h3>
+                  <p>x265 uses spatial and temporal prediction. CRF settings increase compression by allowing progressively larger approximation error.</p>
+                </section>
+              </div>
+            </article>
           </div>
-        </article>
-      </div>
-    </section>
+        </section>
 
-    <section class="section">
-      <div class="container">
-        <article class="text-panel compression-chart-panel">
+        <section class="section" id="compression-comparison">
+          <div class="container">
+            <article class="text-panel compression-chart-panel">
           <p class="kicker">Comparison</p>
           <h2>Compression results across methods</h2>
           <p>
@@ -223,9 +254,11 @@
               </div>
             </div>
           </div>
-        </article>
+            </article>
+          </div>
+        </section>
       </div>
-    </section>
+    </div>
 
     <script id="compression-results-data" type="application/json">
 {
@@ -498,6 +531,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js?v=36"></script>
+  <script src="scripts.js?v=37"></script>
 </body>
 </html>
