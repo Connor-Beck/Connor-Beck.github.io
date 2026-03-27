@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=38">
+  <link rel="stylesheet" href="style.css?v=39">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -282,26 +282,142 @@
         <article class="text-panel">
           <h2>Module 1 - Why dynamics matter for neural data</h2>
           <p>
-            Neural data are high-dimensional, but many analyses ask whether the activity evolves along lower-dimensional
-            structure. In that framing, each point can represent the population activity at one moment, while the
-            trajectory shows how that population moves through a latent state space during a behavior, stimulus, or trial.
+            A central lesson from <a class="text-link" href="https://www.nature.com/articles/nature12742" target="_blank" rel="noopener noreferrer">Mante et al.</a>
+            is that flexible behavior can be easier to understand at the population level than at the level of a single
+            neuron. In their study, many prefrontal neurons showed mixed selectivity: the same cell could carry traces of
+            sensory input, context, and impending choice. That makes raw single-neuron tuning hard to interpret in
+            isolation, even when the population as a whole performs a clean computation.
           </p>
-          <p>Dynamical systems language becomes useful because it separates three questions:</p>
+          <p>
+            Their state-space analysis used linear regression to define axes tied to major task variables, including
+            choice. Once activity is projected onto those axes, the population trajectory becomes much clearer: irrelevant
+            inputs can stay compressed, relevant inputs can separate, and the network can move toward a low-dimensional
+            choice manifold over time.
+          </p>
+          <p>
+            A useful way to think about this is:
+          </p>
           <ol class="list">
-            <li>What variables define the neural state?</li>
-            <li>How does that state evolve over time?</li>
-            <li>How do perturbations or behavioral contexts change the geometry of that evolution?</li>
+            <li>Each moment of population firing defines one point in a high-dimensional neural state space.</li>
+            <li>Across time, that point traces a trajectory.</li>
+            <li>Regression or dimensionality-reduction methods can recover axes that align with task variables such as context, stimulus, and choice.</li>
+            <li>The geometry of those trajectories often reveals the computation more directly than the tuning of any one neuron.</li>
           </ol>
+
+          <div class="dynamics-note-grid" style="margin-top:1rem;">
+            <article class="dynamics-note">
+              <h4>Mixed selectivity</h4>
+              <p>
+                A single neuron can reflect several variables at once, so its response may not map cleanly onto one task
+                label.
+              </p>
+            </article>
+            <article class="dynamics-note">
+              <h4>Regression axes</h4>
+              <p>
+                Regressing population activity onto task variables can recover interpretable axes such as relevant input,
+                context, or choice.
+              </p>
+            </article>
+            <article class="dynamics-note">
+              <h4>Population trajectory</h4>
+              <p>
+                Once the state is projected onto those axes, the evolving trajectory can reveal when evidence is selected,
+                transformed, and committed to a choice.
+              </p>
+            </article>
+          </div>
+
+          <h3>1.1 A simple neuron-level example</h3>
           <p>
-            For real neural datasets, the state might be formed from firing rates, principal components, latent factors,
-            or model-derived embeddings. The inferred flow field can then highlight stable states, rotational structure,
-            divergent regimes, or task-dependent trajectories.
+            Imagine a context-dependent task with two sensory streams, motion and color. On each trial the network is
+            told which stream matters. In a small recurrent population, one neuron might respond strongly to rightward
+            motion, another might respond to color but only when the color context is active, and a third might ramp with
+            the eventual choice regardless of whether that choice was driven by motion or color. None of those neurons
+            alone fully tells you the computation. The population trajectory does.
           </p>
           <p>
-            The pendulum is useful because the variables are interpretable and the geometry is clean. Once the idea is
-            clear in two dimensions, it becomes easier to think about neural manifolds, recurrent dynamics, and latent
-            state models built from measurements rather than hand-written equations.
+            The toy network below is a simplified version of that logic. It is much smaller than the model in Mante et
+            al., but it captures the same qualitative point: single units are mixed, recurrent interactions shape the
+            state over time, and a regression-defined choice axis makes the emerging decision easier to see.
           </p>
+
+          <div class="rnn-demo-shell" data-rnn-demo>
+            <div class="rnn-demo-head">
+              <div>
+                <p class="kicker">Interactive toy example</p>
+                <h3>Context-dependent choice in a small recurrent network</h3>
+                <p class="lead" style="margin:0.5rem 0 0; font-size:1rem;">
+                  Each 20 second trial cues a context, presents motion and color evidence, and lets a small recurrent
+                  network evolve to a choice. The latent plot on the right shows the same activity projected onto
+                  regression-defined axes recovered from many synthetic trials.
+                </p>
+              </div>
+              <div class="dynamics-metrics">
+                <span class="dynamics-chip"><strong data-rnn-phase>Fixation</strong></span>
+                <span class="dynamics-chip"><strong data-rnn-context>Motion</strong> context</span>
+                <span class="dynamics-chip"><strong data-rnn-choice>Right</strong> choice</span>
+                <span class="dynamics-chip"><strong data-rnn-time>0.0</strong> s / 20 s</span>
+              </div>
+            </div>
+
+            <div class="rnn-demo-grid">
+              <section class="rnn-demo-panel">
+                <div class="rnn-panel-top">
+                  <div>
+                    <h4>Inputs, recurrent units, and output</h4>
+                    <p class="dynamics-pane-copy">
+                      Motion and color evidence enter on the left, recurrent units blink with spike-like events in the
+                      middle, and the readout settles onto a choice on the right.
+                    </p>
+                  </div>
+                </div>
+                <div class="rnn-canvas-frame">
+                  <canvas class="rnn-canvas" data-rnn-network aria-label="Toy recurrent neural network animation"></canvas>
+                </div>
+              </section>
+
+              <section class="rnn-demo-panel">
+                <div class="rnn-panel-top">
+                  <div>
+                    <h4>Latent state projected onto regression axes</h4>
+                    <p class="dynamics-pane-copy">
+                      Gray trajectories are reference trials from the same network. The live blue trajectory is the
+                      current trial projected onto a relevant-input axis and a choice axis recovered by linear regression.
+                    </p>
+                  </div>
+                </div>
+                <div class="rnn-canvas-frame">
+                  <canvas class="rnn-canvas" data-rnn-latent aria-label="Latent state trajectory from toy recurrent network"></canvas>
+                </div>
+
+                <div class="rnn-readout-grid">
+                  <article class="rnn-readout-card">
+                    <span>Motion evidence</span>
+                    <strong data-rnn-motion>+0.00</strong>
+                  </article>
+                  <article class="rnn-readout-card">
+                    <span>Color evidence</span>
+                    <strong data-rnn-color>+0.00</strong>
+                  </article>
+                  <article class="rnn-readout-card">
+                    <span>Output readout</span>
+                    <strong data-rnn-output>+0.00</strong>
+                  </article>
+                  <article class="rnn-readout-card">
+                    <span>Choice-axis projection</span>
+                    <strong data-rnn-projection>+0.00</strong>
+                  </article>
+                </div>
+              </section>
+            </div>
+
+            <p class="dynamics-caption">
+              This demo is intentionally small and fast. The point is not to reproduce the full Mante model, but to show
+              how a recurrent population can transform context and sensory input into a low-dimensional decision
+              trajectory that is clearer than any one unit by itself.
+            </p>
+          </div>
         </article>
       </div>
     </section>
@@ -434,6 +550,7 @@ def rk4_step(x, dt):
   </footer>
 
   <script src="scripts.js?v=37"></script>
-  <script src="guide-dynamical-systems.js?v=3"></script>
+  <script src="guide-dynamical-systems.js?v=4"></script>
+  <script src="guide-dynamical-rnn.js?v=1"></script>
 </body>
 </html>
