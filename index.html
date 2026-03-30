@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="style.css?v=40">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -35,15 +35,31 @@
       <div class="container hero-layout">
         <div class="hero-copy">
           <p class="eyebrow">Neuroscience | Behavior | Engineering</p>
-          <h1>Engineering neuroscience with open, practical tool building.</h1>
+          <h1>From neural population dynamics to open experimental systems.</h1>
           <p class="hero-text">
-            I study neural dynamics and behavior with an emphasis on how population-level signals encode internal state,
-            flexibility, and adaptation. My approach combines in vivo and in vitro neuroscience, quantitative analysis,
-            and reusable engineering systems.
+            This site brings together the scientific, analytical, and engineering sides of my work: neural dynamics,
+            behavior, calcium imaging, open software, and laboratory platforms built to make experiments more scalable and
+            interpretable.
           </p>
           <div class="hero-actions">
             <a class="button primary" href="research.html">Explore Research</a>
             <a class="button secondary" href="publications.html">View Publications</a>
+            <a class="button secondary" href="tutorials.html">Browse Guides</a>
+          </div>
+
+          <div class="home-hero-grid">
+            <article class="home-hero-card">
+              <span>Research</span>
+              <strong>Population dynamics, internal state, and behavior in freely moving systems.</strong>
+            </article>
+            <article class="home-hero-card">
+              <span>Guides</span>
+              <strong>Interactive introductions to calcium imaging, dynamical systems, and compression.</strong>
+            </article>
+            <article class="home-hero-card">
+              <span>Open systems</span>
+              <strong>Reusable software, lab tools, and practical workflows for experimental neuroscience.</strong>
+            </article>
           </div>
         </div>
         <div class="hero-visual" aria-label="Interactive neural network">
@@ -54,58 +70,65 @@
 
     <section class="section">
       <div class="container">
-        <p class="eyebrow">At A Glance</p>
-        <h2>Current site sections</h2>
-        <div class="grid-3" style="margin-top:1.2rem;">
-          <article class="card">
-            <img class="image-cover" src="images/TimeCalcium.png" alt="Calcium imaging over time">
-            <div class="card-body">
-              <h3>Research Themes</h3>
-              <p>Neural population dynamics, behavior-state coupling, and circuit dysfunction in freely moving systems.</p>
-              <a class="text-link" href="research.html">Go to Research</a>
-            </div>
-          </article>
-          <article class="card">
-            <img class="image-cover" src="images/MitoNPCa.png" alt="Illustration of nanoparticle neuroscience interface">
-            <div class="card-body">
-              <h3>Software + Analysis</h3>
-              <p>Open computational workflows, synchronization utilities, and reproducible processing pipelines.</p>
-              <a class="text-link" href="software.html">Go to Software</a>
-            </div>
-          </article>
-          <article class="card">
-            <img class="image-cover" src="images/brain.png" alt="Brain silhouette mask used for particle field">
-            <div class="card-body">
-              <h3>Laboratory Platforms</h3>
-              <p>Open hardware, 3D-print resources, and engineered behavioral systems for scalable experimentation.</p>
-              <a class="text-link" href="tools.html">Go to Tools</a>
-            </div>
-          </article>
+        <p class="eyebrow">Site Overview</p>
+        <h2>A clearer map of what is here</h2>
+        <div class="home-summary-grid">
+          <a class="home-summary-card" href="research.html">
+            <p class="kicker">Research</p>
+            <h3>Scientific questions and active project directions</h3>
+            <p>Population dynamics, behavior-state coupling, neuroengineering, and the experimental logic behind current work.</p>
+          </a>
+          <a class="home-summary-card" href="publications.html">
+            <p class="kicker">Publications</p>
+            <h3>Journal papers, conference work, and direct citation links</h3>
+            <p>A cleaner publication index with DOI-forward references and a fast route into published results.</p>
+          </a>
+          <a class="home-summary-card" href="tutorials.html">
+            <p class="kicker">Guides</p>
+            <h3>Interactive teaching pages for methods and analysis</h3>
+            <p>Hands-on walkthroughs for calcium imaging, video compression, and dynamical systems in neural data.</p>
+          </a>
+          <a class="home-summary-card" href="software.html">
+            <p class="kicker">Software</p>
+            <h3>Reusable analysis tools and open computational workflows</h3>
+            <p>Practical code, synchronization utilities, and analysis pipelines meant to be adapted in real labs.</p>
+          </a>
         </div>
       </div>
     </section>
 
     <section class="section alt">
       <div class="container">
-        <p class="eyebrow">Quick Edit Paths</p>
-        <h2>What to customize next</h2>
-        <div class="quick-links">
-          <a class="quick-link" href="about.html">
-            <strong>About</strong>
-            Update bio language, affiliations, and long-term goals.
-          </a>
-          <a class="quick-link" href="research.html">
-            <strong>Research</strong>
-            Add active projects, grants, and project-level media.
-          </a>
-          <a class="quick-link" href="software.html">
-            <strong>Software</strong>
-            Link code repositories, docs, and release notes.
-          </a>
-          <a class="quick-link" href="tools.html">
-            <strong>Tools</strong>
-            Link 3D files, hardware builds, and fabrication guides.
-          </a>
+        <p class="eyebrow">Start Here</p>
+        <h2>Different ways to move through the site</h2>
+        <div class="home-route-grid">
+          <article class="home-route-card">
+            <p class="kicker">If you want the science first</p>
+            <h3>Read the research arc</h3>
+            <p>Start with the research overview, then move into publications to see how the questions and methods connect.</p>
+            <div class="home-route-links">
+              <a class="text-link" href="research.html">Research</a>
+              <a class="text-link" href="publications.html">Publications</a>
+            </div>
+          </article>
+          <article class="home-route-card">
+            <p class="kicker">If you want the methods first</p>
+            <h3>Use the guides and software</h3>
+            <p>Jump into the interactive guides for concepts, then move into software for practical pipelines and tools.</p>
+            <div class="home-route-links">
+              <a class="text-link" href="tutorials.html">Guides</a>
+              <a class="text-link" href="software.html">Software</a>
+            </div>
+          </article>
+          <article class="home-route-card">
+            <p class="kicker">If you want the systems first</p>
+            <h3>See the platforms and hardware</h3>
+            <p>Browse laboratory tools, behavioral platforms, and fabrication-oriented resources built for experimental use.</p>
+            <div class="home-route-links">
+              <a class="text-link" href="tools.html">Lab Tools</a>
+              <a class="text-link" href="about.html">About</a>
+            </div>
+          </article>
         </div>
       </div>
     </section>

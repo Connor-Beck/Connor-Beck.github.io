@@ -223,6 +223,37 @@ h3 {
   flex-wrap: wrap;
 }
 
+.home-hero-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.5rem;
+}
+
+.home-hero-card {
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 14px 28px rgba(17, 32, 25, 0.08);
+}
+
+.home-hero-card span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-hero-card strong {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.96rem;
+  line-height: 1.35;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -863,6 +894,160 @@ h3 {
   display: block;
   font-family: "Sora", "Avenir Next", sans-serif;
   margin-bottom: 0.2rem;
+}
+
+.home-summary-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.2rem;
+}
+
+.home-summary-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.25rem;
+  border-radius: 20px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background:
+    linear-gradient(145deg, rgba(29, 91, 73, 0.07), rgba(255, 255, 255, 0.94)),
+    var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.home-summary-card:hover,
+.home-summary-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(24, 75, 138, 0.24);
+}
+
+.home-summary-card h3 {
+  font-size: 1.1rem;
+}
+
+.home-summary-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.home-route-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.home-route-card {
+  padding: 1.2rem;
+  border-radius: 18px;
+  border: 1px solid rgba(17, 32, 25, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.home-route-card h3 {
+  margin: 0 0 0.45rem;
+}
+
+.home-route-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.home-route-links {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+
+.publication-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.publication-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.publication-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.publication-section-copy {
+  margin: 0;
+  color: var(--muted);
+  max-width: 34ch;
+}
+
+.publication-stack {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.publication-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 32, 25, 0.09);
+  background: rgba(255, 255, 255, 0.86);
+  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.publication-bar:hover,
+.publication-bar:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(24, 75, 138, 0.22);
+  background: rgba(24, 75, 138, 0.04);
+}
+
+.publication-body {
+  min-width: 0;
+}
+
+.publication-body strong {
+  display: block;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.publication-body p,
+.publication-body span {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.publication-action {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  min-height: 34px;
+  padding: 0.1rem 0.7rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.publication-footer-note {
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.publication-footer-note p {
+  margin: 0;
 }
 
 .table-like {
@@ -2083,6 +2268,12 @@ h3 {
     padding-top: 3.2rem;
   }
 
+  .home-hero-grid,
+  .home-summary-grid,
+  .home-route-grid {
+    grid-template-columns: 1fr;
+  }
+
   .about-intro-grid {
     grid-template-columns: 1fr;
   }
@@ -2162,11 +2353,17 @@ h3 {
   .grid-3,
   .research-columns,
   .quick-links,
+  .home-summary-grid,
+  .home-route-grid,
   .tutorial-lab-grid,
   .dynamics-figure-intro,
   .dynamics-note-grid,
   .dynamics-attractor-grid,
   .guide-project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2201,6 +2398,11 @@ h3 {
 
   .dynamics-canvas-overlay {
     padding: 0.75rem 0.8rem;
+  }
+
+  .publication-bar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .dynamics-figure-note + .dynamics-figure-note {
