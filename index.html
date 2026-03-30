@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=40">
+  <link rel="stylesheet" href="style.css?v=41">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -35,32 +35,10 @@
       <div class="container hero-layout">
         <div class="hero-copy">
           <p class="eyebrow">Neuroscience | Behavior | Engineering</p>
-          <h1>From neural population dynamics to open experimental systems.</h1>
+          <h1>Neural dynamics, behavior, and experimental systems.</h1>
           <p class="hero-text">
-            This site brings together the scientific, analytical, and engineering sides of my work: neural dynamics,
-            behavior, calcium imaging, open software, and laboratory platforms built to make experiments more scalable and
-            interpretable.
+            A focused entry point into research, guides, software, and laboratory tools for systems neuroscience.
           </p>
-          <div class="hero-actions">
-            <a class="button primary" href="research.html">Explore Research</a>
-            <a class="button secondary" href="publications.html">View Publications</a>
-            <a class="button secondary" href="tutorials.html">Browse Guides</a>
-          </div>
-
-          <div class="home-hero-grid">
-            <article class="home-hero-card">
-              <span>Research</span>
-              <strong>Population dynamics, internal state, and behavior in freely moving systems.</strong>
-            </article>
-            <article class="home-hero-card">
-              <span>Guides</span>
-              <strong>Interactive introductions to calcium imaging, dynamical systems, and compression.</strong>
-            </article>
-            <article class="home-hero-card">
-              <span>Open systems</span>
-              <strong>Reusable software, lab tools, and practical workflows for experimental neuroscience.</strong>
-            </article>
-          </div>
         </div>
         <div class="hero-visual" aria-label="Interactive neural network">
           <canvas id="brain-canvas" aria-hidden="true"></canvas>
@@ -71,64 +49,74 @@
     <section class="section">
       <div class="container">
         <p class="eyebrow">Site Overview</p>
-        <h2>A clearer map of what is here</h2>
-        <div class="home-summary-grid">
-          <a class="home-summary-card" href="research.html">
-            <p class="kicker">Research</p>
-            <h3>Scientific questions and active project directions</h3>
-            <p>Population dynamics, behavior-state coupling, neuroengineering, and the experimental logic behind current work.</p>
-          </a>
-          <a class="home-summary-card" href="publications.html">
-            <p class="kicker">Publications</p>
-            <h3>Journal papers, conference work, and direct citation links</h3>
-            <p>A cleaner publication index with DOI-forward references and a fast route into published results.</p>
-          </a>
-          <a class="home-summary-card" href="tutorials.html">
-            <p class="kicker">Guides</p>
-            <h3>Interactive teaching pages for methods and analysis</h3>
-            <p>Hands-on walkthroughs for calcium imaging, video compression, and dynamical systems in neural data.</p>
-          </a>
-          <a class="home-summary-card" href="software.html">
-            <p class="kicker">Software</p>
-            <h3>Reusable analysis tools and open computational workflows</h3>
-            <p>Practical code, synchronization utilities, and analysis pipelines meant to be adapted in real labs.</p>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section alt">
-      <div class="container">
-        <p class="eyebrow">Start Here</p>
-        <h2>Different ways to move through the site</h2>
-        <div class="home-route-grid">
-          <article class="home-route-card">
-            <p class="kicker">If you want the science first</p>
-            <h3>Read the research arc</h3>
-            <p>Start with the research overview, then move into publications to see how the questions and methods connect.</p>
-            <div class="home-route-links">
-              <a class="text-link" href="research.html">Research</a>
-              <a class="text-link" href="publications.html">Publications</a>
+        <h2>The seven site sections shown in the brain map</h2>
+        <p class="home-map-intro">
+          Each section below mirrors one of the regions highlighted in the schematic so the structure of the site is visible before you start clicking through.
+        </p>
+        <div class="home-map-grid">
+          <a class="home-map-card" href="about.html">
+            <img class="home-map-image" src="assets/people/headshot_ConnorBeck.png" alt="Connor Beck portrait">
+            <div class="home-map-body">
+              <p class="kicker">About</p>
+              <h3>Research background and perspective</h3>
+              <p>Background, scientific framing, and the questions that connect the rest of the site.</p>
+              <span class="home-map-link">Learn more</span>
             </div>
-          </article>
-          <article class="home-route-card">
-            <p class="kicker">If you want the methods first</p>
-            <h3>Use the guides and software</h3>
-            <p>Jump into the interactive guides for concepts, then move into software for practical pipelines and tools.</p>
-            <div class="home-route-links">
-              <a class="text-link" href="tutorials.html">Guides</a>
-              <a class="text-link" href="software.html">Software</a>
+          </a>
+          <a class="home-map-card" href="publications.html">
+            <img class="home-map-image" src="images/card-img.png" alt="Abstract scientific visual">
+            <div class="home-map-body">
+              <p class="kicker">Publications</p>
+              <h3>Papers and conference work</h3>
+              <p>Journal articles and proceedings collected into a cleaner reference list with direct source links.</p>
+              <span class="home-map-link">View publications</span>
             </div>
-          </article>
-          <article class="home-route-card">
-            <p class="kicker">If you want the systems first</p>
-            <h3>See the platforms and hardware</h3>
-            <p>Browse laboratory tools, behavioral platforms, and fabrication-oriented resources built for experimental use.</p>
-            <div class="home-route-links">
-              <a class="text-link" href="tools.html">Lab Tools</a>
-              <a class="text-link" href="about.html">About</a>
+          </a>
+          <a class="home-map-card" href="research.html">
+            <img class="home-map-image" src="assets/research/force-guidance/ForceGuidance-04.png" alt="Microscopy image from neural engineering research">
+            <div class="home-map-body">
+              <p class="kicker">Research</p>
+              <h3>Population dynamics and behavior</h3>
+              <p>Population dynamics, internal state, and behavior in freely moving systems.</p>
+              <span class="home-map-link">Explore research</span>
             </div>
-          </article>
+          </a>
+          <a class="home-map-card" href="tutorials.html">
+            <img class="home-map-image" src="images/TimeCalcium.png" alt="Calcium imaging style visualization">
+            <div class="home-map-body">
+              <p class="kicker">Guides</p>
+              <h3>Interactive teaching pages</h3>
+              <p>Hands-on guides for calcium imaging, compression, and dynamical systems in neural data.</p>
+              <span class="home-map-link">Browse guides</span>
+            </div>
+          </a>
+          <a class="home-map-card" href="software.html">
+            <img class="home-map-image" src="assets/research/framework/MicroelectrodeArray.png" alt="Microelectrode array framework illustration">
+            <div class="home-map-body">
+              <p class="kicker">Software</p>
+              <h3>Open computational tools</h3>
+              <p>Open-access software for translating neural dynamics and behavior into usable analysis workflows.</p>
+              <span class="home-map-link">Open software</span>
+            </div>
+          </a>
+          <a class="home-map-card" href="tools.html#three-d-printing-tools">
+            <img class="home-map-image" src="assets/research/force-guidance/ForceGuidance-02.png" alt="Laboratory fabrication and prototyping visual">
+            <div class="home-map-body">
+              <p class="kicker">3D Printing Tools</p>
+              <h3>Fabrication-ready lab parts</h3>
+              <p>Printable components and practical build resources for assembling experimental infrastructure.</p>
+              <span class="home-map-link">View printing tools</span>
+            </div>
+          </a>
+          <a class="home-map-card" href="tools.html#behavioral-platforms">
+            <img class="home-map-image" src="assets/research/framework/Mouse.png" alt="Behavioral platform illustration">
+            <div class="home-map-body">
+              <p class="kicker">Behavioral Platforms</p>
+              <h3>Experimental systems for behavior</h3>
+              <p>Behavior rigs and platform concepts for scalable neuroscience experiments in richer environments.</p>
+              <span class="home-map-link">See platforms</span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
