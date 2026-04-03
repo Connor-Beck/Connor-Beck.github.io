@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=41">
+  <link rel="stylesheet" href="style.css?v=42">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -49,71 +49,121 @@
     <section class="section">
       <div class="container">
         <p class="eyebrow">Site Overview</p>
-        <h2>The seven site sections shown in the brain map</h2>
+        <h2>A research website for extracting meaning from neural dynamics</h2>
         <p class="home-map-intro">
-          Each section below mirrors one of the regions highlighted in the schematic so the structure of the site is visible before you start clicking through.
+          This site is organized around a central question in systems neuroscience: what do neural dynamics actually mean for
+          computation, internal state, and behavior? It brings together research directions, publications, tutorials,
+          software, and laboratory tools to make that question more concrete, measurable, and experimentally useful.
         </p>
         <div class="home-map-grid">
           <a class="home-map-card" href="about.html">
-            <img class="home-map-image" src="assets/people/headshot_ConnorBeck.png" alt="Connor Beck portrait">
+            <div class="home-map-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <circle cx="32" cy="21" r="10"></circle>
+                <path d="M16 50c3-9 11-14 16-14s13 5 16 14"></path>
+                <path d="M12 54h40"></path>
+              </svg>
+            </div>
             <div class="home-map-body">
-              <p class="kicker">About</p>
-              <h3>Research background and perspective</h3>
-              <p>Background, scientific framing, and the questions that connect the rest of the site.</p>
+              <h3>About</h3>
+              <p>Background, scientific framing, and the questions connecting the rest of the site.</p>
               <span class="home-map-link">Learn more</span>
             </div>
           </a>
           <a class="home-map-card" href="publications.html">
-            <img class="home-map-image" src="images/card-img.png" alt="Abstract scientific visual">
+            <div class="home-map-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <rect x="16" y="10" width="32" height="44" rx="6"></rect>
+                <path d="M24 22h16"></path>
+                <path d="M24 30h16"></path>
+                <path d="M24 38h10"></path>
+              </svg>
+            </div>
             <div class="home-map-body">
-              <p class="kicker">Publications</p>
-              <h3>Papers and conference work</h3>
-              <p>Journal articles and proceedings collected into a cleaner reference list with direct source links.</p>
+              <h3>Publications</h3>
+              <p>Journal articles and conference work collected into a direct, cleaner reference list.</p>
               <span class="home-map-link">View publications</span>
             </div>
           </a>
           <a class="home-map-card" href="research.html">
-            <img class="home-map-image" src="assets/research/force-guidance/ForceGuidance-04.png" alt="Microscopy image from neural engineering research">
+            <div class="home-map-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <circle cx="22" cy="22" r="6"></circle>
+                <circle cx="42" cy="18" r="5"></circle>
+                <circle cx="40" cy="40" r="7"></circle>
+                <circle cx="20" cy="42" r="5"></circle>
+                <path d="M27 21l10-2"></path>
+                <path d="M25 26l11 10"></path>
+                <path d="M22 28v9"></path>
+              </svg>
+            </div>
             <div class="home-map-body">
-              <p class="kicker">Research</p>
-              <h3>Population dynamics and behavior</h3>
+              <h3>Research</h3>
               <p>Population dynamics, internal state, and behavior in freely moving systems.</p>
               <span class="home-map-link">Explore research</span>
             </div>
           </a>
           <a class="home-map-card" href="tutorials.html">
-            <img class="home-map-image" src="images/TimeCalcium.png" alt="Calcium imaging style visualization">
+            <div class="home-map-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <path d="M10 44h44"></path>
+                <path d="M14 36c4 0 4-16 8-16s4 24 8 24 4-12 8-12 4 6 8 6 4-10 8-10"></path>
+              </svg>
+            </div>
             <div class="home-map-body">
-              <p class="kicker">Guides</p>
-              <h3>Interactive teaching pages</h3>
-              <p>Hands-on guides for calcium imaging, compression, and dynamical systems in neural data.</p>
+              <h3>Guides</h3>
+              <p>Hands-on pages for calcium imaging, compression, and neural dynamical systems.</p>
               <span class="home-map-link">Browse guides</span>
             </div>
           </a>
           <a class="home-map-card" href="software.html">
-            <img class="home-map-image" src="assets/research/framework/MicroelectrodeArray.png" alt="Microelectrode array framework illustration">
+            <div class="home-map-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <rect x="14" y="14" width="36" height="36" rx="8"></rect>
+                <circle cx="24" cy="24" r="2.5"></circle>
+                <circle cx="32" cy="24" r="2.5"></circle>
+                <circle cx="40" cy="24" r="2.5"></circle>
+                <circle cx="24" cy="32" r="2.5"></circle>
+                <circle cx="32" cy="32" r="2.5"></circle>
+                <circle cx="40" cy="32" r="2.5"></circle>
+                <circle cx="24" cy="40" r="2.5"></circle>
+                <circle cx="32" cy="40" r="2.5"></circle>
+                <circle cx="40" cy="40" r="2.5"></circle>
+              </svg>
+            </div>
             <div class="home-map-body">
-              <p class="kicker">Software</p>
-              <h3>Open computational tools</h3>
-              <p>Open-access software for translating neural dynamics and behavior into usable analysis workflows.</p>
+              <h3>Software</h3>
+              <p>Open computational tools for translating neural dynamics into usable analysis workflows.</p>
               <span class="home-map-link">Open software</span>
             </div>
           </a>
           <a class="home-map-card" href="tools.html#three-d-printing-tools">
-            <img class="home-map-image" src="assets/research/force-guidance/ForceGuidance-02.png" alt="Laboratory fabrication and prototyping visual">
+            <div class="home-map-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <path d="M20 16h24v10l6 8v14H14V34l6-8z"></path>
+                <path d="M24 24h16"></path>
+                <path d="M24 40h16"></path>
+                <path d="M32 24v16"></path>
+              </svg>
+            </div>
             <div class="home-map-body">
-              <p class="kicker">3D Printing Tools</p>
-              <h3>Fabrication-ready lab parts</h3>
-              <p>Printable components and practical build resources for assembling experimental infrastructure.</p>
+              <h3>3D Printing Tools</h3>
+              <p>Printable components and build resources for assembling experimental infrastructure.</p>
               <span class="home-map-link">View printing tools</span>
             </div>
           </a>
           <a class="home-map-card" href="tools.html#behavioral-platforms">
-            <img class="home-map-image" src="assets/research/framework/Mouse.png" alt="Behavioral platform illustration">
+            <div class="home-map-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="presentation">
+                <path d="M18 38c0-8 6-14 14-14 7 0 12 5 12 11 0 7-5 13-14 13-7 0-12-4-12-10z"></path>
+                <circle cx="25" cy="22" r="4"></circle>
+                <circle cx="39" cy="21" r="3"></circle>
+                <path d="M46 39c6 2 8 6 8 10"></path>
+              </svg>
+            </div>
             <div class="home-map-body">
-              <p class="kicker">Behavioral Platforms</p>
-              <h3>Experimental systems for behavior</h3>
-              <p>Behavior rigs and platform concepts for scalable neuroscience experiments in richer environments.</p>
+              <h3>Behavioral Platforms</h3>
+              <p>Behavior rigs and platform concepts for scalable experiments in richer environments.</p>
               <span class="home-map-link">See platforms</span>
             </div>
           </a>
